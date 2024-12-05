@@ -13,7 +13,9 @@ const SaleDetails = () => {
         const response = await API.get(`/sales/${id}`);
         setSale(response.data);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to fetch sale details.');
+        setError(
+          err.response?.data?.message || 'Failed to fetch sale details.'
+        );
       }
     };
 

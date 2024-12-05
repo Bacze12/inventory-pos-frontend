@@ -33,8 +33,14 @@ const AddProduct = () => {
       setPrice('');
       alert('Product added successfully!');
     } catch (error) {
-      console.error('Error adding product:', error?.response?.data || error.message);
-      alert(error?.response?.data?.message || 'Failed to add product. Please try again.');
+      console.error(
+        'Error adding product:',
+        error?.response?.data || error.message
+      );
+      alert(
+        error?.response?.data?.message ||
+          'Failed to add product. Please try again.'
+      );
     } finally {
       setIsLoading(false); // Restablecer estado de carga
     }
@@ -55,7 +61,9 @@ const AddProduct = () => {
         onChange={(e) => setPrice(e.target.value)}
       />
       <button
-        className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${isLoading ? 'opacity-50' : ''}`}
+        className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${
+          isLoading ? 'opacity-50' : ''
+        }`}
         onClick={handleSubmit}
         disabled={isLoading}
       >

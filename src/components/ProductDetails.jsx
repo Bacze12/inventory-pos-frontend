@@ -13,7 +13,9 @@ const ProductDetails = () => {
         const response = await API.get(`/products/${id}`);
         setProduct(response.data);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to fetch product details.');
+        setError(
+          err.response?.data?.message || 'Failed to fetch product details.'
+        );
       }
     };
 

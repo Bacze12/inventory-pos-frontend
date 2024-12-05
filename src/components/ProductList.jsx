@@ -21,11 +21,8 @@ const ProductList = () => {
   }, [fetchProducts]);
 
   const productItems = useMemo(() => {
-    return products.map(product => (
-      <div 
-        key={product.id} 
-        className="border rounded-lg p-4 m-2 shadow-sm"
-      >
+    return products.map((product) => (
+      <div key={product.id} className="border rounded-lg p-4 m-2 shadow-sm">
         <h2 className="text-xl font-semibold">{product.name}</h2>
         <p className="text-gray-600">{product.price}</p>
       </div>
@@ -34,9 +31,10 @@ const ProductList = () => {
 
   if (loading) {
     return (
-      <div data-testid="loading-spinner" className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
-
-
+      <div
+        data-testid="loading-spinner"
+        className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"
+      />
     );
   }
 
