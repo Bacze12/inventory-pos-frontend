@@ -6,7 +6,6 @@ const UpdateProduct = () => {
   const { id } = useParams();
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -15,7 +14,7 @@ const UpdateProduct = () => {
         setName(response.data.name);
         setPrice(response.data.price);
       } catch (err) {
-        alert('Failed to load product details.');
+        console.log('Failed to load product details.');
       }
     };
 
@@ -24,13 +23,10 @@ const UpdateProduct = () => {
 
   const handleUpdate = async () => {
     try {
-      setIsLoading(true);
       await API.put(`/products/${id}`, { name, price: parseFloat(price) });
-      alert('Product updated successfully!');
+      console.log('Product updated successfully!');
     } catch (err) {
-      alert('Failed to update product.');
-    } finally {
-      setIsLoading(false);
+      console.log('Failed to update product.');
     }
   };
 
@@ -46,8 +42,8 @@ const UpdateProduct = () => {
         onChange={(e) => setPrice(e.target.value)}
         placeholder="Product Price"
       />
-      <button onClick={handleUpdate} disabled={isLoading}>
-        {isLoading ? 'Updating...' : 'Update Product'}
+      <button onClick={handleUpdate}>
+        Update Product
       </button>
     </div>
   );

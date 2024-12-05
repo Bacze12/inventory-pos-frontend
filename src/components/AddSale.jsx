@@ -4,17 +4,13 @@ import API from '../api';
 const AddSale = () => {
   const [productId, setProductId] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async () => {
     try {
-      setIsLoading(true);
       await API.post('/sales', { productId, quantity: parseInt(quantity) });
-      alert('Sale recorded successfully!');
+      console.log('Sale recorded successfully!');
     } catch (err) {
-      alert('Failed to record sale.');
-    } finally {
-      setIsLoading(false);
+      console.log('Failed to record sale.');
     }
   };
 
@@ -30,8 +26,8 @@ const AddSale = () => {
         onChange={(e) => setQuantity(e.target.value)}
         placeholder="Quantity"
       />
-      <button onClick={handleSubmit} disabled={isLoading}>
-        {isLoading ? 'Saving...' : 'Add Sale'}
+      <button onClick={handleSubmit}>
+        Add Sale
       </button>
     </div>
   );
