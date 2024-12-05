@@ -39,7 +39,7 @@ const AddProduct = () => {
       );
       alert(
         error?.response?.data?.message ||
-          'Failed to add product. Please try again.'
+        'Failed to add product. Please try again.'
       );
     } finally {
       setIsLoading(false); // Restablecer estado de carga
