@@ -4,7 +4,11 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import UpdateProduct from './UpdateProduct';
 import API from '../api';
 
-jest.mock('../api');
+jest.mock('../api', () => ({
+  get: jest.fn(),
+  post: jest.fn(),
+  delete: jest.fn()
+}));
 
 describe('UpdateProduct Component', () => {
   const mockProduct = { id: '1', name: 'Test Product', price: 100 };
@@ -15,6 +19,26 @@ describe('UpdateProduct Component', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+  });
+  test('displays error message when PUT endpoint is missing', async () => {
+    API.put.mockRejectedValueOnce({
+      response: { status: 404, data: 'PUT endpoint not found' },
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/products/1/edit']}>
+        <Routes>
+          <Route path="/products/:id/edit" element={<UpdateProduct />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    const updateButton = screen.getByText('Update Product');
+    fireEvent.click(updateButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Error: PUT endpoint not found')).toBeInTheDocument();
+    });
   });
 
   test('renders UpdateProduct component', async () => {
@@ -32,8 +56,11 @@ describe('UpdateProduct Component', () => {
 
     await waitFor(() => {
       expect(screen.getByDisplayValue(mockProduct.name)).toBeInTheDocument();
-      expect(screen.getByDisplayValue(mockProduct.price.toString())).toBeInTheDocument();
     });
+
+    expect(
+      screen.getByDisplayValue(mockProduct.price.toString())
+    ).toBeInTheDocument();
   });
 
   test('handles user input', async () => {
@@ -56,7 +83,9 @@ describe('UpdateProduct Component', () => {
   });
 
   test('displays success message on successful product update', async () => {
-    API.put.mockResolvedValueOnce({ data: { ...mockProduct, name: 'Updated Product', price: 200 } });
+    API.put.mockResolvedValueOnce({
+      data: { ...mockProduct, name: 'Updated Product', price: 200 },
+    });
 
     render(
       <MemoryRouter initialEntries={['/products/1/edit']}>
@@ -74,7 +103,9 @@ describe('UpdateProduct Component', () => {
     fireEvent.change(priceInput, { target: { value: '200' } });
     fireEvent.click(updateButton);
 
-    expect(await screen.findByText('Product updated successfully!')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Product updated successfully!')
+    ).toBeInTheDocument();
   });
 
   test('displays error message on failed product update', async () => {
@@ -96,6 +127,8 @@ describe('UpdateProduct Component', () => {
     fireEvent.change(priceInput, { target: { value: '200' } });
     fireEvent.click(updateButton);
 
-    expect(await screen.findByText('Failed to update product.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Failed to update product.')
+    ).toBeInTheDocument();
   });
 });

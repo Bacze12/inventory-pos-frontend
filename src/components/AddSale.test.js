@@ -33,7 +33,9 @@ describe('AddSale Component', () => {
     fireEvent.change(quantityInput, { target: { value: '10' } });
     fireEvent.click(addButton);
 
-    expect(await screen.findByText('Sale recorded successfully!')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Sale recorded successfully!')
+    ).toBeInTheDocument();
   });
 
   test('displays error message on failed sale recording', async () => {
@@ -46,6 +48,22 @@ describe('AddSale Component', () => {
     fireEvent.change(quantityInput, { target: { value: '10' } });
     fireEvent.click(addButton);
 
-    expect(await screen.findByText('Failed to record sale.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Failed to record sale.')
+    ).toBeInTheDocument();
   });
+  test('displays error message when POST endpoint for sales is missing', async () => {
+    API.post.mockRejectedValueOnce({
+      response: { status: 404, data: 'Sales POST endpoint not found' },
+    });
+  
+    render(<AddSale />);
+    const addButton = screen.getByText('Add Sale');
+    fireEvent.click(addButton);
+  
+    await waitFor(() => {
+      expect(screen.getByText('Error: Sales POST endpoint not found')).toBeInTheDocument();
+    });
+  });
+  
 });

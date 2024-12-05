@@ -16,4 +16,4 @@ root.render(
   </ErrorBoundary>
 );
 
-reportWebVitals(console.log);
+reportWebVitals(console.log); // eslint-disable-line no-console

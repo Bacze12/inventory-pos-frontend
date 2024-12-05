@@ -16,7 +16,9 @@ describe('DeleteProduct Component', () => {
 
     fireEvent.click(deleteButton);
 
-    expect(await screen.findByText('Product deleted successfully!')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Product deleted successfully!')
+    ).toBeInTheDocument();
     expect(onDeleteMock).toHaveBeenCalled();
   });
 
@@ -26,6 +28,22 @@ describe('DeleteProduct Component', () => {
 
     fireEvent.click(deleteButton);
 
-    expect(await screen.findByText('Failed to delete product.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Failed to delete product.')
+    ).toBeInTheDocument();
   });
+  test('displays error message when DELETE endpoint is missing', async () => {
+    API.delete.mockRejectedValueOnce({
+      response: { status: 404, data: 'DELETE endpoint not found' },
+    });
+  
+    render(<DeleteProduct id="1" />);
+    const deleteButton = screen.getByText('Delete Product');
+    fireEvent.click(deleteButton);
+  
+    await waitFor(() => {
+      expect(screen.getByText('Error: DELETE endpoint not found')).toBeInTheDocument();
+    });
+  });
+  
 });

@@ -7,7 +7,12 @@ import API from '../api';
 jest.mock('../api');
 
 describe('SaleDetails Component', () => {
-  const mockSale = { id: '1', productId: '123', quantity: 10, date: '2023-01-01' };
+  const mockSale = {
+    id: '1',
+    productId: '123',
+    quantity: 10,
+    date: '2023-01-01',
+  };
 
   beforeEach(() => {
     API.get.mockResolvedValue({ data: mockSale });
@@ -30,10 +35,15 @@ describe('SaleDetails Component', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Sale Details')).toBeInTheDocument();
-      expect(screen.getByText(`Product ID: ${mockSale.productId}`)).toBeInTheDocument();
-      expect(screen.getByText(`Quantity: ${mockSale.quantity}`)).toBeInTheDocument();
-      expect(screen.getByText(`Date: ${mockSale.date}`)).toBeInTheDocument();
     });
+
+    expect(
+      screen.getByText(`Product ID: ${mockSale.productId}`)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(`Quantity: ${mockSale.quantity}`)
+    ).toBeInTheDocument();
+    expect(screen.getByText(`Date: ${mockSale.date}`)).toBeInTheDocument();
   });
 
   test('displays error message on failed fetch', async () => {
@@ -48,7 +58,9 @@ describe('SaleDetails Component', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Failed to fetch sale details.')).toBeInTheDocument();
+      expect(
+        screen.getByText('Failed to fetch sale details.')
+      ).toBeInTheDocument();
     });
   });
 });

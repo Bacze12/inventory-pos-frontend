@@ -4,7 +4,11 @@ import '@testing-library/jest-dom/extend-expect';
 import SalesList from './SalesList';
 import API from '../api';
 
-jest.mock('../api');
+jest.mock('../api', () => ({
+  get: jest.fn(),
+  post: jest.fn(),
+  delete: jest.fn()
+}));
 
 describe('SalesList Component', () => {
   const mockSales = [
@@ -26,10 +30,25 @@ describe('SalesList Component', () => {
 
     await waitFor(() => {
       mockSales.forEach((sale) => {
-        expect(screen.getByText(`Product ID: ${sale.productId}`)).toBeInTheDocument();
-        expect(screen.getByText(`Quantity: ${sale.quantity}`)).toBeInTheDocument();
+        expect(
+          screen.getByText(`Product ID: ${sale.productId}`)
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(`Quantity: ${sale.quantity}`)
+        ).toBeInTheDocument();
         expect(screen.getByText(`Date: ${sale.date}`)).toBeInTheDocument();
       });
+    });
+  });
+  test('displays error message when endpoint does not exist', async () => {
+    API.get.mockRejectedValueOnce({
+      response: { status: 404, data: 'Endpoint not found' },
+    });
+
+    render(<SalesList />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Error: Endpoint not found')).toBeInTheDocument();
     });
   });
 
