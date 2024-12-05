@@ -22,6 +22,7 @@ const SalesList = () => {
     return sales.map((sale) => (
       <li key={sale.id}>
         Product ID: {sale.productId}, Quantity: {sale.quantity}, Date: {sale.date}
+        {' '}
       </li>
     ));
   }, [sales]);
@@ -29,11 +30,7 @@ const SalesList = () => {
   if (error) return <p>{error}</p>;
   if (sales.length === 0) return <p>No sales recorded.</p>;
 
-  return (
-    <ul>
-      {salesItems}
-    </ul>
-  );
+  return <ul>{salesItems}</ul>;
 };
 
 export default React.memo(SalesList);
