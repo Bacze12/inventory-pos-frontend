@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/dom';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import UpdateProduct from './UpdateProduct';
 import API from '../api';

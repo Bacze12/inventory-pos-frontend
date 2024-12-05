@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
+import '@testing-library/dom';
 import ProductList from './ProductList';
 import API from '../api';
 
