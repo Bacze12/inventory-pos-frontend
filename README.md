@@ -1,70 +1,90 @@
-# Getting Started with Create React App
+# Inventory POS Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is a frontend application for an inventory point-of-sale (POS) system. It allows users to manage products and sales, including adding, updating, and deleting products, as well as recording and viewing sales.
 
-## Available Scripts
+## Project Architecture
 
-In the project directory, you can run:
+The project is built using React and follows a component-based architecture. The main components are organized in the `src/components` directory, and the application routes are defined in `src/App.jsx` using `react-router-dom`.
 
-### `npm start`
+### Components
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- `src/components/AddProduct.jsx`: A component for adding new products.
+- `src/components/AddSale.jsx`: A component for recording new sales.
+- `src/components/DeleteProduct.jsx`: A component for deleting products.
+- `src/components/ProductDetails.jsx`: A component for displaying product details.
+- `src/components/ProductList.jsx`: A component for listing all products.
+- `src/components/SaleDetails.jsx`: A component for displaying sale details.
+- `src/components/SalesList.jsx`: A component for listing all sales.
+- `src/components/UpdateProduct.jsx`: A component for updating product details.
+- `src/components/ui/theme-provider.jsx`: A component for providing the theme to the application.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### API Configuration
 
-### `npm test`
+The `src/api.js` file contains the configuration for Axios, which is used for making API requests to the backend.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Error Handling
 
-### `npm run build`
+The `src/ErrorBoundary.jsx` file contains an error boundary component to catch and handle errors in the application.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Contributing
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+We welcome contributions to this project! Please follow the guidelines below to contribute:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. Ensure that you have read and understood the project's purpose and architecture as described in this `README.md` file.
+2. Before making any changes, please check the existing issues and pull requests to avoid duplicating work.
+3. Fork the repository and create a new branch for your feature or bug fix.
+4. Write clear and concise commit messages that describe the changes you have made.
+5. Ensure that your code follows the project's coding style and conventions. Use a linter and formatter to maintain consistent code style.
+6. Add comments and documentation within the code to make it easier for other developers to understand and maintain.
+7. Write unit tests for your changes to ensure code quality and reliability. Place your test files in the `src` directory.
+8. Update the `README.md` file if your changes affect the documentation.
+9. If your changes involve adding new dependencies, ensure that they are added to the `package.json` file.
+10. Implement error handling and validation in your code to improve user experience and prevent potential issues.
+11. Ensure that your code handles loading states and errors gracefully.
+12. Submit a pull request with a clear description of the changes you have made and the problem they solve.
+13. Be responsive to feedback and make any necessary changes requested by the project maintainers.
+14. Follow the project's code of conduct and be respectful to other contributors.
 
-### `npm run eject`
+## Setting Up the Development Environment
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+To set up the development environment for this project, follow these steps:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. Clone the repository to your local machine:
+   ```sh
+   git clone https://github.com/Bacze12/inventory-pos-frontend.git
+   cd inventory-pos-frontend
+   ```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+2. Install the project dependencies using npm:
+   ```sh
+   npm install
+   ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+3. Create a `.env` file in the root directory of the project and add the necessary environment variables. You can use the `.env.example` file as a template.
 
-## Learn More
+4. Start the development server:
+   ```sh
+   npm start
+   ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Running Tests and Building the Project
 
-### Code Splitting
+### Running Tests
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+To run the tests for this project, use the following command:
+```sh
+npm test
+```
+This will launch the test runner in the interactive watch mode. Ensure that all tests pass before submitting a pull request.
 
-### Analyzing the Bundle Size
+### Building the Project
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+To build the project for production, use the following command:
+```sh
+npm run build
+```
+This will create an optimized production build in the `build` folder. The build is minified, and the filenames include the hashes. Your app is ready to be deployed!
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+For more information on deployment, refer to the [Create React App documentation](https://facebook.github.io/create-react-app/docs/deployment).
