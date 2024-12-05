@@ -3,16 +3,13 @@ import API from '../api';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   const fetchProducts = useCallback(async () => {
     try {
       const response = await API.get('/products');
       setProducts(response.data);
     } catch (error) {
-      console.error('Error fetching products:', error);
-    } finally {
-      setLoading(false);
+      console.log('Error fetching products:', error);
     }
   }, []);
 
@@ -28,15 +25,6 @@ const ProductList = () => {
       </div>
     ));
   }, [products]);
-
-  if (loading) {
-    return (
-      <div
-        data-testid="loading-spinner"
-        className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"
-      />
-    );
-  }
 
   return (
     <div className="p-4">

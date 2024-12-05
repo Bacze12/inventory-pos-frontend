@@ -5,7 +5,6 @@ import API from '../api';
 const ProductDetails = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -13,7 +12,7 @@ const ProductDetails = () => {
         const response = await API.get(`/products/${id}`);
         setProduct(response.data);
       } catch (err) {
-        setError(
+        console.log(
           err.response?.data?.message || 'Failed to fetch product details.'
         );
       }
@@ -22,7 +21,6 @@ const ProductDetails = () => {
     fetchProduct();
   }, [id]);
 
-  if (error) return <p>{error}</p>;
   if (!product) return <p>Loading...</p>;
 
   return (
