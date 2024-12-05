@@ -10,14 +10,13 @@ We welcome contributions to this project! Please follow the guidelines below to 
 4. Write clear and concise commit messages that describe the changes you have made.
 5. Ensure that your code follows the project's coding style and conventions. Use a linter and formatter to maintain consistent code style.
 6. Add comments and documentation within the code to make it easier for other developers to understand and maintain.
-7. Write unit tests for your changes to ensure code quality and reliability. Place your test files in the `src` directory.
-8. Update the `README.md` file if your changes affect the documentation.
-9. If your changes involve adding new dependencies, ensure that they are added to the `package.json` file.
-10. Implement error handling and validation in your code to improve user experience and prevent potential issues.
-11. Ensure that your code handles loading states and errors gracefully.
-12. Submit a pull request with a clear description of the changes you have made and the problem they solve.
-13. Be responsive to feedback and make any necessary changes requested by the project maintainers.
-14. Follow the project's code of conduct and be respectful to other contributors.
+7. Update the `README.md` file if your changes affect the documentation.
+8. If your changes involve adding new dependencies, ensure that they are added to the `package.json` file.
+9. Implement error handling and validation in your code to improve user experience and prevent potential issues.
+10. Ensure that your code handles loading states and errors gracefully.
+11. Submit a pull request with a clear description of the changes you have made and the problem they solve.
+12. Be responsive to feedback and make any necessary changes requested by the project maintainers.
+13. Follow the project's code of conduct and be respectful to other contributors.
 
 ## Forking the Repository and Creating a New Branch
 
