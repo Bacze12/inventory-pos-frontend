@@ -1,20 +1,18 @@
-const API_BASE = 'http://localhost:3009/api';
+import API from './api';
+import { useQuery } from '@tanstack/react-query';
 
-export const fetchProducts = async (token) => {
-  const response = await fetch(`${API_BASE}/products`, {
-    headers: { Authorization: `Bearer ${token}` },
+// Obtener todos los productos con cacheo
+export const useProducts = () => {
+  return useQuery('products', async () => {
+    const { data } = await API.get('/products');
+    return data;
   });
-  return response.json();
 };
 
-export const addProduct = async (token, product) => {
-  const response = await fetch(`${API_BASE}/products`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(product),
+// Obtener detalles de un producto específico con cacheo
+export const useProductDetails = (id) => {
+  return useQuery(['product', id], async () => {
+    const { data } = await API.get(`/products/${id}`);
+    return data;
   });
-  return response.ok;
 };
