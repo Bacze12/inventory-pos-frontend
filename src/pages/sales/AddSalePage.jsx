@@ -1,5 +1,5 @@
 import React from 'react';
-import AddSale from '../../components/AddSale';
+import AddSale from '../../components/sales/AddSale';
 
 const AddSalePage = () => {
   return <AddSale />;
