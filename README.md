@@ -8,14 +8,14 @@ The project is built using React and follows a component-based architecture. The
 
 ### Components
 
-- `src/components/AddProduct.jsx`: A component for adding new products.
-- `src/components/AddSale.jsx`: A component for recording new sales.
-- `src/components/DeleteProduct.jsx`: A component for deleting products.
-- `src/components/ProductDetails.jsx`: A component for displaying product details.
-- `src/components/ProductList.jsx`: A component for listing all products.
-- `src/components/SaleDetails.jsx`: A component for displaying sale details.
-- `src/components/SalesList.jsx`: A component for listing all sales.
-- `src/components/UpdateProduct.jsx`: A component for updating product details.
+- `src/components/products/AddProduct.jsx`: A component for adding new products.
+- `src/components/sales/AddSale.jsx`: A component for recording new sales.
+- `src/components/common/DeleteProduct.jsx`: A component for deleting products.
+- `src/components/products/ProductDetails.jsx`: A component for displaying product details.
+- `src/components/products/ProductList.jsx`: A component for listing all products.
+- `src/components/sales/SaleDetails.jsx`: A component for displaying sale details.
+- `src/components/sales/SalesList.jsx`: A component for listing all sales.
+- `src/components/products/UpdateProduct.jsx`: A component for updating product details.
 - `src/components/ui/theme-provider.jsx`: A component for providing the theme to the application.
 
 ### API Configuration
