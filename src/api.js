@@ -3,12 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 
 // Configuración de Axios
 const API = axios.create({
-
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3000', // Cambia la URL al backend desplegado
-  withCredentials: true,
-
-  
-
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3000',
+  withCredentials: false, // change to false if not using sessions
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
 
 // Función para obtener productos con caching
