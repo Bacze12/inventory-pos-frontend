@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import API from '../../api';
+import API from '../../api/api';
 
 const SalesList = () => {
   const [sales, setSales] = useState([]);
