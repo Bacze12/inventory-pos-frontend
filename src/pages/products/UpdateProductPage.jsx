@@ -1,5 +1,5 @@
 import React from 'react';
-import UpdateProduct from '../components/UpdateProduct';
+import UpdateProduct from '../../components/UpdateProduct';
 
 const UpdateProductPage = () => {
   return <UpdateProduct />;
