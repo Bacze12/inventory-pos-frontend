@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 
 // Configuración de Axios
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3000', // Cambia la URL al backend desplegado
+  baseURL: process.env.REACT_APP_API_URL || 'https://inventory-pos-frontend.vercel.app/products', // Cambia la URL al backend desplegado
 });
 
 // Función para obtener productos con caching
