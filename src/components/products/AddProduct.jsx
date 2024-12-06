@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import API from '../api';
+import api from '../../api';
 
 const AddProduct = () => {
   const [name, setName] = useState('');
