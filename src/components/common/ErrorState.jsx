@@ -1,6 +1,7 @@
 import React from 'react';
-import { Box, Text, Icon, Button, VStack } from '@chakra-ui/react';
+import { Button, VStack } from '@chakra-ui/react';
 import { AlertTriangle } from 'lucide-react';
+import BaseState from './BaseState';
 
 /**
  * ErrorState Component
@@ -16,18 +17,21 @@ export const ErrorState = ({
   retryText = 'Reintentar',
 }) => {
   return (
-    <Box textAlign="center" py={10} px={6}>
-      <VStack spacing={4}>
-        <Icon as={icon} boxSize={12} color="red.500" />
-        <Text fontSize="lg" color="red.500">
-          {message}
-        </Text>
-        {onRetry && (
-          <Button colorScheme="blue" onClick={onRetry}>
-            {retryText}
-          </Button>
-        )}
-      </VStack>
-    </Box>
+    <VStack spacing={4}>
+      <BaseState
+        icon={icon}
+        message={message}
+        iconColor="red.500"
+        textColor="red.500"
+        iconSize={12}
+      />
+      {onRetry && (
+        <Button colorScheme="blue" onClick={onRetry}>
+          {retryText}
+        </Button>
+      )}
+    </VStack>
   );
 };
+
+export default ErrorState;

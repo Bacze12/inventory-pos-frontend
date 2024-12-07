@@ -1,117 +1,59 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import {
-  Box,
-  Input,
-  Button,
-  FormControl,
-  FormLabel,
-  useToast,
-  Spinner,
-  Center,
-  Alert,
-  AlertIcon,
-} from '@chakra-ui/react';
-import API from '../../api/api';
+import React, { useEffect } from 'react';
+import { Box, Button, Input, FormControl, FormLabel, FormErrorMessage } from '@chakra-ui/react';
+import { useForm } from '../../hooks/useForm';
+import { useProducts } from '../../hooks/useProducts';
 
-const UpdateProduct = () => {
-  const { id } = useParams();
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const toast = useToast();
+const UpdateProduct = ({ productId }) => {
+  const { products, handleAddProduct } = useProducts();
+  const product = products.find((p) => p.id === productId);
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const response = await API.get(`/products/${id}`);
-        setName(response.data.name);
-        setPrice(response.data.price.toString());
-      } catch (err) {
-        setError('Error al cargar los detalles del producto.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProduct();
-  }, [id]);
-
-  const handleUpdate = async () => {
-    try {
-      const numericPrice = parseFloat(price);
-
-      if (!name.trim() || isNaN(numericPrice) || numericPrice <= 0) {
-        toast({
-          title: 'Validación fallida',
-          description: 'Ingrese un nombre válido y un precio mayor a 0.',
-          status: 'warning',
-          duration: 3000,
-          isClosable: true,
-        });
-        return;
-      }
-
-      await API.put(`/products/${id}`, { name, price: numericPrice });
-
-      toast({
-        title: 'Producto actualizado',
-        description: 'El producto ha sido actualizado exitosamente.',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-    } catch (err) {
-      toast({
-        title: 'Error al actualizar',
-        description: 'No se pudo actualizar el producto. Inténtelo nuevamente.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-    }
+  const validate = (values) => {
+    const errors = {};
+    if (!values.name) errors.name = 'El nombre es obligatorio.';
+    if (!values.price) errors.price = 'El precio es obligatorio.';
+    else if (isNaN(values.price)) errors.price = 'Debe ser un número válido.';
+    return errors;
   };
 
-  if (isLoading) {
-    return (
-      <Center h="100vh">
-        <Spinner size="xl" />
-      </Center>
-    );
-  }
+  const { values, errors, handleChange, handleSubmit, resetForm, setValues } = useForm(
+    { name: '', price: '' },
+    validate
+  );
 
-  if (error) {
-    return (
-      <Center h="100vh">
-        <Alert status="error">
-          <AlertIcon />
-          {error}
-        </Alert>
-      </Center>
-    );
-  }
+  useEffect(() => {
+    if (product) setValues({ name: product.name, price: product.price });
+  }, [product, setValues]);
+
+  const onSubmit = async () => {
+    await handleAddProduct(values);
+    resetForm();
+  };
 
   return (
-    <Box p={6} bg="white" borderRadius="md" shadow="sm">
-      <FormControl mb={4}>
+    <Box>
+      <FormControl isInvalid={!!errors.name} mb={4}>
         <FormLabel>Nombre del Producto</FormLabel>
         <Input
-          placeholder="Ingrese el nombre del producto"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          name="name"
+          value={values.name}
+          onChange={handleChange}
+          placeholder="Ingresa el nombre"
         />
+        <FormErrorMessage>{errors.name}</FormErrorMessage>
       </FormControl>
-      <FormControl mb={4}>
+
+      <FormControl isInvalid={!!errors.price} mb={4}>
         <FormLabel>Precio</FormLabel>
         <Input
-          placeholder="Ingrese el precio del producto"
-          value={price}
-          type="number"
-          onChange={(e) => setPrice(e.target.value)}
+          name="price"
+          value={values.price}
+          onChange={handleChange}
+          placeholder="Ingresa el precio"
         />
+        <FormErrorMessage>{errors.price}</FormErrorMessage>
       </FormControl>
-      <Button colorScheme="blue" onClick={handleUpdate}>
+
+      <Button colorScheme="blue" onClick={handleSubmit(onSubmit)}>
         Actualizar Producto
       </Button>
     </Box>

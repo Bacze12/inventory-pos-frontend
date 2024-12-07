@@ -1,14 +1,15 @@
-import { Box, Text, Icon } from '@chakra-ui/react';
+import React from 'react';
 import { Package } from 'lucide-react';
+import BaseState from './BaseState';
 
 /**
  * EmptyState Component
- * @param {string} message - Mensaje a mostrar cuando no hay datos.
- * @param {ComponentType} icon - Ícono que representa el estado vacío.
- * @param {string} iconColor - Color del ícono (por defecto 'gray.400').
- * @param {string} textColor - Color del texto (por defecto 'gray.600').
- * @param {number} iconSize - Tamaño del ícono (por defecto 12).
- * @param {object} styles - Estilos adicionales para el contenedor.
+ * @param {string} message - Mensaje para el estado vacío.
+ * @param {ComponentType} icon - Ícono para el estado vacío.
+ * @param {string} iconColor - Color del ícono.
+ * @param {string} textColor - Color del texto.
+ * @param {number} iconSize - Tamaño del ícono.
+ * @param {object} styles - Estilos adicionales.
  */
 export const EmptyState = ({
   message = 'No hay datos disponibles.',
@@ -19,11 +20,15 @@ export const EmptyState = ({
   styles = {},
 }) => {
   return (
-    <Box textAlign="center" py={10} px={6} {...styles}>
-      <Icon as={icon} boxSize={iconSize} color={iconColor} />
-      <Text mt={4} fontSize="lg" color={textColor}>
-        {message}
-      </Text>
-    </Box>
+    <BaseState
+      icon={icon}
+      message={message}
+      iconColor={iconColor}
+      textColor={textColor}
+      iconSize={iconSize}
+      styles={styles}
+    />
   );
 };
+
+export default EmptyState;

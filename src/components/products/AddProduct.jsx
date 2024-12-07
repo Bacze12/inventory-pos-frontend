@@ -1,88 +1,54 @@
-import React, { useState } from 'react';
-import { Box, Input, Button, FormControl, FormLabel, useToast } from '@chakra-ui/react';
-import API from '../../api/api';
+import React from 'react';
+import { Box, Button, Input, FormControl, FormLabel, FormErrorMessage } from '@chakra-ui/react';
+import { useForm } from '../../hooks/useForm';
+import { useProducts } from '../../hooks/useProducts';
 
 const AddProduct = () => {
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const toast = useToast();
+  const { handleAddProduct } = useProducts();
+  const validate = (values) => {
+    const errors = {};
+    if (!values.name) errors.name = 'El nombre es obligatorio.';
+    if (!values.price) errors.price = 'El precio es obligatorio.';
+    else if (isNaN(values.price)) errors.price = 'Debe ser un número válido.';
+    return errors;
+  };
 
-  const handleSubmit = async () => {
-    try {
-      // Validaciones básicas
-      if (!name.trim() || !price.trim()) {
-        toast({
-          title: 'Campos incompletos',
-          description: 'Por favor, complete todos los campos.',
-          status: 'warning',
-          duration: 3000,
-          isClosable: true,
-        });
-        return;
-      }
+  const { values, errors, handleChange, handleSubmit, resetForm } = useForm(
+    { name: '', price: '' },
+    validate
+  );
 
-      const numericPrice = parseFloat(price);
-      if (isNaN(numericPrice) || numericPrice <= 0) {
-        toast({
-          title: 'Precio inválido',
-          description: 'Ingrese un precio válido mayor a 0.',
-          status: 'warning',
-          duration: 3000,
-          isClosable: true,
-        });
-        return;
-      }
-
-      // Enviar solicitud al backend
-      await API.post('/products', {
-        name,
-        price: numericPrice,
-      });
-
-      // Limpiar campos después del éxito
-      setName('');
-      setPrice('');
-
-      toast({
-        title: 'Producto añadido',
-        description: 'El producto se ha añadido exitosamente.',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-    } catch (error) {
-      toast({
-        title: 'Error al añadir producto',
-        description:
-          error?.response?.data?.message || 'No se pudo añadir el producto. Inténtelo nuevamente.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-    }
+  const onSubmit = async () => {
+    await handleAddProduct(values);
+    resetForm();
   };
 
   return (
-    <Box p={6} bg="white" borderRadius="md" shadow="sm">
-      <FormControl mb={4}>
+    <Box>
+      <FormControl isInvalid={!!errors.name} mb={4}>
         <FormLabel>Nombre del Producto</FormLabel>
         <Input
-          placeholder="Ingrese el nombre del producto"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          name="name"
+          value={values.name}
+          onChange={handleChange}
+          placeholder="Ingresa el nombre"
         />
+        <FormErrorMessage>{errors.name}</FormErrorMessage>
       </FormControl>
-      <FormControl mb={4}>
+
+      <FormControl isInvalid={!!errors.price} mb={4}>
         <FormLabel>Precio</FormLabel>
         <Input
-          placeholder="Ingrese el precio del producto"
-          value={price}
-          type="number"
-          onChange={(e) => setPrice(e.target.value)}
+          name="price"
+          value={values.price}
+          onChange={handleChange}
+          placeholder="Ingresa el precio"
         />
+        <FormErrorMessage>{errors.price}</FormErrorMessage>
       </FormControl>
-      <Button colorScheme="blue" onClick={handleSubmit}>
-        Añadir Producto
+
+      <Button colorScheme="blue" onClick={handleSubmit(onSubmit)}>
+        Agregar Producto
       </Button>
     </Box>
   );

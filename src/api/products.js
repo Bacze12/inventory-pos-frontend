@@ -12,7 +12,7 @@ export const useProducts = () => {
 // Obtener detalles de un producto específico con cacheo
 export const useProductDetails = (id) => {
   return useQuery(['product', id], async () => {
-    const { data } = await API.get(`/products/${id}`);
+    const { data } = await API.get(`/products/${id}`);    
     return data;
   });
 };

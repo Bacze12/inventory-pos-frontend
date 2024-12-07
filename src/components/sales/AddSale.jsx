@@ -1,92 +1,55 @@
-import React, { useState } from 'react';
-import {
-  Box,
-  Input,
-  Button,
-  FormControl,
-  FormLabel,
-  useToast,
-} from '@chakra-ui/react';
-import API from '../../api/api';
+import React from 'react';
+import { Box, Button, Input, FormControl, FormLabel, FormErrorMessage } from '@chakra-ui/react';
+import { useForm } from '../../hooks/useForm';
+import { useSales } from '../../hooks/useSales';
 
 const AddSale = () => {
-  const [productId, setProductId] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const toast = useToast();
+  const { createSale } = useSales();
 
-  const handleSubmit = async () => {
-    try {
-      // Validación básica
-      if (!productId.trim() || !quantity.trim()) {
-        toast({
-          title: 'Campos incompletos',
-          description: 'Por favor, complete todos los campos.',
-          status: 'warning',
-          duration: 3000,
-          isClosable: true,
-        });
-        return;
-      }
+  const validate = (values) => {
+    const errors = {};
+    if (!values.customer) errors.customer = 'El cliente es obligatorio.';
+    if (!values.total) errors.total = 'El total es obligatorio.';
+    else if (isNaN(values.total)) errors.total = 'Debe ser un número válido.';
+    return errors;
+  };
 
-      const parsedQuantity = parseInt(quantity, 10);
-      if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
-        toast({
-          title: 'Cantidad inválida',
-          description: 'Ingrese un número mayor a 0 para la cantidad.',
-          status: 'warning',
-          duration: 3000,
-          isClosable: true,
-        });
-        return;
-      }
+  const { values, errors, handleChange, handleSubmit, resetForm } = useForm(
+    { customer: '', total: '' },
+    validate
+  );
 
-      // Enviar solicitud al backend
-      await API.post('/sales', { productId, quantity: parsedQuantity });
-
-      // Mostrar notificación de éxito
-      toast({
-        title: 'Venta registrada',
-        description: 'La venta se ha registrado exitosamente.',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-
-      // Limpiar campos después del éxito
-      setProductId('');
-      setQuantity('');
-    } catch (err) {
-      toast({
-        title: 'Error al registrar la venta',
-        description: 'No se pudo registrar la venta. Inténtelo nuevamente.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-    }
+  const onSubmit = async () => {
+    const success = await createSale(values);
+    if (success) resetForm();
   };
 
   return (
-    <Box p={6} bg="white" borderRadius="md" shadow="sm">
-      <FormControl mb={4}>
-        <FormLabel>ID del Producto</FormLabel>
+    <Box>
+      <FormControl isInvalid={!!errors.customer} mb={4}>
+        <FormLabel>Cliente</FormLabel>
         <Input
-          placeholder="Ingrese el ID del producto"
-          value={productId}
-          onChange={(e) => setProductId(e.target.value)}
+          name="customer"
+          value={values.customer}
+          onChange={handleChange}
+          placeholder="Nombre del cliente"
         />
+        <FormErrorMessage>{errors.customer}</FormErrorMessage>
       </FormControl>
-      <FormControl mb={4}>
-        <FormLabel>Cantidad</FormLabel>
+
+      <FormControl isInvalid={!!errors.total} mb={4}>
+        <FormLabel>Total</FormLabel>
         <Input
-          placeholder="Ingrese la cantidad"
-          value={quantity}
-          type="number"
-          onChange={(e) => setQuantity(e.target.value)}
+          name="total"
+          value={values.total}
+          onChange={handleChange}
+          placeholder="Total de la venta"
         />
+        <FormErrorMessage>{errors.total}</FormErrorMessage>
       </FormControl>
-      <Button colorScheme="blue" onClick={handleSubmit}>
-        Registrar Venta
+
+      <Button colorScheme="blue" onClick={handleSubmit(onSubmit)}>
+        Agregar Venta
       </Button>
     </Box>
   );
