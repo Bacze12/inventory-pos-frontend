@@ -1,21 +1,35 @@
 import React, { useState } from 'react';
+import { Box, Input, Button, FormControl, FormLabel, useToast } from '@chakra-ui/react';
 import API from '../../api/api';
 
 const AddProduct = () => {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
+  const toast = useToast();
 
   const handleSubmit = async () => {
     try {
       // Validaciones básicas
       if (!name.trim() || !price.trim()) {
-        console.log('Please fill in all fields.');
+        toast({
+          title: 'Campos incompletos',
+          description: 'Por favor, complete todos los campos.',
+          status: 'warning',
+          duration: 3000,
+          isClosable: true,
+        });
         return;
       }
 
       const numericPrice = parseFloat(price);
       if (isNaN(numericPrice) || numericPrice <= 0) {
-        console.log('Please enter a valid price greater than 0.');
+        toast({
+          title: 'Precio inválido',
+          description: 'Ingrese un precio válido mayor a 0.',
+          status: 'warning',
+          duration: 3000,
+          isClosable: true,
+        });
         return;
       }
 
@@ -28,40 +42,49 @@ const AddProduct = () => {
       // Limpiar campos después del éxito
       setName('');
       setPrice('');
-      console.log('Product added successfully!');
+
+      toast({
+        title: 'Producto añadido',
+        description: 'El producto se ha añadido exitosamente.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
     } catch (error) {
-      console.log(
-        'Error adding product:',
-        error?.response?.data || error.message
-      );
-      console.log(
-        error?.response?.data?.message ||
-          'Failed to add product. Please try again.'
-      );
+      toast({
+        title: 'Error al añadir producto',
+        description:
+          error?.response?.data?.message || 'No se pudo añadir el producto. Inténtelo nuevamente.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
   return (
-    <div className="p-4">
-      <input
-        className="w-full border rounded p-2 mb-4"
-        placeholder="Product Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <input
-        className="w-full border rounded p-2 mb-4"
-        placeholder="Product Price"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-      />
-      <button
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        onClick={handleSubmit}
-      >
-        Add Product
-      </button>
-    </div>
+    <Box p={6} bg="white" borderRadius="md" shadow="sm">
+      <FormControl mb={4}>
+        <FormLabel>Nombre del Producto</FormLabel>
+        <Input
+          placeholder="Ingrese el nombre del producto"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </FormControl>
+      <FormControl mb={4}>
+        <FormLabel>Precio</FormLabel>
+        <Input
+          placeholder="Ingrese el precio del producto"
+          value={price}
+          type="number"
+          onChange={(e) => setPrice(e.target.value)}
+        />
+      </FormControl>
+      <Button colorScheme="blue" onClick={handleSubmit}>
+        Añadir Producto
+      </Button>
+    </Box>
   );
 };
 
