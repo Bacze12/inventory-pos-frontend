@@ -1,51 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import API from '../../api/api';
+import React, { useEffect } from 'react';
+import { Box, Button, Input, FormControl, FormLabel, FormErrorMessage } from '@chakra-ui/react';
+import useForm  from '../../hooks/useForm';
+import { useProducts } from '../../hooks/useProducts';
 
-const UpdateProduct = () => {
-  const { id } = useParams();
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
+const UpdateProduct = ({ productId }) => {
+  const { products, handleAddProduct } = useProducts();
+  const product = products.find((p) => p.id === productId);
+
+  const validate = (values) => {
+    const errors = {};
+    if (!values.name) errors.name = 'El nombre es obligatorio.';
+    if (!values.price) errors.price = 'El precio es obligatorio.';
+    else if (isNaN(values.price)) errors.price = 'Debe ser un número válido.';
+    return errors;
+  };
+
+  const { values, errors, handleChange, handleSubmit, resetForm, setValues } = useForm(
+    { name: '', price: '' },
+    validate
+  );
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const response = await API.get(`/products/${id}`);
-        setName(response.data.name);
-        setPrice(response.data.price);
-      } catch (err) {
-        console.log('Failed to load product details.');
-      }
-    };
+    if (product) setValues({ name: product.name, price: product.price });
+  }, [product, setValues]);
 
-    fetchProduct();
-  }, [id]);
-
-  const handleUpdate = async () => {
-    try {
-      await API.put(`/products/${id}`, { name, price: parseFloat(price) });
-      console.log('Product updated successfully!');
-    } catch (err) {
-      console.log('Failed to update product.');
-    }
+  const onSubmit = async () => {
+    await handleAddProduct(values);
+    resetForm();
   };
 
   return (
-    <div>
-      <input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Product Name"
-      />
-      <input
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-        placeholder="Product Price"
-      />
-      <button onClick={handleUpdate}>
-        Update Product
-      </button>
-    </div>
+    <Box>
+      <FormControl isInvalid={!!errors.name} mb={4}>
+        <FormLabel>Nombre del Producto</FormLabel>
+        <Input
+          name="name"
+          value={values.name}
+          onChange={handleChange}
+          placeholder="Ingresa el nombre"
+        />
+        <FormErrorMessage>{errors.name}</FormErrorMessage>
+      </FormControl>
+
+      <FormControl isInvalid={!!errors.price} mb={4}>
+        <FormLabel>Precio</FormLabel>
+        <Input
+          name="price"
+          value={values.price}
+          onChange={handleChange}
+          placeholder="Ingresa el precio"
+        />
+        <FormErrorMessage>{errors.price}</FormErrorMessage>
+      </FormControl>
+
+      <Button colorScheme="blue" onClick={handleSubmit(onSubmit)}>
+        Actualizar Producto
+      </Button>
+    </Box>
   );
 };
 

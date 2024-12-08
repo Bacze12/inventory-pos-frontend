@@ -1,67 +1,56 @@
-import React, { useState } from 'react';
-import API from '../../api/api';
+import React from 'react';
+import { Box, Button, Input, FormControl, FormLabel, FormErrorMessage } from '@chakra-ui/react';
+import useForm from '../../hooks/useForm';
+import { useProducts } from '../../hooks/useProducts';
 
 const AddProduct = () => {
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
+  const { handleAddProduct } = useProducts();
+  const validate = (values) => {
+    const errors = {};
+    if (!values.name) errors.name = 'El nombre es obligatorio.';
+    if (!values.price) errors.price = 'El precio es obligatorio.';
+    else if (isNaN(values.price)) errors.price = 'Debe ser un número válido.';
+    return errors;
+  };
 
-  const handleSubmit = async () => {
-    try {
-      // Validaciones básicas
-      if (!name.trim() || !price.trim()) {
-        console.log('Please fill in all fields.');
-        return;
-      }
+  const { values, errors, handleChange, handleSubmit, resetForm } = useForm(
+    { name: '', price: '' },
+    validate
+  );
 
-      const numericPrice = parseFloat(price);
-      if (isNaN(numericPrice) || numericPrice <= 0) {
-        console.log('Please enter a valid price greater than 0.');
-        return;
-      }
-
-      // Enviar solicitud al backend
-      await API.post('/products', {
-        name,
-        price: numericPrice,
-      });
-
-      // Limpiar campos después del éxito
-      setName('');
-      setPrice('');
-      console.log('Product added successfully!');
-    } catch (error) {
-      console.log(
-        'Error adding product:',
-        error?.response?.data || error.message
-      );
-      console.log(
-        error?.response?.data?.message ||
-          'Failed to add product. Please try again.'
-      );
-    }
+  const onSubmit = async () => {
+    await handleAddProduct(values);
+    resetForm();
   };
 
   return (
-    <div className="p-4">
-      <input
-        className="w-full border rounded p-2 mb-4"
-        placeholder="Product Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <input
-        className="w-full border rounded p-2 mb-4"
-        placeholder="Product Price"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-      />
-      <button
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        onClick={handleSubmit}
-      >
-        Add Product
-      </button>
-    </div>
+    <Box>
+      <FormControl isInvalid={!!errors.name} mb={4}>
+        <FormLabel>Nombre del Producto</FormLabel>
+        <Input
+          name="name"
+          value={values.name}
+          onChange={handleChange}
+          placeholder="Ingresa el nombre"
+        />
+        <FormErrorMessage>{errors.name}</FormErrorMessage>
+      </FormControl>
+
+      <FormControl isInvalid={!!errors.price} mb={4}>
+        <FormLabel>Precio</FormLabel>
+        <Input
+          name="price"
+          value={values.price}
+          onChange={handleChange}
+          placeholder="Ingresa el precio"
+        />
+        <FormErrorMessage>{errors.price}</FormErrorMessage>
+      </FormControl>
+
+      <Button colorScheme="blue" onClick={handleSubmit(onSubmit)}>
+        Agregar Producto
+      </Button>
+    </Box>
   );
 };
 

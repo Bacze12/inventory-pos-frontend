@@ -12,7 +12,16 @@ export const useProducts = () => {
 // Obtener detalles de un producto específico con cacheo
 export const useProductDetails = (id) => {
   return useQuery(['product', id], async () => {
-    const { data } = await API.get(`/products/${id}`);
+    const { data } = await API.get(`/products/${id}`);    
     return data;
   });
+};
+
+// products.js
+export const fetchProducts = async (token) => {
+  // implementación de fetchProducts
+};
+
+export const addProduct = async (product) => {
+  // implementación de addProduct
 };

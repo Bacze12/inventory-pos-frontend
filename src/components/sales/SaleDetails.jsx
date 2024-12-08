@@ -1,35 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import API from '../../api/api';
+import React, { useEffect } from 'react';
+import { Box, Text } from '@chakra-ui/react';
+import useSales from '../../hooks/useSales';
 
-const SaleDetails = () => {
-  const { id } = useParams();
-  const [sale, setSale] = useState(null);
+const SaleDetails = ({ saleId }) => {
+  const { sales, getSales } = useSales();
+  const sale = sales.find((s) => s.id === saleId);
 
   useEffect(() => {
-    const fetchSale = async () => {
-      try {
-        const response = await API.get(`/sales/${id}`);
-        setSale(response.data);
-      } catch (err) {
-        console.log(
-          err.response?.data?.message || 'Failed to fetch sale details.'
-        );
-      }
-    };
+    if (!sales.length) {
+      getSales();
+    }
+  }, [sales, getSales]);
 
-    fetchSale();
-  }, [id]);
-
-  if (!sale) return <p>Loading...</p>;
+  if (!sale) {
+    return <Text>Cargando detalles de la venta...</Text>;
+  }
 
   return (
-    <div>
-      <h1>Sale Details</h1>
-      <p>Product ID: {sale.productId}</p>
-      <p>Quantity: {sale.quantity}</p>
-      <p>Date: {sale.date}</p>
-    </div>
+    <Box>
+      <Text fontWeight="bold">Cliente: {sale.customer}</Text>
+      <Text>Total: ${sale.total}</Text>
+      <Text>Fecha: {new Date(sale.date).toLocaleDateString()}</Text>
+    </Box>
   );
 };
 

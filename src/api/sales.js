@@ -16,3 +16,12 @@ export const useSaleDetails = (id) => {
     return data;
   });
 };
+
+// sales.js
+export const fetchSales = async (token) => {
+  // implementación de fetchSales
+};
+
+export const addSale = async (sale) => {
+  // implementación de addSale
+};
