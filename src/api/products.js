@@ -16,3 +16,12 @@ export const useProductDetails = (id) => {
     return data;
   });
 };
+
+// products.js
+export const fetchProducts = async (token) => {
+  // implementación de fetchProducts
+};
+
+export const addProduct = async (product) => {
+  // implementación de addProduct
+};

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAlert } from '../../hooks/useAlert';
-import { authApi } from '../../api/api';
+import useAlert from '../../hooks/useAlert';
+import authApi from '../../api/api';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -14,7 +14,7 @@ const LoginPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await authApi.post('/login', { email, password });
+      await authApi.post('/login', { email, password });
       alert.success('Login successful!');
       navigate('/home');
     } catch (error) {
@@ -29,8 +29,9 @@ const LoginPage = () => {
       <h1>Login</h1>
       <form onSubmit={handleLogin}>
         <div>
-          <label>Email:</label>
+          <label htmlFor="email">Email:</label>
           <input
+            id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -38,8 +39,9 @@ const LoginPage = () => {
           />
         </div>
         <div>
-          <label>Password:</label>
+          <label htmlFor="password">Password:</label>
           <input
+            id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -47,7 +49,7 @@ const LoginPage = () => {
           />
         </div>
         <button type="submit" disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
+          {loading ? 'Loading...' : 'Login'}
         </button>
       </form>
     </div>

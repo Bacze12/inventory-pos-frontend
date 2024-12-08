@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Box, Text } from '@chakra-ui/react';
-import { useSales } from '../../hooks/useSales';
+import useSales from '../../hooks/useSales';
 
 const SaleDetails = ({ saleId }) => {
   const { sales, getSales } = useSales();

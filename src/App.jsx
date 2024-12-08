@@ -2,7 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Layout from './components/layout/Layout';
-import LoginPage from './auth/Login';
+import LoginPage from './pages/auth/Login';
 
 const ProductListPage = lazy(() => import('./pages/products/ProductListPage'));
 const AddProductPage = lazy(() => import('./pages/products/AddProductPage'));

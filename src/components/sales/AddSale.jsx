@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button, Input, FormControl, FormLabel, FormErrorMessage } from '@chakra-ui/react';
-import { useForm } from '../../hooks/useForm';
-import { useSales } from '../../hooks/useSales';
+import useForm from '../../hooks/useForm';
+import useSales from '../../hooks/useSales';
 
 const AddSale = () => {
   const { createSale } = useSales();

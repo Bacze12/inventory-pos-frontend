@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalCloseButton, Input, SimpleGrid } from '@chakra-ui/react';
-import { useProducts } from '../../hooks/useProducts';
+import useProducts from '../../hooks/useProducts';
 import ProductCard from './ProductCard';
 
 const SearchProductModal = ({ isOpen, onClose }) => {

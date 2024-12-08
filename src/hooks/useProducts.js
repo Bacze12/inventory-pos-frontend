@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { fetchProducts, addProduct } from '../api/products';
 
+
 export const useProducts = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -30,14 +31,10 @@ export const useProducts = () => {
     }
   }, [query, products]);
 
-  const handleAddProduct = async () => {
-    const token = localStorage.getItem('token');
-    if (await addProduct(token, { name, price: parseFloat(price) })) {
-      setName('');
-      setPrice('');
-      const data = await fetchProducts(token);
-      setProducts(data);
-    }
+  const handleAddProduct = async (product) => {
+    const newProduct = await addProduct(product);
+    setProducts([...products, newProduct]);
+    setFilteredProducts([...products, newProduct]);
   };
 
   return {
@@ -46,8 +43,8 @@ export const useProducts = () => {
     query,
     setQuery,
     name,
-    price,
     setName,
+    price,
     setPrice,
     handleAddProduct,
   };
