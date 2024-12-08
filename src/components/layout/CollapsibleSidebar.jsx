@@ -1,69 +1,111 @@
-import React, { useState } from 'react';
-import { Box, VStack, IconButton, Flex, Text } from '@chakra-ui/react';
-import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
-import { Menu as MenuIcon } from 'lucide-react';
-import NavItem from './NavItem';
+import {
+  Box,
+  VStack,
+  Icon,
+  Text,
+  Flex,
+  IconButton,
+  useColorModeValue,
+} from '@chakra-ui/react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  LayoutDashboard,
+  ShoppingCart,
+  Package,
+  Settings,
+  Menu,
+  Home,
+  Users,
+  FileText,
+} from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/slices'; // Corrige la ruta de importación
 
-const CollapsibleSidebar = ({ NavItems, navigate, onMenuClick }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+interface NavItem {
+  name: string;
+  icon: React.ComponentType;
+  path: string;
+  roles?: string[];
+}
 
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
+interface CollapsibleSidebarProps {
+  isOpen: boolean; // Control externo del estado abierto/cerrado 
+  onToggle: () => void; // Función para alternar el estado
+}
+
+const NavItems: NavItem[] = [
+  { name: 'Home', icon: Home, path: '/home', roles: ['admin'] },
+  { name: 'Home', icon: Home, path: '/home-cajera', roles: ['cashier'] },
+  { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', roles: ['admin'] },
+  { name: 'POS', icon: ShoppingCart, path: '/pos' },
+  { name: 'Inventario', icon: Package, path: '/inventory' },
+  { name: 'Reportes', icon: FileText, path: '/reports', roles: ['admin'] },
+  { name: 'Clientes', icon: Users, path: '/clients' },
+  { name: 'Usuarios', icon: Users, path: '/users-permissions', roles: ['admin'] },
+  { name: 'Configuración', icon: Settings, path: '/system-configuration', roles: ['admin'] },
+];
+
+export const CollapsibleSidebar = ({ isOpen, onToggle }: CollapsibleSidebarProps) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  const NavItem = ({ item }: { item: NavItem }) => {
+    const isActive = location.pathname === item.path;
+    const bg = useColorModeValue('gray.100', 'gray.700');
+
+    if (item.roles && !item.roles.includes(user?.role || '')) {
+      return null;
+    }
+
+    return (
+      <Flex
+        align="center"
+        p="4"
+        mx={isOpen ? '4' : '2'}
+        borderRadius="lg"
+        role="group"
+        cursor="pointer"
+        bg={isActive ? bg : 'transparent'}
+        _hover={{ bg }}
+        onClick={() => navigate(item.path)}
+      >
+        <Icon
+          mr={isOpen ? '4' : '0'}
+          fontSize="16"
+          as={item.icon}
+          color={isActive ? 'blue.500' : undefined}
+        />
+        {isOpen && <Text color={isActive ? 'blue.500' : undefined}>{item.name}</Text>}
+      </Flex>
+    );
   };
 
   return (
     <Box
-      w={isCollapsed ? '60px' : '250px'}
-      bg="white"
-      boxShadow="lg"
+      bg={useColorModeValue('white', 'gray.900')}
+      borderRight="1px"
+      borderRightColor={useColorModeValue('gray.200', 'gray.700')}
+      w={isOpen ? '240px' : '60px'}
       h="100vh"
-      overflowY="auto"
-      position="relative"
+      pos="fixed"
       transition="width 0.3s"
     >
-      <IconButton
-        icon={isCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-        onClick={toggleSidebar}
-        aria-label="Toggle Sidebar"
-        position="absolute"
-        top="10px"
-        right={isCollapsed ? '-20px' : '-40px'}
-        size="sm"
-        bg="white"
-        boxShadow="md"
-        _hover={{ bg: 'gray.100' }}
-      />
-
-      <Flex
-        direction="column"
-        alignItems={isCollapsed ? 'center' : 'stretch'}
-        h="100%"
-        p={isCollapsed ? 2 : 4}
-      >
-        {!isCollapsed && (
-          <>
-            <IconButton
-              onClick={onMenuClick}
-              variant="ghost"
-              icon={<MenuIcon />}
-              aria-label="Open Menu"
-            />
-          </>
-        )}
-
-        <VStack align={isCollapsed ? 'center' : 'stretch'} spacing={4}>
-          {NavItems.map((item) => (
-            <NavItem
-              key={item.path}
-              item={item}
-              navigate={navigate}
-              isCollapsed={isCollapsed}
-            />
-          ))}
-        </VStack>
+      <Flex h="20" alignItems="center" mx="3" justifyContent="space-between">
+        <IconButton
+          aria-label="Toggle Sidebar"
+          icon={<Menu />}
+          size="sm"
+          onClick={onToggle} // Alternar estado al hacer clic
+          bg="transparent"
+          _hover={{ bg: useColorModeValue('gray.200', 'gray.700') }}
+        />
       </Flex>
+      <VStack spacing={1} align="stretch">
+        {NavItems.map((item) => (
+          <NavItem key={item.name} item={item} />
+        ))}
+      </VStack>
     </Box>
   );
 };
-
-export default CollapsibleSidebar;

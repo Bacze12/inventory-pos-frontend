@@ -1,39 +1,47 @@
-import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
-import { Box, Flex } from '@chakra-ui/react';
-import CollapsibleSidebar from './CollapsibleSidebar';
+import React from 'react';
+import {
+  Box,
+  VStack,
+  Icon,
+  Text, 
+  Flex,
+  IconButton,
+  useColorModeValue,
+  useDisclosure
+} from '@chakra-ui/react';
+import { useLocation, useNavigate, Outlet } from 'react-router-dom';
+import {
+  LayoutDashboard,
+  ShoppingCart,
+  Package,
+  Settings,
+  Menu,
+  Home,
+  Users,
+  FileText,
+} from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/slices';
 import { Navbar } from './Navbar';
-import { useNavigate } from 'react-router-dom';
+import { CollapsibleSidebar } from './CollapsibleSidebar';
 
-// Elementos de navegación
-const navItems = [
-  { path: '/ventas', label: 'Ventas', icon: require('react-icons/fa').FaShoppingCart },
-  { path: '/reportes', label: 'Reportes', icon: require('react-icons/fa').FaChartBar },
-  { path: '/usuarios', label: 'Usuarios', icon: require('react-icons/fa').FaUsers },
-  { path: '/configuracion', label: 'Configuración', icon: require('react-icons/fa').FaCog },
-];
-
-const Layout = () => {
-  const navigate = useNavigate();
-  const [isSidebarOpen, setSidebarOpen] = useState(true);
-
-  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+export const Layout = () => {
+  const { isOpen, onToggle } = useDisclosure();
 
   return (
-    <Box>
-      {/* Navbar */}
-      <Navbar onMenuClick={toggleSidebar} />
-
-      <Flex>
-        {/* Barra lateral */}
-        {isSidebarOpen && <CollapsibleSidebar NavItems={navItems} navigate={navigate} />}
-
-        {/* Contenido principal */}
-        <Box flex="1" p={6} bg="gray.50" minH="100vh">
+    <Flex h="100vh">
+      <CollapsibleSidebar isOpen={isOpen} onToggle={onToggle} />
+      <Box
+        flex="1"
+        ml={isOpen ? '240px' : '60px'}
+        transition="margin-left 0.3s"
+      >
+        <Navbar onMenuClick={onToggle} userName={''} />
+        <Box p={4}>
           <Outlet />
         </Box>
-      </Flex>
-    </Box>
+      </Box>
+    </Flex>
   );
 };
 

@@ -3,7 +3,7 @@ import { Box, Flex, Grid, GridItem, Text, Heading, Button, Icon } from '@chakra-
 import { FaShoppingCart, FaChartBar, FaUsers, FaCog } from 'react-icons/fa';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { MdInventory } from 'react-icons/md';
-import CollapsibleSidebar from '../components/layout/CollapsibleSidebar';
+import { CollapsibleSidebar } from '../components/layout/CollapsibleSidebar';
 import { Navbar } from '../components/layout/Navbar';
 import { useNavigate } from 'react-router-dom';
 

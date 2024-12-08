@@ -6,7 +6,6 @@ import { configureStore } from '@reduxjs/toolkit';
 import rootReducer from './store/slices';
 import App from './App';
 
-// Crear el store una sola vez
 const store = configureStore({
   reducer: rootReducer,
 });
@@ -21,3 +20,5 @@ root.render(
     </ChakraProvider>
   </Provider>
 );
+
+export default store;

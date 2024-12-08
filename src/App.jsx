@@ -1,7 +1,7 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import Layout from './components/layout/Layout';
+import { Layout } from './components/layout/Layout';
 import LoginPage from './pages/auth/Login';
 import Register from './pages/auth/Register';
 
