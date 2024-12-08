@@ -39,12 +39,6 @@ import {
       >
         <Flex align="center" justify="space-between">
           <HStack spacing={4}>
-            <IconButton
-              onClick={onMenuClick}
-              variant="ghost"
-              icon={<MenuIcon />}
-              aria-label="Open Menu"
-            />
             <Text fontSize="lg" fontWeight="bold">
               SGI
             </Text>

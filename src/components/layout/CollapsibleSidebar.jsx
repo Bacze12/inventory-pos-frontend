@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
 import { Box, VStack, IconButton, Flex, Text } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
+import { Menu as MenuIcon } from 'lucide-react';
 import NavItem from './NavItem';
 
-/**
- * CollapsibleSidebar Component
- * Barra lateral con funcionalidad de colapso/expansión.
- * @param {Array} NavItems - Lista de elementos de navegación (con `path`, `label`, y `icon`).
- * @param {Function} navigate - Función para manejar la navegación.
- */
-const CollapsibleSidebar = ({ NavItems, navigate }) => {
+const CollapsibleSidebar = ({ NavItems, navigate, onMenuClick }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const toggleSidebar = () => {
@@ -26,7 +21,6 @@ const CollapsibleSidebar = ({ NavItems, navigate }) => {
       position="relative"
       transition="width 0.3s"
     >
-      {/* Botón para expandir/contraer */}
       <IconButton
         icon={isCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
         onClick={toggleSidebar}
@@ -47,9 +41,14 @@ const CollapsibleSidebar = ({ NavItems, navigate }) => {
         p={isCollapsed ? 2 : 4}
       >
         {!isCollapsed && (
-          <Text fontWeight="bold" fontSize="xl" mb={4}>
-            Menú
-          </Text>
+          <>
+            <IconButton
+              onClick={onMenuClick}
+              variant="ghost"
+              icon={<MenuIcon />}
+              aria-label="Open Menu"
+            />
+          </>
         )}
 
         <VStack align={isCollapsed ? 'center' : 'stretch'} spacing={4}>
