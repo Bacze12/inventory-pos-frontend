@@ -1,14 +1,23 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { ChakraProvider } from '@chakra-ui/react';
-import App from './App.jsx';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import rootReducer from './store/slices';
+import App from './App';
+
+// Crear el store una sola vez
+const store = configureStore({
+  reducer: rootReducer,
+});
 
 const container = document.getElementById('root');
 const root = createRoot(container);
 
 root.render(
-  <ChakraProvider>
-    <App />
-  </ChakraProvider>,
-  document.getElementById('root')
+  <Provider store={store}>
+    <ChakraProvider>
+      <App />
+    </ChakraProvider>
+  </Provider>
 );

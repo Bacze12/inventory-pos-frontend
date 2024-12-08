@@ -15,6 +15,7 @@ import {
   import { useNavigate } from 'react-router-dom';
   import { useDispatch, useSelector } from 'react-redux';
   import { logout } from '../../store/slices/authSlice'; // Ajusta según tu estructura
+  import React from 'react';
   
   export const Navbar = ({ onMenuClick }) => {
     const { colorMode, toggleColorMode } = useColorMode();
@@ -76,4 +77,3 @@ import {
       </Box>
     );
   };
-  

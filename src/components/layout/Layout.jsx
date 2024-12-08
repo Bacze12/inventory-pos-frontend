@@ -1,21 +1,40 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from '../layout/Layout';
-import Home from '../../pages/Home';
-import ProductListPage from '../../pages/products/ProductListPage';
+import React, { useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import { Box, Flex } from '@chakra-ui/react';
+import CollapsibleSidebar from './CollapsibleSidebar';
+import { Navbar } from './Navbar';
+import { useNavigate } from 'react-router-dom';
 
-const App = () => {
+// Elementos de navegación
+const navItems = [
+  { path: '/ventas', label: 'Ventas', icon: require('react-icons/fa').FaShoppingCart },
+  { path: '/reportes', label: 'Reportes', icon: require('react-icons/fa').FaChartBar },
+  { path: '/usuarios', label: 'Usuarios', icon: require('react-icons/fa').FaUsers },
+  { path: '/configuracion', label: 'Configuración', icon: require('react-icons/fa').FaCog },
+];
+
+const Layout = () => {
+  const navigate = useNavigate();
+  const [isSidebarOpen, setSidebarOpen] = useState(true);
+
+  const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="products" element={<ProductListPage />} />
-          {/* Otras rutas */}
-        </Route>
-      </Routes>
-    </Router>
+    <Box>
+      {/* Navbar */}
+      <Navbar onMenuClick={toggleSidebar} />
+
+      <Flex>
+        {/* Barra lateral */}
+        {isSidebarOpen && <CollapsibleSidebar NavItems={navItems} navigate={navigate} />}
+
+        {/* Contenido principal */}
+        <Box flex="1" p={6} bg="gray.50" minH="100vh">
+          <Outlet />
+        </Box>
+      </Flex>
+    </Box>
   );
 };
 
-export default App;
+export default Layout;
