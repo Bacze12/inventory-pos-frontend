@@ -17,7 +17,9 @@ import {
   Home,
   Users,
   FileText,
+  Tags, // Importar el ícono Tags de lucide-react
 } from 'lucide-react';
+import { MdInventory } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/slices'; // Corrige la ruta de importación
 
@@ -34,15 +36,16 @@ interface CollapsibleSidebarProps {
 }
 
 const NavItems: NavItem[] = [
-  { name: 'Home', icon: Home, path: '/home', roles: ['admin'] },
-  { name: 'Home', icon: Home, path: '/home-cajera', roles: ['cashier'] },
-  { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', roles: ['admin'] },
+  { name: 'Home', icon: Home, path: '/home' },
+  { name: 'Home Cashier', icon: Home, path: '/home-cajera', roles: ['cashier'] },
+  { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard'},
   { name: 'POS', icon: ShoppingCart, path: '/pos' },
-  { name: 'Inventario', icon: Package, path: '/inventory' },
-  { name: 'Reportes', icon: FileText, path: '/reports', roles: ['admin'] },
+  { name: 'Productos', icon: Tags, path: '/products' }, // Usar el ícono Tags importado
+  { name: 'Inventario', icon: MdInventory, path: '/inventory' },
+  { name: 'Reportes', icon: FileText, path: '/reports' },
   { name: 'Clientes', icon: Users, path: '/clients' },
-  { name: 'Usuarios', icon: Users, path: '/users-permissions', roles: ['admin'] },
-  { name: 'Configuración', icon: Settings, path: '/system-configuration', roles: ['admin'] },
+  { name: 'Usuarios', icon: Users, path: '/users-permissions' },
+  { name: 'Configuración', icon: Settings, path: '/system-configuration' },
 ];
 
 export const CollapsibleSidebar = ({ isOpen, onToggle }: CollapsibleSidebarProps) => {

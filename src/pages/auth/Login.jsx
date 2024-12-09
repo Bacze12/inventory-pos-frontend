@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, 
+import { 
+  Box, 
   Button, 
   FormControl, 
   FormLabel, 
@@ -9,26 +10,39 @@ import { Box,
   VStack,
   Link,
   Text, 
-  Spinner } from '@chakra-ui/react'
+  Spinner 
+} from '@chakra-ui/react';
 import useAlert from '../../hooks/useAlert';
-import authApi from '../../api/api';
+import API from '../../api/api';
+import { useDispatch } from 'react-redux';
+import { login } from '../../store/slices/authSlice';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const alert = useAlert();
+  const { showAlert } = useAlert();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await authApi.post('/login', { email, password });
-      alert.success('Login successful!');
+      const response = await API.post('/login', { email, password });
+      dispatch(login(response.data.user));
+      showAlert({
+        title: 'Inicio de sesión exitoso',
+        status: 'success',
+        description: '¡Bienvenido de vuelta!'
+      });
       navigate('/home');
     } catch (error) {
-      alert.error(error.response?.data?.message || 'Login failed!');
+      showAlert({
+        title: 'Error al iniciar sesión',
+        description: error.response?.data?.message || 'No se pudo iniciar sesión',
+        status: 'error'
+      });
     } finally {
       setLoading(false);
     }

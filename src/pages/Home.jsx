@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Flex, Grid, GridItem, Text, Heading, Button, Icon } from '@chakra-ui/react';
 import { FaShoppingCart, FaChartBar, FaUsers, FaCog } from 'react-icons/fa';
 import { AiOutlinePlus } from 'react-icons/ai';
@@ -7,29 +7,32 @@ import { CollapsibleSidebar } from '../components/layout/CollapsibleSidebar';
 import { Navbar } from '../components/layout/Navbar';
 import { useNavigate } from 'react-router-dom';
 
-// Elementos de la barra lateral
-const navItems = [
-  { path: '/ventas', label: 'Ventas', icon: FaShoppingCart },
-  { path: '/reportes', label: 'Reportes', icon: FaChartBar },
-  { path: '/usuarios', label: 'Usuarios', icon: FaUsers },
-  { path: '/configuracion', label: 'Configuración', icon: FaCog },
-];
-
 const Home = () => {
+  const [isSidebarOpen, setSidebarOpen] = useState(true);
   const navigate = useNavigate();
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!isSidebarOpen);
+  };
 
   return (
     <Box>
       {/* Navbar */}
-      <Navbar onMenuClick={() => console.log('Menu Clicked')} />
+      <Navbar onMenuClick={toggleSidebar} />
 
-      {/* Layout principal */}
       <Flex>
         {/* Barra lateral */}
-        <CollapsibleSidebar NavItems={navItems} navigate={navigate} />
+        <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
 
         {/* Contenido principal */}
-        <Box flex="1" p={6} bg="gray.50" minH="100vh">
+        <Box
+          flex="1"
+          p={6}
+          bg="gray.50"
+          minH="100vh"
+          ml={isSidebarOpen ? '240px' : '60px'} // Ajustar margen izquierdo según el estado de la barra lateral
+          transition="margin-left 0.3s"
+        >
           {/* Encabezado */}
           <Heading as="h1" size="lg" mb={2}>
             Bienvenido, Wilfredo de los Wilfredos

@@ -6,6 +6,7 @@ import {
   Select,
   Textarea,
   FormErrorMessage,
+  VStack,
 } from '@chakra-ui/react';
 
 /**
@@ -79,4 +80,16 @@ export const TextAreaField = ({
     />
     <FormErrorMessage>{errorMessage}</FormErrorMessage>
   </FormControl>
+);
+
+/**
+ * NavItems Component
+ * Un contenedor de elementos de navegación.
+ */
+export const NavItems = ({ items }) => (
+  <VStack spacing={1} align="stretch">
+    {items.map((item) => (
+      <NavItem key={item.name} item={item} />
+    ))}
+  </VStack>
 );
