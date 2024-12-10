@@ -25,7 +25,9 @@ const Register = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleRegister = async () => {
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    
     if (!formData.email || !formData.name || !formData.password) {
       toast({
         title: 'Todos los campos son requeridos.',
@@ -38,7 +40,7 @@ const Register = () => {
 
     try {
       setIsSubmitting(true);
-      await API.post('/users', formData);
+      await API.post('/auth/register', formData);
       toast({
         title: 'Cuenta creada con éxito.',
         description: 'Ahora puedes iniciar sesión.',
@@ -46,7 +48,7 @@ const Register = () => {
         duration: 3000,
         isClosable: true,
       });
-      navigate('/login'); // Redirige a la página de inicio de sesión
+      navigate('/login');
     } catch (error) {
       toast({
         title: 'Error al crear la cuenta.',
@@ -66,45 +68,47 @@ const Register = () => {
         <Heading as="h1" size="lg" mb={6} textAlign="center" color="blue.600">
           Crear Cuenta
         </Heading>
-        <VStack spacing={4}>
-          <FormControl>
-            <FormLabel>Correo</FormLabel>
-            <Input
-              type="email"
-              placeholder="Ingresa tu correo"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Nombre</FormLabel>
-            <Input
-              placeholder="Ingresa tu nombre"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Contraseña</FormLabel>
-            <Input
-              type="password"
-              placeholder="Ingresa tu contraseña"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-            />
-          </FormControl>
-          <Button
-            colorScheme="blue"
-            width="full"
-            isLoading={isSubmitting}
-            onClick={handleRegister}
-          >
-            Crear Cuenta
-          </Button>
-        </VStack>
+        <form onSubmit={handleRegister}>
+          <VStack spacing={4}>
+            <FormControl>
+              <FormLabel>Correo</FormLabel>
+              <Input
+                type="email"
+                placeholder="Ingresa tu correo"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Nombre</FormLabel>
+              <Input
+                placeholder="Ingresa tu nombre"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Contraseña</FormLabel>
+              <Input
+                type="password"
+                placeholder="Ingresa tu contraseña"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+              />
+            </FormControl>
+            <Button
+              type="submit"
+              colorScheme="blue"
+              width="full"
+              isLoading={isSubmitting}
+            >
+              Crear Cuenta
+            </Button>
+          </VStack>
+        </form>
         <Text mt={4} textAlign="center">
           ¿Ya tienes una cuenta?{' '}
           <Button variant="link" colorScheme="blue" onClick={() => navigate('/login')}>

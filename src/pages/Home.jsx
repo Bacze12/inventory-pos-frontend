@@ -86,7 +86,7 @@ const Home = () => {
               p={6}
               cursor="pointer"
               _hover={{ shadow: 'lg' }}
-              onClick={() => navigate('/usuarios')}
+              onClick={() => navigate('/users')}
             >
               <Flex align="center" mb={4}>
                 <Icon as={FaUsers} boxSize={6} color="purple.500" />

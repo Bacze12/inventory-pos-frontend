@@ -29,8 +29,15 @@ const LoginPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await API.post('/login', { email, password });
-      dispatch(login(response.data.user));
+      const response = await API.post('/auth/login', { email, password });
+      const { token, user } = response.data;
+      
+      // Guardar el token
+      localStorage.setItem('token', token);
+      
+      // Actualizar el estado de Redux
+      dispatch(login(user));
+      
       showAlert({
         title: 'Inicio de sesión exitoso',
         status: 'success',
@@ -40,7 +47,7 @@ const LoginPage = () => {
     } catch (error) {
       showAlert({
         title: 'Error al iniciar sesión',
-        description: error.response?.data?.message || 'No se pudo iniciar sesión',
+        description: error.response?.data?.message || 'Credenciales incorrectas',
         status: 'error'
       });
     } finally {
