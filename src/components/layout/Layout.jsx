@@ -1,21 +1,48 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from '../layout/Layout';
-import Home from '../../pages/Home';
-import ProductListPage from '../../pages/products/ProductListPage';
+import {
+  Box,
+  VStack,
+  Icon,
+  Text, 
+  Flex,
+  IconButton,
+  useColorModeValue,
+  useDisclosure
+} from '@chakra-ui/react';
+import { useLocation, useNavigate, Outlet } from 'react-router-dom';
+import {
+  LayoutDashboard,
+  ShoppingCart,
+  Package,
+  Settings,
+  Menu,
+  Home,
+  Users,
+  FileText,
+} from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/slices';
+import { Navbar } from './Navbar';
+import { CollapsibleSidebar } from './CollapsibleSidebar';
 
-const App = () => {
+export const Layout = () => {
+  const { isOpen, onToggle } = useDisclosure();
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="products" element={<ProductListPage />} />
-          {/* Otras rutas */}
-        </Route>
-      </Routes>
-    </Router>
+    <Flex h="100vh">
+      <CollapsibleSidebar isOpen={isOpen} onToggle={onToggle} />
+      <Box
+        flex="1"
+        ml={isOpen ? '240px' : '60px'}
+        transition="margin-left 0.3s"
+      >
+        <Navbar onMenuClick={onToggle} userName={''} />
+        <Box p={4}>
+          <Outlet />
+        </Box>
+      </Box>
+    </Flex>
   );
 };
 
-export default App;
+export default Layout;

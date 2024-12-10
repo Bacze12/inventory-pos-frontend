@@ -1,7 +1,7 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import Layout from './components/layout/Layout';
+import { Layout } from './components/layout/Layout';
 import LoginPage from './pages/auth/Login';
 import Register from './pages/auth/Register';
 
@@ -12,6 +12,7 @@ const UpdateProductPage = lazy(() => import('./pages/products/UpdateProductPage'
 const AddSalePage = lazy(() => import('./pages/sales/AddSalePage'));
 const SalesListPage = lazy(() => import('./pages/sales/SalesListPage'));
 const SaleDetailsPage = lazy(() => import('./pages/sales/SaleDetailsPage'));
+const UserManagementPage = lazy(() => import('./pages/users/UserManagementPage'));
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
           <Route path="/sales/:id" element={<SaleDetailsPage />} />
           <Route path="/home" element={<Home />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/users" element={<UserManagementPage />} />
         </Routes>
       </Suspense>
     </Router>
