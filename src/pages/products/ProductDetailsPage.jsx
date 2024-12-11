@@ -3,49 +3,61 @@ import {
   Box,
   Flex,
   Heading,
-  Button,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  IconButton,
-  useDisclosure,
+  Text,
+  Spinner,
+  Center,
+  Alert,
+  AlertIcon,
   useToast,
 } from '@chakra-ui/react';
-import { AddIcon } from '@chakra-ui/icons';
 import { CollapsibleSidebar } from '../../components/layout/CollapsibleSidebar';
 import { Navbar } from '../../components/layout/Navbar';
-import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import API from '../../api/api';
 
-const ProductListPage = () => {
+const ProductDetailsPage = () => {
+  const { id } = useParams();
   const [isSidebarOpen, setSidebarOpen] = useState(true);
-  const [products, setProducts] = useState([]);
-  const navigate = useNavigate();
+  const [product, setProduct] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const toast = useToast();
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
 
-  const fetchProducts = async () => {
-    try {
-      const response = await API.get('/products');
-      setProducts(response.data);
-    } catch (error) {
-      toast({
-        title: 'Error al cargar productos',
-        description: error.response?.data?.message || 'No se pudieron cargar los productos',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
-
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    const fetchProduct = async () => {
+      try {
+        const response = await API.get(`/products/${id}`);
+        setProduct(response.data);
+      } catch (err) {
+        setError(err.response?.data?.message || 'No se pudo obtener la información del producto.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <Center h="100vh">
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
+
+  if (error) {
+    return (
+      <Center h="100vh">
+        <Alert status="error">
+          <AlertIcon />
+          {error}
+        </Alert>
+      </Center>
+    );
+  }
 
   return (
     <Box>
@@ -53,11 +65,28 @@ const ProductListPage = () => {
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
         <Box flex="1" ml={isSidebarOpen ? '240px' : '60px'} p={4}>
-          {/* Contenido de la lista de productos */}
+          <Heading size="lg" mb={4}>Detalles del Producto</Heading>
+          <Box p={6} bg="white" borderRadius="md" shadow="sm">
+            <Heading size="lg" mb={4}>
+              {product.name}
+            </Heading>
+            <Text fontSize="xl" fontWeight="bold" mb={2}>
+              Precio: ${product.price.toFixed(2)}
+            </Text>
+            <Text fontSize="md" mb={2}>
+              Descripción: {product.description}
+            </Text>
+            <Text fontSize="md" mb={2}>
+              Categoría: {product.category}
+            </Text>
+            <Text fontSize="md" mb={2}>
+              Stock: {product.stock}
+            </Text>
+          </Box>
         </Box>
       </Flex>
     </Box>
   );
 };
 
-export default ProductListPage;
+export default ProductDetailsPage;

@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/slices'; // Corregir la ruta de importación
 import { logout } from '../../store/slices/authSlice';
+import { Link } from 'react-router-dom';
 
 interface NavbarProps {
   onMenuClick: () => void;
@@ -52,9 +53,11 @@ export const Navbar = ({ onMenuClick }: NavbarProps) => {
             aria-label="open menu"
             icon={<MenuIcon />}
           />
-          <Text fontSize="xl" fontWeight="bold">
-            SGI
-          </Text>
+          <Link to="/home">
+            <Text fontSize="xl" fontWeight="bold">
+              SGI
+            </Text>
+          </Link>
         </HStack>
 
         <HStack spacing={4}>

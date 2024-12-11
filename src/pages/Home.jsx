@@ -35,7 +35,7 @@ const Home = () => {
         >
           {/* Encabezado */}
           <Heading as="h1" size="lg" mb={2}>
-            Bienvenido, Wilfredo de los Wilfredos
+            Bienvenido
           </Heading>
           <Text fontSize="lg" color="gray.600" mb={6}>
             ¿Qué te gustaría hacer hoy?

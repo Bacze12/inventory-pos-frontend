@@ -6,7 +6,6 @@ import LoginPage from './pages/auth/Login';
 import Register from './pages/auth/Register';
 
 const ProductListPage = lazy(() => import('./pages/products/ProductListPage'));
-const AddProductPage = lazy(() => import('./pages/products/AddProductPage'));
 const ProductDetailsPage = lazy(() => import('./pages/products/ProductDetailsPage'));
 const UpdateProductPage = lazy(() => import('./pages/products/UpdateProductPage'));
 const AddSalePage = lazy(() => import('./pages/sales/AddSalePage'));
@@ -22,7 +21,6 @@ const App = () => {
           <Route path="/" element={<LoginPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/products" element={<ProductListPage />} />
-          <Route path="/add-product" element={<AddProductPage />} />
           <Route path="/products/:id" element={<ProductDetailsPage />} />
           <Route path="/products/:id/edit" element={<UpdateProductPage />} />
           <Route path="/add-sale" element={<AddSalePage />} />

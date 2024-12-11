@@ -44,7 +44,7 @@ const NavItems: NavItem[] = [
   { name: 'Inventario', icon: MdInventory, path: '/inventory' },
   { name: 'Reportes', icon: FileText, path: '/reports' },
   { name: 'Clientes', icon: Users, path: '/clients' },
-  { name: 'Usuarios', icon: Users, path: '/users-permissions' },
+  { name: 'Usuarios', icon: Users, path: '/users' },
   { name: 'Configuración', icon: Settings, path: '/system-configuration' },
 ];
 

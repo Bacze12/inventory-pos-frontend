@@ -17,14 +17,41 @@ import { CollapsibleSidebar } from '../../components/layout/CollapsibleSidebar';
 import { Navbar } from '../../components/layout/Navbar';
 import { useNavigate } from 'react-router-dom';
 import API from '../../api/api';
+import ProductModal from '../../components/products/ProductModal';
 
 const ProductsPage = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [products, setProducts] = useState([]);
+  const [isModalOpen, setModalOpen] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+
+  const handleOpenModal = () => setModalOpen(true);
+  const handleCloseModal = () => setModalOpen(false);
+  const handleSubmitModal = async (productData) => {
+    try {
+      await API.post('/products', productData);
+      toast({
+        title: 'Producto agregado',
+        description: 'El producto ha sido agregado exitosamente.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      setModalOpen(false);
+      fetchProducts();
+    } catch (error) {
+      toast({
+        title: 'Error al agregar producto',
+        description: error.response?.data?.message || 'No se pudo agregar el producto.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
   // Cargar productos desde la API
   const fetchProducts = async () => {
@@ -57,7 +84,7 @@ const ProductsPage = () => {
             <Heading as="h1" size="lg">
               Productos
             </Heading>
-            <Button leftIcon={<AddIcon />} colorScheme="blue" onClick={() => navigate('/products/new')}>
+            <Button leftIcon={<AddIcon />} colorScheme="blue" onClick={handleOpenModal}>
               Nuevo Producto
             </Button>
           </Flex>
@@ -88,6 +115,7 @@ const ProductsPage = () => {
               ))}
             </Tbody>
           </Table>
+          <ProductModal isOpen={isModalOpen} onClose={handleCloseModal} onSubmit={handleSubmitModal} />
         </Box>
       </Flex>
     </Box>
