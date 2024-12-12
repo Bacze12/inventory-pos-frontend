@@ -11,7 +11,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   ShoppingCart,
-  Package,
   Settings,
   Menu,
   Home,
