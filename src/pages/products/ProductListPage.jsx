@@ -71,7 +71,7 @@ const ProductsPage = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [fetchProducts]); // Add 'fetchProducts' to the dependency array
 
   return (
     <Box>
