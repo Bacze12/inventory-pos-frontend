@@ -93,7 +93,7 @@ const ProductsPage = () => {
           <Table variant="simple">
             <Thead>
               <Tr>
-                <Th>ID</Th>
+                <Th>Sku</Th>
                 <Th>Nombre</Th>
                 <Th>Precio</Th>
                 <Th>Stock</Th>
@@ -107,9 +107,9 @@ const ProductsPage = () => {
                   cursor="pointer"
                   _hover={{ bg: 'gray.100' }}
                 >
-                  <Td>{product.id}</Td>
+                  <Td>{product.sku}</Td>
                   <Td>{product.name}</Td>
-                  <Td>${product.price}</Td>
+                  <Td>${product.finalPrice}</Td>
                   <Td>{product.stock}</Td>
                 </Tr>
               ))}

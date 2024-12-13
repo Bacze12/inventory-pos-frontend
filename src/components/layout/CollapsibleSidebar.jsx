@@ -45,6 +45,9 @@ const NavItems: NavItem[] = [
   { name: 'Clientes', icon: Users, path: '/clients' },
   { name: 'Usuarios', icon: Users, path: '/users' },
   { name: 'Configuración', icon: Settings, path: '/system-configuration' },
+  { name: 'categorias', icon: Tags, path: '/categories' },
+  { name: 'Proveedores', icon: Tags, path: '/suppliers' }, // Agregar la ruta de proveedores
+  
 ];
 
 export const CollapsibleSidebar = ({ isOpen, onToggle }: CollapsibleSidebarProps) => {
