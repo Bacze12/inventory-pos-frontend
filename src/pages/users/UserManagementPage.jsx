@@ -24,11 +24,12 @@ import {
   Select,
   useDisclosure,
   useToast,
+  Divider,
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { CollapsibleSidebar } from '../../components/layout/CollapsibleSidebar';
 import { Navbar } from '../../components/layout/Navbar';
-import API from '../../api/api'; // Importar la instancia API configurada
+import API from '../../api/api';
 import { useNavigate } from 'react-router-dom';
 
 const UserManagementPage = () => {
@@ -75,7 +76,6 @@ const UserManagementPage = () => {
   // Activar o desactivar un usuario
   const toggleUserStatus = async (userId, isActive) => {
     try {
-      // Usar el endpoint correcto según el estado actual
       const endpoint = isActive 
         ? `/users/${userId}/deactivate`
         : `/users/${userId}/reactivate`;
@@ -89,7 +89,6 @@ const UserManagementPage = () => {
         isClosable: true,
       });
       
-      // Recargar la lista de usuarios
       fetchUsers();
     } catch (error) {
       toast({
@@ -102,7 +101,6 @@ const UserManagementPage = () => {
     }
   };
 
-  // Agregar esta función para manejar la creación de usuarios
   const handleCreateUser = async () => {
     if (!newUser.email || !newUser.name || !newUser.password || !newUser.role) {
       toast({
@@ -142,51 +140,52 @@ const UserManagementPage = () => {
   }, []);
 
   return (
-    <Box>
+    <Box bg="gray.50" minH="100vh">
       <Navbar onMenuClick={toggleSidebar} />
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
         <Box flex="1" ml={isSidebarOpen ? '240px' : '60px'} p={6}>
           <Flex justify="space-between" align="center" mb={6}>
-            <Heading as="h1" size="lg">
+            <Heading as="h1" size="lg" >
               Gestión de Usuarios
             </Heading>
-            <Button leftIcon={<AddIcon />} colorScheme="blue" onClick={onOpen}>
+            <Button leftIcon={<AddIcon />} colorScheme="blue" onClick={onOpen} size="lg">
               Nuevo Usuario
             </Button>
           </Flex>
 
-          {/* Tabla de usuarios */}
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>ID</Th>
-                <Th>Correo</Th>
-                <Th>Nombre</Th>
-                <Th>Rol</Th>
-                <Th>Activo</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {users.map((user) => (
-                <Tr key={user.id}>
-                  <Td>{user.id}</Td>
-                  <Td>{user.email}</Td>
-                  <Td>{user.name}</Td>
-                  <Td>{user.role}</Td>
-                  <Td>
-                    <Switch
-                      isChecked={user.isActive}
-                      onChange={() => toggleUserStatus(user.id, user.isActive)}
-                    />
-                  </Td>
+          <Box bg="white" p={6} borderRadius="lg" shadow="md">
+            <Table variant="simple">
+              <Thead bg="gray.100">
+                <Tr>
+                  <Th>ID</Th>
+                  <Th>Correo</Th>
+                  <Th>Nombre</Th>
+                  <Th>Rol</Th>
+                  <Th>Activo</Th>
                 </Tr>
-              ))}
-            </Tbody>
-          </Table>
+              </Thead>
+              <Tbody>
+                {users.map((user) => (
+                  <Tr key={user.id}>
+                    <Td>{user.id}</Td>
+                    <Td>{user.email}</Td>
+                    <Td>{user.name}</Td>
+                    <Td>{user.role}</Td>
+                    <Td>
+                      <Switch
+                        colorScheme="green"
+                        isChecked={user.isActive}
+                        onChange={() => toggleUserStatus(user.id, user.isActive)}
+                      />
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </Box>
 
-          {/* Modal para nuevo usuario */}
-          <Modal isOpen={isOpen} onClose={onClose}>
+          <Modal isOpen={isOpen} onClose={onClose} size="lg">
             <ModalOverlay />
             <ModalContent>
               <ModalHeader>Crear Nuevo Usuario</ModalHeader>
@@ -234,10 +233,10 @@ const UserManagementPage = () => {
                 </FormControl>
               </ModalBody>
               <ModalFooter>
-                <Button colorScheme="blue" onClick={handleCreateUser}>
+                <Button colorScheme="blue" onClick={handleCreateUser} size="lg">
                   Guardar
                 </Button>
-                <Button variant="ghost" ml={3} onClick={onClose}>
+                <Button variant="ghost" ml={3} onClick={onClose} size="lg">
                   Cancelar
                 </Button>
               </ModalFooter>

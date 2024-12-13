@@ -8,6 +8,11 @@ import {
   Center,
   Alert,
   AlertIcon,
+  Divider,
+  Button,
+  SimpleGrid,
+  Stack,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { CollapsibleSidebar } from '../../components/layout/CollapsibleSidebar';
 import { Navbar } from '../../components/layout/Navbar';
@@ -38,6 +43,8 @@ const ProductDetailsPage = () => {
     fetchProduct();
   }, [id]);
 
+  const bgColor = useColorModeValue('white', 'gray.800');
+
   if (isLoading) {
     return (
       <Center h="100vh">
@@ -58,37 +65,70 @@ const ProductDetailsPage = () => {
   }
 
   return (
-    <Box>
+    <Box bg="gray.50" minH="100vh">
       <Navbar onMenuClick={toggleSidebar} />
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
-        <Box flex="1" ml={isSidebarOpen ? '240px' : '60px'} p={4}>
-          <Heading size="lg" mb={4}>Detalles del Producto</Heading>
-          <Box p={6} bg="white" borderRadius="md" shadow="sm">
-            <Heading size="lg" mb={4}>
-              {product.name || 'Nombre no disponible'}
-            </Heading>
-            <Text fontSize="xl" fontWeight="bold" mb={2}>
-              Precio de Compra: ${product.purchasePrice }
-            </Text>
-            <Text fontSize="xl" fontWeight="bold" mb={2}>
-              Precio Final: ${product.finalPrice }
-            </Text>
-            <Text fontSize="md" mb={2}>
-              Categoría: {product.Category?.name || 'No disponible'}
-            </Text>
-            <Text fontSize="md" mb={2}>
-              Proveedor: {product.Supplier?.name || 'No disponible'}
-            </Text>
-            <Text fontSize="md" mb={2}>
-              Activo: {product.isActive ? 'Sí' : 'No'}
-            </Text>
-            <Text fontSize="md" mb={2}>
-              Fecha de Creación: {product.createdAt ? new Date(product.createdAt).toLocaleString() : 'No disponible'}
-            </Text>
-            <Text fontSize="md" mb={2}>
-              Última Actualización: {product.updatedAt ? new Date(product.updatedAt).toLocaleString() : 'No disponible'}
-            </Text>
+        <Box flex="1" ml={isSidebarOpen ? '240px' : '60px'} p={6}>
+          <Heading size="lg" mb={6}>
+            Detalles del Producto
+          </Heading>
+          <Box p={8} bg={bgColor} borderRadius="lg" shadow="md">
+            <SimpleGrid columns={[1, 2]} spacing={8} mb={6}>
+              <Stack spacing={4}>
+                <Heading size="md" color="gray.600">
+                  Información Básica
+                </Heading>
+                <Text fontSize="lg" fontWeight="bold">
+                  Nombre: <Text as="span" color="blue.500">{product.name || 'Nombre no disponible'}</Text>
+                </Text>
+                <Text fontSize="lg" fontWeight="bold">
+                  Categoría: <Text as="span" color="blue.500">{product.Category?.name || 'No disponible'}</Text>
+                </Text>
+                <Text fontSize="lg" fontWeight="bold">
+                  Proveedor: <Text as="span" color="blue.500">{product.Supplier?.name || 'No disponible'}</Text>
+                </Text>
+                <Text fontSize="lg" fontWeight="bold">
+                  Activo: <Text as="span" color={product.isActive ? 'green.500' : 'red.500'}>{product.isActive ? 'Sí' : 'No'}</Text>
+                </Text>
+              </Stack>
+              <Stack spacing={4}>
+                <Heading size="md" color="gray.600">
+                  Precios
+                </Heading>
+                <Text fontSize="lg" fontWeight="bold">
+                  Precio de Compra: <Text as="span" color="blue.500">${product.purchasePrice}</Text>
+                </Text>
+                <Text fontSize="lg" fontWeight="bold">
+                  Precio Final: <Text as="span" color="blue.500">${product.finalPrice}</Text>
+                </Text>
+              </Stack>
+            </SimpleGrid>
+            <Divider mb={6} />
+            <SimpleGrid columns={[1, 2]} spacing={8}>
+              <Stack spacing={4}>
+                <Heading size="md" color="gray.600">
+                  Información Temporal
+                </Heading>
+                <Text fontSize="lg" fontWeight="bold">
+                  Fecha de Creación: <Text as="span" color="blue.500">{product.createdAt ? new Date(product.createdAt).toLocaleString() : 'No disponible'}</Text>
+                </Text>
+                <Text fontSize="lg" fontWeight="bold">
+                  Última Actualización: <Text as="span" color="blue.500">{product.updatedAt ? new Date(product.updatedAt).toLocaleString() : 'No disponible'}</Text>
+                </Text>
+              </Stack>
+              <Stack spacing={4}>
+                <Heading size="md" color="gray.600">
+                  Acciones
+                </Heading>
+                <Button colorScheme="blue" size="lg" w="full">
+                  Editar Producto
+                </Button>
+                <Button colorScheme="red" size="lg" w="full">
+                  Eliminar Producto
+                </Button>
+              </Stack>
+            </SimpleGrid>
           </Box>
         </Box>
       </Flex>
