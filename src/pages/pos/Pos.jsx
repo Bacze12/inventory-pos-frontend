@@ -82,14 +82,6 @@ const SalesModule = () => {
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
         <Box flex="1" ml={isSidebarOpen ? "240px" : "60px"} p={6}>
-          <Flex mb={4} justify="space-between" align="center">
-            <Input
-              placeholder="Buscar producto o escanear código"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              width="400px"
-            />
-          </Flex>
 
           {error && (
             <Alert status="error" mb={4}>
@@ -99,14 +91,16 @@ const SalesModule = () => {
           )}
 
           <Flex gap={6}>
-            {/* Tabla de productos */}
             <Box
-              flex="2"
+              flex="3"
               border="1px solid #E2E8F0"
               rounded="md"
               overflow="auto"
-              maxH="400px" // Altura fija de la tabla
+              maxH="2500px" // Altura fija de la tabla
             >
+              <Text fontSize="xl" fontWeight="bold" mb={4} borderBottom="1px solid #E2E8F0" pb={2} align="center">
+                Tabla de productos
+              </Text>
               <Table variant="simple" size="sm">
                 <Thead bg="gray.100" position="sticky" top="0" zIndex="1">
                   <Tr>
@@ -150,27 +144,15 @@ const SalesModule = () => {
             </Box>
 
             {/* Resumen de la venta */}
-            <Box flex="1" border="1px solid #E2E8F0" rounded="md" p={4}>
-              <Text fontSize="xl" fontWeight="bold" mb={4}>
-                Venta Actual
-              </Text>
-              <Divider mb={4} />
-              <Box>
-                {Object.entries(cart).map(([productId, quantity]) => {
-                  const product = products.find((p) => p.id === parseInt(productId));
-                  if (!product || quantity === 0) return null;
-
-                  return (
-                    <Flex key={productId} justify="space-between" mb={2}>
-                      <Text>{product.name}</Text>
-                      <Text>
-                        {quantity} x ${(product.price || 0).toFixed(2)} = $
-                        {calculateSubtotal(productId, product.price).toFixed(2)}
-                      </Text>
-                    </Flex>
-                  );
-                })}
-              </Box>
+            <Box flex="1" border="1px solid #E2E8F0" rounded="md" p={4} maxH="200px">
+              <Flex mb={4} justify="space-between" align="center">
+              <Input
+                placeholder="Buscar producto o escanear código"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                width="400px"
+              />
+              </Flex>
               <Divider my={4} />
               <Flex justify="space-between">
                 <Text fontSize="lg" fontWeight="bold">
