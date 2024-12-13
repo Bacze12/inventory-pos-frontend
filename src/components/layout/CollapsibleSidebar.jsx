@@ -41,13 +41,12 @@ const NavItems: NavItem[] = [
   { name: 'POS', icon: ShoppingCart, path: '/pos' },
   { name: 'Productos', icon: Tags, path: '/products' }, // Usar el ícono Tags importado
   { name: 'Inventario', icon: MdInventory, path: '/inventory' },
-  { name: 'Reportes', icon: FileText, path: '/reports' },
-  { name: 'Clientes', icon: Users, path: '/clients' },
+  // { name: 'Reportes', icon: FileText, path: '/reports' },
+  // { name: 'Clientes', icon: Users, path: '/clients' },
   { name: 'Usuarios', icon: Users, path: '/users' },
-  { name: 'Configuración', icon: Settings, path: '/system-configuration' },
   { name: 'categorias', icon: Tags, path: '/categories' },
   { name: 'Proveedores', icon: Tags, path: '/suppliers' }, // Agregar la ruta de proveedores
-  
+  { name: 'Configuración', icon: Settings, path: '/system-configuration' },
 ];
 
 export const CollapsibleSidebar = ({ isOpen, onToggle }: CollapsibleSidebarProps) => {

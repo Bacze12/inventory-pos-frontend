@@ -11,6 +11,7 @@ import SupplierListPage from './pages/suppliers/SupplierListPage'; // Import Sup
 import SupplierUpdatePage from './pages/suppliers/SupplierUpdatePage'; // Import SupplierUpdatePage
 import InventoryListPage from './pages/Inventory/InventoryListPage';
 import InventoryDetailsPage from './pages/Inventory/InventoryDetailsPage';
+import Dashboard from './pages/Dashboard';
 
 import Pos from './pages/pos/Pos';
 
@@ -46,6 +47,7 @@ const App = () => {
           <Route path="/suppliers/:id" element={<SupplierUpdatePage />} /> {/* Add SupplierUpdatePage route */}
           <Route path="/inventory" element={<InventoryListPage />} />
           <Route path="/inventory/:id" element={<InventoryDetailsPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
 
           <Route path="/pos" element={<Pos />} />
 

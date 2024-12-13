@@ -205,7 +205,7 @@ const ProductsPage = () => {
                     >
                       <Td>{product.sku}</Td>
                       <Td>{product.name}</Td>
-                      <Td>${(product.price || 0).toFixed(2)}</Td>
+                      <Td>${(product.finalPrice || 0)}</Td>
                       <Td>{product.stock}</Td>
                       <Td>
                         <IconButton
