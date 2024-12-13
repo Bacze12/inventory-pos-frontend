@@ -8,7 +8,6 @@ import {
   Center,
   Alert,
   AlertIcon,
-  useToast,
 } from '@chakra-ui/react';
 import { CollapsibleSidebar } from '../../components/layout/CollapsibleSidebar';
 import { Navbar } from '../../components/layout/Navbar';
@@ -21,7 +20,6 @@ const ProductDetailsPage = () => {
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const toast = useToast();
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
 
@@ -68,19 +66,28 @@ const ProductDetailsPage = () => {
           <Heading size="lg" mb={4}>Detalles del Producto</Heading>
           <Box p={6} bg="white" borderRadius="md" shadow="sm">
             <Heading size="lg" mb={4}>
-              {product.name}
+              {product.name || 'Nombre no disponible'}
             </Heading>
             <Text fontSize="xl" fontWeight="bold" mb={2}>
-              Precio: ${product.price.toFixed(2)}
+              Precio de Compra: ${product.purchasePrice }
+            </Text>
+            <Text fontSize="xl" fontWeight="bold" mb={2}>
+              Precio Final: ${product.finalPrice }
             </Text>
             <Text fontSize="md" mb={2}>
-              Descripción: {product.description}
+              Categoría: {product.Category?.name || 'No disponible'}
             </Text>
             <Text fontSize="md" mb={2}>
-              Categoría: {product.category}
+              Proveedor: {product.Supplier?.name || 'No disponible'}
             </Text>
             <Text fontSize="md" mb={2}>
-              Stock: {product.stock}
+              Activo: {product.isActive ? 'Sí' : 'No'}
+            </Text>
+            <Text fontSize="md" mb={2}>
+              Fecha de Creación: {product.createdAt ? new Date(product.createdAt).toLocaleString() : 'No disponible'}
+            </Text>
+            <Text fontSize="md" mb={2}>
+              Última Actualización: {product.updatedAt ? new Date(product.updatedAt).toLocaleString() : 'No disponible'}
             </Text>
           </Box>
         </Box>
