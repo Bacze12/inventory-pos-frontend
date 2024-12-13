@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import { Layout } from './components/layout/Layout';
 import LoginPage from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import Pos from './pages/pos/Pos';
 
 const ProductListPage = lazy(() => import('./pages/products/ProductListPage'));
 const ProductDetailsPage = lazy(() => import('./pages/products/ProductDetailsPage'));
@@ -29,6 +30,7 @@ const App = () => {
           <Route path="/home" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/users" element={<UserManagementPage />} />
+          <Route path="/pos" element={<Pos />} />
         </Routes>
       </Suspense>
     </Router>
