@@ -1,116 +1,76 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalBody,
   ModalFooter,
+  ModalBody,
   ModalCloseButton,
-  FormControl,
-  FormLabel,
-  Input,
   Button,
+  Input,
+  Select,
   Text,
-  useToast,
-  VStack,
+  Flex,
   Box,
-  RadioGroup,
-  Radio,
-  Stack,
-} from '@chakra-ui/react';
-import PrintReceiptModal from './PrintReceiptModal';
+} from "@chakra-ui/react";
 
-/**
- * Componente PaymentModal
- * @param {boolean} isOpen - Si el modal está abierto.
- * @param {Function} onClose - Función para cerrar el modal.
- * @param {number} total - Monto total a pagar.
- * @param {Function} onPayment - Función que se ejecuta al confirmar el pago.
- * @param {string} paymentMethod - Método de pago seleccionado.
- * @param {Function} setPaymentMethod - Función para establecer el método de pago.
- */
 const PaymentModal = ({ isOpen, onClose, total, onPayment, paymentMethod, setPaymentMethod }) => {
-  const [amountReceived, setAmountReceived] = useState('');
-  const [isReceiptOpen, setReceiptOpen] = useState(false);
-  const toast = useToast();
+  const [amountReceived, setAmountReceived] = useState(0);
 
-  const handlePayment = () => {
-    const received = parseFloat(amountReceived);
-    if (isNaN(received) || received < total) {
-      toast({
-        title: 'Monto inválido',
-        description: 'El monto recibido debe ser igual o mayor al total.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
+  const change = Math.max(amountReceived - total, 0);
+
+  const handleConfirmPayment = () => {
+    if (amountReceived < total) {
+      alert("The received amount is less than the total!");
       return;
     }
-
-    const change = received - total;
-    onPayment(received, change);
-    setAmountReceived('');
+    onPayment(amountReceived, change);
+    setAmountReceived(0);
     onClose();
-    setReceiptOpen(true); // Abrir el modal de impresión de boleta
   };
 
   return (
-    <>
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Realizar Pago</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <VStack spacing={4} align="stretch">
-              <FormControl>
-                <FormLabel>Total a Pagar</FormLabel>
-                <Box p={2} bg="gray.100" borderRadius="md">
-                  <Text fontWeight="bold">${total.toFixed(2)}</Text>
-                </Box>
-              </FormControl>
-              <FormControl>
-                <FormLabel>Método de Pago</FormLabel>
-                <RadioGroup onChange={setPaymentMethod} value={paymentMethod}>
-                  <Stack direction="row">
-                    <Radio value="cash">Efectivo</Radio>
-                    <Radio value="card">Tarjeta</Radio>
-                  </Stack>
-                </RadioGroup>
-              </FormControl>
-              {paymentMethod === 'cash' && (
-                <FormControl>
-                  <FormLabel>Monto Recibido</FormLabel>
-                  <Input
-                    placeholder="Ingrese el monto recibido"
-                    type="number"
-                    value={amountReceived}
-                    onChange={(e) => setAmountReceived(e.target.value)}
-                  />
-                </FormControl>
-              )}
-            </VStack>
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handlePayment}>
-              Confirmar
-            </Button>
-            <Button variant="ghost" onClick={onClose}>
-              Cancelar
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-
-      <PrintReceiptModal
-        isOpen={isReceiptOpen}
-        onClose={() => setReceiptOpen(false)}
-        total={total}
-        receivedAmount={parseFloat(amountReceived)}
-        change={parseFloat(amountReceived) - total}
-      />
-    </>
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Process Payment</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Box mb={4}>
+            <Text fontSize="lg">Total: ${total}</Text>
+          </Box>
+          <Box mb={4}>
+            <Text mb={2}>Payment Method:</Text>
+            <Select
+              value={paymentMethod}
+              onChange={(e) => setPaymentMethod(e.target.value)}
+            >
+              <option value="cash">Cash</option>
+              <option value="card">Card</option>
+              <option value="transfer">Transfer</option>
+            </Select>
+          </Box>
+          <Box mb={4}>
+            <Text mb={2}>Amount Received:</Text>
+            <Input
+              type="number"
+              value={amountReceived}
+              onChange={(e) => setAmountReceived(Number(e.target.value))}
+              placeholder="Enter amount received"
+            />
+          </Box>
+          <Flex justify="space-between" mt={4}>
+            <Text>Change: ${change}</Text>
+          </Flex>
+        </ModalBody>
+        <ModalFooter>
+          <Button colorScheme="blue" onClick={handleConfirmPayment}>
+            Confirm Payment
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 
