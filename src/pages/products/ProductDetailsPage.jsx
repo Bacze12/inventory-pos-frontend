@@ -137,7 +137,7 @@ const ProductDetailsPage = () => {
             </Button>
           </Flex>
             <SimpleGrid columns={[1, 2]} spacing={20} mb={6}>
-              <SimpleGrid columns={[1, 2]} spacing={8} mb={30}>
+              <SimpleGrid columns={[1, 2]} spacing={8} mb={6}>
                 <Stat bg={bgColor} p={4} shadow="sm" borderRadius="lg">
                   <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Codigo de Barra:</StatLabel>
                   <StatNumber as="span" color="blue.500">{product.sku}</StatNumber>
@@ -147,14 +147,19 @@ const ProductDetailsPage = () => {
                   <StatNumber as="span" color="blue.500">{product.Category?.name || 'No disponible'}</StatNumber>
                 </Stat>
               </SimpleGrid>
-              <SimpleGrid columns={[1, 2]} spacing={8} mb={6}>
+              <SimpleGrid columns={[1, 2, 3]} spacing={8} mb={6}>
                 <Stat bg={bgColor} p={6} shadow="sm" borderRadius="lg">
                   <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Stock actual</StatLabel>
                   <StatNumber as="span" color="blue.500">{product.stock}</StatNumber>
                 </Stat>
                 <Stat spacing={15} bg={bgColor} p={4} shadow="sm" borderRadius="lg">
+                  <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Ultima Reposición</StatLabel>
+                  <StatNumber>{product.updatedAt ? new Date(product.updatedAt).toLocaleString() : 'No disponible'}</StatNumber>
+                </Stat>
+                
+                <Stat spacing={15} bg={bgColor} p={9} shadow="sm" borderRadius="lg">
                   <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Ultima Modificacion</StatLabel>
-                  <StatNumber as="span" color="blue.500">{product.updatedAt ? new Date(product.updatedAt).toLocaleString() : 'No disponible'}</StatNumber>
+                  <StatNumber>{product.updatedAt ? new Date(product.updatedAt).toLocaleString() : 'No disponible'}</StatNumber>
                 </Stat>
               </SimpleGrid>
             </SimpleGrid>
