@@ -7,13 +7,15 @@ import {
   Spinner,
   Center,
   Alert,
+  IconButton,
   AlertIcon,
   Divider,
   Button,
   SimpleGrid,
-  Stack,
+  Stat,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
 import { CollapsibleSidebar } from '../../components/layout/CollapsibleSidebar';
 import { Navbar } from '../../components/layout/Navbar';
 import { useParams } from 'react-router-dom';
@@ -70,66 +72,60 @@ const ProductDetailsPage = () => {
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
         <Box flex="1" ml={isSidebarOpen ? '240px' : '60px'} p={6}>
-          <Heading size="lg" mb={6}>
-            Detalles del Producto
-          </Heading>
-          <Box p={8} bg={bgColor} borderRadius="lg" shadow="md">
+          <Flex align="center" mb={4}>
+            <Heading as="h1" size="lg" >
+              <Text as="span">{product.name || 'Nombre no disponible'}</Text>
+            </Heading>
+            <Button variant="outline" ml="auto">
+              Editar
+            </Button>
+            <Button colorScheme="red" ml={4}>
+              Eliminar
+            </Button>
+          </Flex>
             <SimpleGrid columns={[1, 2]} spacing={8} mb={6}>
-              <Stack spacing={4}>
+                <Stat bg={bgColor} p={4} shadow="sm" borderRadius="lg">
+                  <Text fontSize="lg" fontWeight="bold">
+                    Detalles del Producto
+                  </Text>
+                  <Divider my={4} />
+                  <Text fontSize="lg" fontWeight="bold" color="gray.600" mb={3}>
+                    Codigo de Barra: <Text as="span" color="blue.500">{product.sku}</Text>
+                  </Text>
+                  <Text fontSize="lg" fontWeight="bold" color="gray.600" mb={3}>
+                    Categoría: <Text as="span" color="blue.500">{product.Category?.name || 'No disponible'}</Text>
+                  </Text>
+                  <Text fontSize="lg" fontWeight="bold" color="gray.600" mb={3}>
+                    Proveedor: <Text as="span" color="blue.500">{product.Supplier?.name || 'No disponible'}</Text>
+                  </Text>
+                </Stat>
+              <Stat spacing={4} bg={bgColor} p={4} shadow="sm" borderRadius="lg">
                 <Heading size="md" color="gray.600">
-                  Información Básica
+                  Stock
                 </Heading>
-                <Text fontSize="lg" fontWeight="bold">
-                  Nombre: <Text as="span" color="blue.500">{product.name || 'Nombre no disponible'}</Text>
+                <Divider my={4} />
+                <Text fontSize="lg" fontWeight="bold" mb={3}>
+                  Stock actual: <Text as="span" color="blue.500">{product.stock}</Text>
                 </Text>
-                <Text fontSize="lg" fontWeight="bold">
-                  Categoría: <Text as="span" color="blue.500">{product.Category?.name || 'No disponible'}</Text>
+                <Text fontSize="lg" fontWeight="bold" mb={3}>
+                  Última Reposicion: <Text as="span" color="blue.500">{product.updatedAt ? new Date(product.updatedAt).toLocaleString() : 'No disponible'}</Text>
                 </Text>
-                <Text fontSize="lg" fontWeight="bold">
-                  Proveedor: <Text as="span" color="blue.500">{product.Supplier?.name || 'No disponible'}</Text>
-                </Text>
-                <Text fontSize="lg" fontWeight="bold">
-                  Activo: <Text as="span" color={product.isActive ? 'green.500' : 'red.500'}>{product.isActive ? 'Sí' : 'No'}</Text>
-                </Text>
-              </Stack>
-              <Stack spacing={4}>
+              </Stat>
+            </SimpleGrid>
+            <SimpleGrid columns={[1, 2]} spacing={8}>
+              <Stat spacing={4} bg={bgColor} p={4} shadow="sm" borderRadius="lg">
                 <Heading size="md" color="gray.600">
                   Precios
                 </Heading>
-                <Text fontSize="lg" fontWeight="bold">
-                  Precio de Compra: <Text as="span" color="blue.500">${product.purchasePrice}</Text>
+                <Divider my={4} />
+                <Text fontSize="lg" fontWeight="bold" mb={3}>
+                  Precio de Compra: <Text as="span" color="blue.500">${product.purchasePrice.toLocaleString('es-CL')}</Text>
                 </Text>
-                <Text fontSize="lg" fontWeight="bold">
-                  Precio Final: <Text as="span" color="blue.500">${product.finalPrice}</Text>
+                <Text fontSize="lg" fontWeight="bold" mb={3}>
+                  Precio Final: <Text as="span" color="blue.500">${product.finalPrice.toLocaleString('es-CL')}</Text>
                 </Text>
-              </Stack>
+              </Stat>
             </SimpleGrid>
-            <Divider mb={6} />
-            <SimpleGrid columns={[1, 2]} spacing={8}>
-              <Stack spacing={4}>
-                <Heading size="md" color="gray.600">
-                  Información Temporal
-                </Heading>
-                <Text fontSize="lg" fontWeight="bold">
-                  Fecha de Creación: <Text as="span" color="blue.500">{product.createdAt ? new Date(product.createdAt).toLocaleString() : 'No disponible'}</Text>
-                </Text>
-                <Text fontSize="lg" fontWeight="bold">
-                  Última Actualización: <Text as="span" color="blue.500">{product.updatedAt ? new Date(product.updatedAt).toLocaleString() : 'No disponible'}</Text>
-                </Text>
-              </Stack>
-              <Stack spacing={4}>
-                <Heading size="md" color="gray.600">
-                  Acciones
-                </Heading>
-                <Button colorScheme="blue" size="lg" w="full">
-                  Editar Producto
-                </Button>
-                <Button colorScheme="red" size="lg" w="full">
-                  Eliminar Producto
-                </Button>
-              </Stack>
-            </SimpleGrid>
-          </Box>
         </Box>
       </Flex>
     </Box>

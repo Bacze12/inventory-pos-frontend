@@ -159,7 +159,7 @@ const DashboardPage = () => {
             </Stat>
             <Stat bg={bgColor} p={4} shadow="sm" borderRadius="lg">
               <StatLabel>Ingresos Totales</StatLabel>
-              <StatNumber>${stats.totalRevenue}</StatNumber>
+              <StatNumber>${stats.totalRevenue.toLocaleString('es-CL')}</StatNumber>
             </Stat>
           </SimpleGrid>
 
@@ -203,7 +203,7 @@ const DashboardPage = () => {
                     <Td>{sale.id}</Td>
                     <Td>{sale.customerName}</Td>
                     <Td>{new Date(sale.createdAt).toLocaleDateString()}</Td>
-                    <Td isNumeric>${sale.total}</Td>
+                    <Td isNumeric>${sale.total.toLocaleString('es-CL')}</Td>
                   </Tr>
                 ))}
               </Tbody>
