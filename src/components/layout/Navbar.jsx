@@ -21,10 +21,10 @@ import { Link } from 'react-router-dom';
 
 interface NavbarProps {
   onMenuClick: () => void;
-  userName: string;
+  isSidebarOpen: boolean;
 }
 
-export const Navbar = ({ onMenuClick }: NavbarProps) => {
+export const Navbar = ({ onMenuClick, isSidebarOpen }: NavbarProps) => {
   const { colorMode, toggleColorMode } = useColorMode();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -37,14 +37,18 @@ export const Navbar = ({ onMenuClick }: NavbarProps) => {
 
   return (
     <Box
-      px={4}
-      py={2}
+      position="fixed"
+      top="0"
+      left={isSidebarOpen ? '240px' : '60px'} // Ajusta el margen izquierdo según el estado de la barra lateral
+      width={`calc(100% - ${isSidebarOpen ? '240px' : '60px'})`} // Ajusta el ancho según el estado de la barra lateral
+      zIndex="1000"
       bg="white"
       _dark={{ bg: 'gray.800' }}
       borderBottomWidth="1px"
       shadow="sm"
+      transition="left 0.3s, width 0.3s"
     >
-      <Flex alignItems="center" justifyContent="space-between">
+      <Flex alignItems="center" justifyContent="space-between" px={4} py={2}>
         <HStack spacing={4}>
           <IconButton
             display={{ base: 'flex', md: 'none' }}
@@ -67,7 +71,6 @@ export const Navbar = ({ onMenuClick }: NavbarProps) => {
             variant="ghost"
             aria-label="toggle theme"
           />
-          
 
           <Menu>
             <MenuButton

@@ -15,7 +15,6 @@ import {
   Menu,
   Home,
   Users,
-  FileText,
   Tags, // Importar el ícono Tags de lucide-react
 } from 'lucide-react';
 import { MdInventory } from 'react-icons/md';
@@ -41,8 +40,6 @@ const NavItems: NavItem[] = [
   { name: 'POS', icon: ShoppingCart, path: '/pos' },
   { name: 'Productos', icon: Tags, path: '/products' }, // Usar el ícono Tags importado
   { name: 'Inventario', icon: MdInventory, path: '/inventory' },
-  // { name: 'Reportes', icon: FileText, path: '/reports' },
-  // { name: 'Clientes', icon: Users, path: '/clients' },
   { name: 'Usuarios', icon: Users, path: '/users' },
   { name: 'categorias', icon: Tags, path: '/categories' },
   { name: 'Proveedores', icon: Tags, path: '/suppliers' }, // Agregar la ruta de proveedores
@@ -93,6 +90,7 @@ export const CollapsibleSidebar = ({ isOpen, onToggle }: CollapsibleSidebarProps
       w={isOpen ? '240px' : '60px'}
       h="100vh"
       pos="fixed"
+      zIndex="1001" // Asegúrate de que el zIndex sea menor que el del Navbar
       transition="width 0.3s"
     >
       <Flex h="20" alignItems="center" mx="3" justifyContent="space-between">
