@@ -40,6 +40,7 @@ const UserManagementPage = () => {
   const toast = useToast();
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const navigate = useNavigate();
+  const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'active', 'inactive'
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
 
@@ -134,6 +135,13 @@ const UserManagementPage = () => {
     }
   };
 
+  const filteredUsers = users.filter(user => {
+    if (statusFilter === 'all') return true;
+    if (statusFilter === 'active') return user.isActive;
+    if (statusFilter === 'inactive') return !user.isActive;
+    return true;
+  });
+
   useEffect(() => {
     fetchUsers();
     fetchRoles();
@@ -154,6 +162,18 @@ const UserManagementPage = () => {
             </Button>
           </Flex>
 
+          <Flex justify="space-between" align="center" mb={4}>
+            <Select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              width="200px"
+            >
+              <option value="all">Todos los usuarios</option>
+              <option value="active">Usuarios activos</option>
+              <option value="inactive">Usuarios inactivos</option>
+            </Select>
+          </Flex>
+
           <Box bg="white" p={6} borderRadius="lg" shadow="md">
             <Table variant="simple">
               <Thead bg="gray.100">
@@ -166,7 +186,7 @@ const UserManagementPage = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {users.map((user) => (
+                {filteredUsers.map((user) => (
                   <Tr key={user.id}>
                     <Td>{user.id}</Td>
                     <Td>{user.email}</Td>
