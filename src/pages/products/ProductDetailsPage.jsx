@@ -95,7 +95,7 @@ const ProductDetailsPage = () => {
       },
       title: {
         display: true,
-        text: 'Historial de Precios',
+        text: '',
       },
     },
   };
@@ -136,71 +136,68 @@ const ProductDetailsPage = () => {
               Eliminar
             </Button>
           </Flex>
-            <SimpleGrid columns={[1, 2]} spacing={20} mb={6}>
+            <SimpleGrid columns={[1, 2]} spacing={100} mb={3}>
               <SimpleGrid columns={[1, 2]} spacing={8} mb={6}>
-                <Stat bg={bgColor} p={4} shadow="sm" borderRadius="lg">
-                  <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Codigo de Barra:</StatLabel>
+                <Stat bg={bgColor} p={4} shadow="sm" borderRadius="lg" textAlign="center">
+                  <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Codigo de Barra</StatLabel>
                   <StatNumber as="span" color="blue.500">{product.sku}</StatNumber>
                 </Stat>
-                <Stat bg={bgColor} p={4} shadow="sm" borderRadius="lg">
-                  <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Categoría:</StatLabel>
+                <Stat bg={bgColor} p={4} shadow="sm" borderRadius="lg" textAlign="center">
+                  <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Categoría</StatLabel>
                   <StatNumber as="span" color="blue.500">{product.Category?.name || 'No disponible'}</StatNumber>
                 </Stat>
               </SimpleGrid>
-              <SimpleGrid columns={[1, 2, 3]} spacing={8} mb={6}>
-                <Stat bg={bgColor} p={6} shadow="sm" borderRadius="lg">
+              <SimpleGrid columns={[1, 2]} spacing={8} mb={6}>
+                <Stat bg={bgColor} p={6} shadow="sm" borderRadius="lg" textAlign="center">
                   <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Stock actual</StatLabel>
-                  <StatNumber as="span" color="blue.500">{product.stock}</StatNumber>
+                  <StatNumber as="span" color="blue.500">{product.stock} Unidades</StatNumber>
                 </Stat>
-                <Stat spacing={15} bg={bgColor} p={4} shadow="sm" borderRadius="lg">
-                  <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Ultima Reposición</StatLabel>
-                  <StatNumber>{product.updatedAt ? new Date(product.updatedAt).toLocaleString() : 'No disponible'}</StatNumber>
-                </Stat>
-                
-                <Stat spacing={15} bg={bgColor} p={9} shadow="sm" borderRadius="lg">
-                  <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Ultima Modificacion</StatLabel>
-                  <StatNumber>{product.updatedAt ? new Date(product.updatedAt).toLocaleString() : 'No disponible'}</StatNumber>
+                <Stat spacing={15} bg={bgColor} p={4} shadow="sm" borderRadius="lg" textAlign="center">
+                  <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Ultima Modificación</StatLabel>
+                  <StatNumber as="span" color="blue.500">{product.updatedAt ? new Date(product.updatedAt).toLocaleString() : 'No disponible'}</StatNumber>
                 </Stat>
               </SimpleGrid>
             </SimpleGrid>
-            <SimpleGrid columns={[1, 2]} spacing={8}>
-              <Stat spacing={4} bg={bgColor} p={4} shadow="sm" borderRadius="lg">
-                <Heading size="md">
-                  Precios
-                </Heading>
-                <Divider my={4} />
-                <Text fontSize="lg" fontWeight="bold" mb={3}>
-                  Precio de Compra: <Text as="span" color="blue.500">${product.purchasePrice.toLocaleString('es-CL')}</Text>
-                </Text>
-                <Text fontSize="lg" fontWeight="bold" mb={3}>
-                  Precio Final: <Text as="span" color="blue.500">${product.finalPrice.toLocaleString('es-CL')}</Text>
-                </Text>
-                <Text fontSize="lg" fontWeight="bold" mb={3}>
-                  Margen A.I: <Text as="span" color="green.500">%{product.marginPercent}</Text>
-                </Text>
-                <Text fontSize="lg" fontWeight="bold" mb={3}>
-                  Margen D.I: <Text as="span" color="green.500">%{product.marginPercent - 19}</Text>
-                </Text>
+            <SimpleGrid columns={[1, 2, 3, 4, 5]} spacing={4} mb={6}>
+              <Stat spacing={4} bg={bgColor} p={4} shadow="sm" borderRadius="lg" textAlign="center">
+                <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Precio de Compra</StatLabel>
+                <StatNumber as="span" color="blue.500">${product.purchasePrice.toLocaleString('es-CL')}</StatNumber>
               </Stat>
-              <Stat spacing={4} bg={bgColor} p={4} shadow="sm" borderRadius="lg">
-                <Heading size="md">
-                  Movimientos
-                </Heading>
-                <Divider my={4} />
-                <Text fontSize="lg" fontWeight="bold" mb={3}>
-                  Precio de Compra: <Text as="span" color="blue.500">${product.purchasePrice.toLocaleString('es-CL')}</Text>
-                </Text>
-                <Text fontSize="lg" fontWeight="bold" mb={3}>
-                  Precio Final: <Text as="span" color="blue.500">${product.finalPrice.toLocaleString('es-CL')}</Text>
-                </Text>
+              <Stat spacing={4} bg={bgColor} p={4} shadow="sm" borderRadius="lg" textAlign="center">
+                <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Precio Final</StatLabel>
+                <StatNumber as="span" color="blue.500">${product.finalPrice.toLocaleString('es-CL')}</StatNumber>
+              </Stat>
+
+              <Stat spacing={4} bg={bgColor} p={4} shadow="sm" borderRadius="lg" textAlign="center">
+                <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Monto Margen</StatLabel>
+                <StatNumber as="span" color="green.500">${(product.finalPrice - product.purchasePrice).toLocaleString('es-CL') }</StatNumber>
+              </Stat>
+
+              <Stat spacing={4} bg={bgColor} p={4} shadow="sm" borderRadius="lg" textAlign="center">
+                <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Margen A.I</StatLabel>
+                <StatNumber as="span" color="green.500">{new Intl.NumberFormat('es-CL', { style: 'percent' }).format(product.marginPercent/100)}</StatNumber>
+              </Stat>
+              
+              <Stat spacing={4} bg={bgColor} p={4} shadow="sm" borderRadius="lg" textAlign="center">
+                <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Margen D.I</StatLabel>
+                <StatNumber as="span" color="green.500">{new Intl.NumberFormat('es-CL', { style: 'percent' }).format((product.marginPercent - 19) / 100)}</StatNumber>
               </Stat>
             </SimpleGrid>
-            <Box bg={bgColor} p={4} shadow="sm" borderRadius="lg" mt={8}>
-              <Heading size="md" mb={4}>
-                Historial de Precios
-              </Heading>
-              <Line options={options} data={priceHistoryData} />
-            </Box>
+            <SimpleGrid columns={[1, 2]} spacing={8} mb={6}>
+              <Stat spacing={4} bg={bgColor} p={4} shadow="sm" borderRadius="lg">
+                <Heading size="md" textAlign="center">
+                  Historial de Precios
+                </Heading>
+                <Line options={options} data={priceHistoryData} />
+              </Stat>
+              <Stat spacing={4} bg={bgColor} p={4} shadow="sm" borderRadius="lg">
+                <Heading size="md">
+                  Tabla con movimientos del producto
+                </Heading>
+                <Divider my={4} />
+                
+              </Stat>
+            </SimpleGrid>
         </Box>
       </Flex>
     </Box>
