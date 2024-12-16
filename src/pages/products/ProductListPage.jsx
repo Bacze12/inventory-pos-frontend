@@ -205,7 +205,7 @@ const ProductsPage = () => {
                     >
                       <Td>{product.sku}</Td>
                       <Td>{product.name}</Td>
-                      <Td>${(product.finalPrice || 0)}</Td>
+                      <Td>${(product.finalPrice.toLocaleString('es-CL') || 0)}</Td>
                       <Td>{product.stock}</Td>
                       <Td>
                         <IconButton
