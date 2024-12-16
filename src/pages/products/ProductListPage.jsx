@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Flex,
@@ -44,6 +44,17 @@ const ProductsPage = () => {
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
 
   const handleOpenModal = () => setModalOpen(true);
+  const handleCloseModal = () => setModalOpen(false);
+
+  const handleError = useCallback((message, error) => {
+    toast({
+      title: message,
+      description: error.message,
+      status: 'error',
+      duration: 3000,
+      isClosable: true,
+    });
+  }, [toast]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -51,14 +62,7 @@ const ProductsPage = () => {
         const response = await API.get('/products');
         setProducts(response.data);
       } catch (error) {
-        console.error('Error al cargar productos:', error);
-        toast({
-          title: 'Error al cargar productos',
-          description: 'No se pudieron cargar los productos. Por favor, inténtelo de nuevo más tarde.',
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-        });
+        handleError('Error al cargar productos:', error);
       }
     };
 
@@ -67,14 +71,7 @@ const ProductsPage = () => {
         const response = await API.get('/categories');
         setCategories(response.data);
       } catch (error) {
-        console.error('Error al cargar categorías:', error);
-        toast({
-          title: 'Error al cargar categorías',
-          description: 'No se pudieron cargar las categorías. Por favor, inténtelo de nuevo más tarde.',
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-        });
+        handleError('Error al cargar categorías:', error);
       }
     };
 
@@ -83,21 +80,14 @@ const ProductsPage = () => {
         const response = await API.get('/suppliers');
         setSuppliers(response.data);
       } catch (error) {
-        console.error('Error al cargar proveedores:', error);
-        toast({
-          title: 'Error al cargar proveedores',
-          description: 'No se pudieron cargar los proveedores. Por favor, inténtelo de nuevo más tarde.',
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-        });
+        handleError('Error al cargar proveedores:', error);
       }
     };
 
     fetchProducts();
     fetchCategories();
     fetchSuppliers();
-  }, [toast]);
+  }, [handleError]);
 
   const handleDeleteProduct = async () => {
     try {
@@ -112,14 +102,7 @@ const ProductsPage = () => {
       });
       setAlertOpen(false);
     } catch (error) {
-      console.error('Error al eliminar producto:', error);
-      toast({
-        title: 'Error al eliminar producto',
-        description: 'No se pudo eliminar el producto. Por favor, inténtelo de nuevo más tarde.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
+      handleError('Error al eliminar producto:', error);
     }
   };
 
@@ -177,56 +160,49 @@ const ProductsPage = () => {
           </Flex>
 
           {/* Tabla de productos */}
-          <Flex gap={6}>
-            <Box
-              flex="3"
-              border="1px solid #E2E8F0"
-              rounded="md"
-              overflow="auto"
-              maxH="2500px" // Altura fija de la tabla
-            >
-              <Table variant="simple" size="sm">
-                <Thead>
-                  <Tr>
-                    <Th>Sku</Th>
-                    <Th>Nombre</Th>
-                    <Th>Precio</Th>
-                    <Th>Stock</Th>
-                    <Th>Acciones</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {filteredProducts.map((product) => (
-                    <Tr
-                      key={product.id}
-                      onClick={() => navigate(`/products/${product.id}`)} // Redirige al detalle del producto
-                      cursor="pointer"
-                      _hover={{ bg: 'gray.100' }}
-                    >
-                      <Td>{product.sku}</Td>
-                      <Td>{product.name}</Td>
-                      <Td>${(product.finalPrice.toLocaleString('es-CL') || 0)}</Td>
-                      <Td>{product.stock}</Td>
-                      <Td>
-                        <IconButton
-                          icon={<DeleteIcon />}
-                          colorScheme="red"
-                          variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation(); // Evita que se active la navegación al hacer clic en el botón
-                            handleOpenAlert(product);
-                          }}
-                          aria-label="Eliminar producto"
-                        />
-                      </Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </Box>
-          </Flex>
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th>SKU</Th>
+                <Th>Nombre</Th>
+                <Th>Precio</Th>
+                <Th>Stock</Th>
+                <Th>Acciones</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {filteredProducts.map((product) => (
+                <Tr
+                  key={product.id}
+                  onClick={() => navigate(`/products/${product.id}`)}
+                  cursor="pointer"
+                  _hover={{ bg: 'gray.100' }}
+                >
+                  <Td>{product.sku}</Td>
+                  <Td>{product.name}</Td>
+                  <Td>${product.finalPrice.toLocaleString('es-CL')}</Td>
+                  <Td>{product.stock}</Td>
+                  <Td>
+                    <IconButton
+                      icon={<DeleteIcon />}
+                      colorScheme="red"
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenAlert(product);
+                      }}
+                      aria-label="Eliminar producto"
+                    />
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
         </Box>
       </Flex>
+
+      {/* Modal de agregar producto */}
+      <ProductModal isOpen={isModalOpen} onClose={handleCloseModal} onSubmit={handleOpenModal} />
 
       {/* Modal de confirmación de eliminación */}
       <AlertDialog

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -13,6 +13,7 @@ import {
   Button,
   Checkbox,
   Select,
+  useToast,
 } from '@chakra-ui/react';
 
 const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
@@ -28,8 +29,19 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
   const [categories, setCategories] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const [calculatedPrices, setCalculatedPrices] = useState(null);
+  const toast = useToast();
 
   const API_URL = process.env.REACT_APP_API_URL;
+
+  const handleError = useCallback((message, error) => {
+    toast({
+      title: message,
+      description: error.message,
+      status: 'error',
+      duration: 3000,
+      isClosable: true,
+    });
+  }, [toast]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -40,7 +52,7 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
           setCategories(data);
         }
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        handleError('Error al cargar categorías:', error);
       }
     };
 
@@ -52,13 +64,13 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
           setSuppliers(data);
         }
       } catch (error) {
-        console.error('Error fetching suppliers:', error);
+        handleError('Error al cargar proveedores:', error);
       }
     };
 
     fetchCategories();
     fetchSuppliers();
-  }, [API_URL]);
+  }, [API_URL, handleError]);
 
   const fetchPreviewPrices = async () => {
     try {
@@ -76,7 +88,7 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
       const data = await response.json();
       setCalculatedPrices(data);
     } catch (error) {
-      console.error('Error fetching preview prices:', error);
+      handleError('Error en la operación:', error);
     }
   };
 
@@ -93,7 +105,7 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
     try {
       await onSubmit(productData);
     } catch (error) {
-      console.error('Error creating product:', error);
+      handleError('Error al crear el producto:', error);
     }
   };
 
