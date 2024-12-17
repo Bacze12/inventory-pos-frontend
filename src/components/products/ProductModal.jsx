@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Quagga from 'quagga';
+import { isMobile, isTablet } from 'react-device-detect';
 import {
   Modal,
   ModalOverlay,
@@ -196,9 +197,12 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
           <FormControl mb={4}>
             <FormLabel>Codigo de Barra</FormLabel>
             <Input value={sku} onChange={(e) => setSku(e.target.value)} />
-            <Button mt={2} colorScheme="teal" onClick={startScanner}>
-              Escanear Código de Barras
-            </Button>
+            {/* Muestra el botón solo si es móvil o tableta */}
+            {(isMobile || isTablet) && (
+              <Button mt={2} colorScheme="teal" onClick={startScanner}>
+                Escanear Código de Barras
+              </Button>
+            )}
           </FormControl>
           {scanning && (
             <div id="scanner-container" style={{ width: '100%', height: '300px' }}>
