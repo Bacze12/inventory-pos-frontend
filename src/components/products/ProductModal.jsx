@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import Quagga from 'quagga';
 import {
   Modal,
   ModalOverlay,
@@ -19,6 +20,7 @@ import {
 const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
   const [name, setName] = useState(initialData?.name || '');
   const [sku, setSku] = useState(initialData?.sku || '');
+  const [scanning, setScanning] = useState(false);
   const [purchasePrice, setPurchasePrice] = useState(initialData?.purchasePrice || '');
   const [marginPercent, setMarginPercent] = useState(initialData?.marginPercent || '');
   const [hasExtraTax, setHasExtraTax] = useState(initialData?.hasExtraTax || false);
@@ -33,15 +35,18 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
 
   const API_URL = process.env.REACT_APP_API_URL;
 
-  const handleError = useCallback((message, error) => {
-    toast({
-      title: message,
-      description: error.message,
-      status: 'error',
-      duration: 3000,
-      isClosable: true,
-    });
-  }, [toast]);
+  const handleError = useCallback(
+    (message, error) => {
+      toast({
+        title: message,
+        description: error.message,
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    },
+    [toast]
+  );
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -92,6 +97,74 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
     }
   };
 
+  const startScanner = () => {
+    setScanning(true);
+    let isCodeDetected = false;
+
+    setTimeout(() => {
+      const scannerContainer = document.getElementById('scanner-container');
+      if (!scannerContainer) {
+        toast({
+          title: 'Error',
+          description: 'No se pudo encontrar el contenedor del escáner.',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
+
+      Quagga.init(
+        {
+          inputStream: {
+            type: 'LiveStream',
+            target: document.querySelector('#scanner-container'), // Div donde irá el stream
+            constraints: {
+              facingMode: 'environment', // Usa la cámara trasera
+            },
+          },
+          decoder: {
+            readers: ['ean_reader'], // Tipos de códigos
+          },
+        },
+        (err) => {
+          if (err) {
+            toast({
+              title: 'Error al iniciar el escáner',
+              description: err.message,
+              status: 'error',
+              duration: 3000,
+              isClosable: true,
+            });
+            return;
+          }
+          Quagga.start();
+        }
+      );
+
+      Quagga.onDetected((data) => {
+        if (!isCodeDetected) {
+          isCodeDetected = true; // Evita llamadas repetidas
+          const scannedCode = data.codeResult.code; // Código detectado
+          setSku(scannedCode); // Actualiza el estado de SKU
+          toast({
+            title: 'Código detectado',
+            description: `Código de barras: ${scannedCode}`,
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+          });
+          stopScanner();
+        }
+      });
+    }, 30);
+  };
+
+  const stopScanner = () => {
+    setScanning(false);
+    Quagga.stop();
+  };
+
   const handleSubmit = async () => {
     const productData = {
       name,
@@ -121,9 +194,17 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
             <Input value={name} onChange={(e) => setName(e.target.value)} />
           </FormControl>
           <FormControl mb={4}>
-            <FormLabel>SKU</FormLabel>
+            <FormLabel>Codigo de Barra</FormLabel>
             <Input value={sku} onChange={(e) => setSku(e.target.value)} />
+            <Button mt={2} colorScheme="teal" onClick={startScanner}>
+              Escanear Código de Barras
+            </Button>
           </FormControl>
+          {scanning && (
+            <div id="scanner-container" style={{ width: '100%', height: '300px' }}>
+              {/* El stream de la cámara se mostrará aquí */}
+            </div>
+          )}
           <FormControl mb={4}>
             <FormLabel>Precio de Compra</FormLabel>
             <Input
