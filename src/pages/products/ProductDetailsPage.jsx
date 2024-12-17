@@ -63,6 +63,7 @@ const ProductDetailsPage = () => {
         setIsLoading(false);
       }
     };
+    
 
     fetchProduct();
   }, [id]);
