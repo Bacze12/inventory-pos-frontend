@@ -160,7 +160,7 @@ const ProductDetailsPage = () => {
               </SimpleGrid>
             </SimpleGrid>
             <SimpleGrid columns={[1, 2, 3, 4, 5]} spacing={4} mb={6}>
-              <Stat spacing={4} bg={bgColor} p={4} shadow="sm" borderRadius="lg" textAlign="center">
+              <Stat spacing={4} bg={bgColor} p={4} shadow="sm" borderRadius="lg"  >
                 <StatLabel fontSize="lg" fontWeight="bold" mb={3}>Precio de Compra</StatLabel>
                 <StatNumber as="span" color="blue.500">${product.purchasePrice.toLocaleString('es-CL')}</StatNumber>
               </Stat>

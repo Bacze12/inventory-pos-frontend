@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Quagga from 'quagga';
 import { isMobile, isTablet } from 'react-device-detect';
+import { FiCamera } from "react-icons/fi";
 import {
   Modal,
   ModalOverlay,
@@ -16,6 +17,7 @@ import {
   Checkbox,
   Select,
   useToast,
+  SimpleGrid,
 } from '@chakra-ui/react';
 
 const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
@@ -31,10 +33,18 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
   const [supplierId, setSupplierId] = useState(initialData?.supplierId || '');
   const [categories, setCategories] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
-  const [calculatedPrices, setCalculatedPrices] = useState(null);
   const toast = useToast();
 
   const API_URL = process.env.REACT_APP_API_URL;
+
+  const formatCurrency = (value) => {
+    if (!value) return '';
+    return `$${Number(value).toLocaleString('es-ES')}`;
+  };
+  const handlePurchasePriceChange = (e) => {
+    const value = e.target.value.replace(/[^0-9]/g, ''); // Eliminar caracteres no numéricos
+    setPurchasePrice(value);
+  };
 
   const handleError = useCallback(
     (message, error) => {
@@ -78,26 +88,6 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
     fetchSuppliers();
   }, [API_URL, handleError]);
 
-  const fetchPreviewPrices = async () => {
-    try {
-      const response = await fetch(`${API_URL}products/preview`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          purchasePrice: parseFloat(purchasePrice) || 0,
-          marginPercent: parseFloat(marginPercent) || 0,
-          isIvaExempt,
-          hasExtraTax,
-          extraTaxRate: parseFloat(extraTaxRate) || 0,
-        }),
-      });
-      const data = await response.json();
-      setCalculatedPrices(data);
-    } catch (error) {
-      handleError('Error en la operación:', error);
-    }
-  };
-
   const startScanner = () => {
     setScanning(true);
     let isCodeDetected = false;
@@ -119,9 +109,9 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
         {
           inputStream: {
             type: 'LiveStream',
-            target: document.querySelector('#scanner-container'), // Div donde irá el stream
+            target: document.querySelector('#scanner-container'),
             constraints: {
-              facingMode: 'environment', // Usa la cámara trasera
+              facingMode: 'environment',
             },
           },
           decoder: {
@@ -190,41 +180,105 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
         <ModalHeader>{initialData ? 'Editar Producto' : 'Agregar Producto'}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <FormControl mb={4}>
-            <FormLabel>Nombre del Producto</FormLabel>
-            <Input value={name} onChange={(e) => setName(e.target.value)} />
-          </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Codigo de Barra</FormLabel>
-            <Input value={sku} onChange={(e) => setSku(e.target.value)} />
-            {/* Muestra el botón solo si es móvil o tableta */}
-            {(isMobile || isTablet) && (
-              <Button mt={2} colorScheme="teal" onClick={startScanner}>
-                Escanear Código de Barras
-              </Button>
-            )}
-          </FormControl>
-          {scanning && (
-            <div id="scanner-container" style={{ width: '100%', height: '300px' }}>
-              {/* El stream de la cámara se mostrará aquí */}
-            </div>
-          )}
-          <FormControl mb={4}>
-            <FormLabel>Precio de Compra</FormLabel>
-            <Input
-              type="number"
-              value={purchasePrice}
-              onChange={(e) => setPurchasePrice(e.target.value)}
-            />
-          </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Porcentaje de Margen</FormLabel>
-            <Input
-              type="number"
-              value={marginPercent}
-              onChange={(e) => setMarginPercent(e.target.value)}
-            />
-          </FormControl>
+            <SimpleGrid columns={[1, 2]} spacing={10} mb={3}>
+              <FormControl mb={4}>
+              <FormLabel>Nombre</FormLabel>
+              <Input value={name} onChange={(e) => setName(e.target.value)} />
+              </FormControl>
+              <FormControl mb={4}>
+              <FormLabel leftIcon={<FiCamera/>}>Codigo de Barra</FormLabel>
+              <Input value={sku} onChange={(e) => setSku(e.target.value)} />
+              {/* Muestra el botón solo si es móvil o tableta */}
+              {(isMobile || isTablet) && (
+                <Button mt={2} colorScheme="teal" onClick={startScanner}></Button>
+              )}
+            </FormControl>
+              {scanning && (
+                <div id="scanner-container" style={{ width: '100%', height: '300px' }}>
+                  {/* El stream de la cámara se mostrará aquí */}
+                </div>
+              )}
+            </SimpleGrid>
+  
+            <SimpleGrid columns={[1, 2]} spacing={10} mb={3}>
+              <FormControl mb={4}>
+              <FormLabel>Categoría</FormLabel>
+              <Select
+                placeholder="Seleccionar"
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+              >
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </Select>
+              </FormControl>
+              <FormControl mb={4}>
+                <FormLabel>Proveedor</FormLabel>
+                <Select
+                  placeholder="Seleccionar"
+                  value={supplierId}
+                  onChange={(e) => setSupplierId(e.target.value)}
+                >
+                  {suppliers.map((supplier) => (
+                    <option key={supplier.id} value={supplier.id}>
+                      {supplier.name}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+            </SimpleGrid>
+  
+            <SimpleGrid columns={[1, 2, 3]} spacing={10} mb={3}>
+              <FormControl mb={4}>
+                <FormLabel textAlign="center">Costo Neto</FormLabel>
+                <Input
+                  type="tex"
+                  value={formatCurrency(purchasePrice)}
+                  onChange={handlePurchasePriceChange}
+                />
+              </FormControl>
+              <FormControl> </FormControl>
+              <FormControl mb={4}>
+                <FormLabel textAlign="center">Costo Bruto</FormLabel>
+                <Input
+                  type="text"
+                  value={formatCurrency(purchasePrice)}
+                  onChange={handlePurchasePriceChange}
+                />
+              </FormControl>
+            </SimpleGrid>
+
+            <SimpleGrid columns={[1, 2, 3]} spacing={10} mb={3}>
+              <FormControl mb={4}>
+                <FormLabel textAlign="center">Venta Neto</FormLabel>
+                <Input
+                  type="tex"
+                  value={formatCurrency(purchasePrice)}
+                  onChange={handlePurchasePriceChange}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel textAlign="center">Margen A.I</FormLabel>
+                <Input
+                  type="number"
+                  textAlign="center"
+                  value={marginPercent}
+                  onChange={(e) => setMarginPercent(e.target.value)}
+                />
+              </FormControl>
+              <FormControl mb={4}>
+                <FormLabel textAlign="center">Venta Bruto</FormLabel>
+                <Input
+                  type="text"
+                  value={formatCurrency(purchasePrice)}
+                  onChange={handlePurchasePriceChange}
+                />
+              </FormControl>
+            </SimpleGrid>
+
           <FormControl mb={4}>
             <Checkbox isChecked={hasExtraTax} onChange={(e) => setHasExtraTax(e.target.checked)}>
               Tiene Impuesto Extra
@@ -245,44 +299,6 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
               Exento de IVA
             </Checkbox>
           </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Categoría</FormLabel>
-            <Select
-              placeholder="Selecciona una categoría"
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-            >
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Proveedor</FormLabel>
-            <Select
-              placeholder="Selecciona un proveedor"
-              value={supplierId}
-              onChange={(e) => setSupplierId(e.target.value)}
-            >
-              {suppliers.map((supplier) => (
-                <option key={supplier.id} value={supplier.id}>
-                  {supplier.name}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-          <Button onClick={fetchPreviewPrices} colorScheme="teal" mb={4}>
-            Calcular Precios
-          </Button>
-          {calculatedPrices && (
-            <div>
-              <p>Precio de Venta: {calculatedPrices.sellingPrice}</p>
-              <p>Precio Mínimo: {calculatedPrices.minSellingPrice}</p>
-              <p>Precio Final: {calculatedPrices.finalPrice}</p>
-            </div>
-          )}
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
