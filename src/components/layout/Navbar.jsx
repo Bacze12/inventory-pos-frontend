@@ -12,23 +12,17 @@ import {
   useColorMode,
   HStack
 } from '@chakra-ui/react';
-import { Menu as MenuIcon, Sun, Moon, User, LogOut } from 'lucide-react';
+import { Menu as MenuIcon, Sun, Moon, User, LogOut, DollarSign } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../store/slices'; // Corregir la ruta de importación
 import { logout } from '../../store/slices/authSlice';
 import { Link } from 'react-router-dom';
 
-interface NavbarProps {
-  onMenuClick: () => void;
-  userName: string;
-}
-
-export const Navbar = ({ onMenuClick }: NavbarProps) => {
+const Navbar = ({ onMenuClick, username  }) => {
   const { colorMode, toggleColorMode } = useColorMode();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.auth.user);
+  const user = useSelector((state) => state.auth.user);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -36,14 +30,7 @@ export const Navbar = ({ onMenuClick }: NavbarProps) => {
   };
 
   return (
-    <Box
-      px={4}
-      py={2}
-      bg="white"
-      _dark={{ bg: 'gray.800' }}
-      borderBottomWidth="1px"
-      shadow="sm"
-    >
+    <Box px={4} py={2} bg={colorMode === 'light' ? 'white' : 'gray.900'} borderBottomWidth="1px" shadow="sm" >
       <Flex alignItems="center" justifyContent="space-between">
         <HStack spacing={4}>
           <IconButton
@@ -61,6 +48,21 @@ export const Navbar = ({ onMenuClick }: NavbarProps) => {
         </HStack>
 
         <HStack spacing={4}>
+
+        <Flex alignItems="center">
+          <HStack spacing={4}>
+            {user?.role === 'CASHIER' && (  // Si el usuario es Cajero, mostrar los botones de Apertura y Cierre de Caja
+              <>
+                <Button onClick={() => navigate('/cash-opening')} leftIcon={<DollarSign />}>
+                  Apertura de Caja
+                </Button>
+                <Button onClick={() => navigate('/cash-closing')} leftIcon={<DollarSign />}>
+                  Cierre de Caja
+                </Button>
+              </>
+            )}
+
+
           <IconButton
             icon={colorMode === 'light' ? <Moon /> : <Sun />}
             onClick={toggleColorMode}
@@ -92,6 +94,10 @@ export const Navbar = ({ onMenuClick }: NavbarProps) => {
           </Menu>
         </HStack>
       </Flex>
-    </Box>
+    </HStack>
+  </Flex>
+</Box>
   );
 };
+
+export default Navbar;

@@ -23,7 +23,7 @@ import {
 import { Line, Bar } from 'react-chartjs-2';
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { CollapsibleSidebar } from '../components/layout/CollapsibleSidebar';
-import { Navbar } from '../components/layout/Navbar';
+import  Navbar  from '../components/layout/Navbar';
 import API from '../api/api';
 
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);

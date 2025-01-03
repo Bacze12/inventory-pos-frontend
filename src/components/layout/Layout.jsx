@@ -1,28 +1,11 @@
 import React from 'react';
 import {
   Box,
-  VStack,
-  Icon,
-  Text, 
   Flex,
-  IconButton,
-  useColorModeValue,
   useDisclosure
 } from '@chakra-ui/react';
-import { useLocation, useNavigate, Outlet } from 'react-router-dom';
-import {
-  LayoutDashboard,
-  ShoppingCart,
-  Package,
-  Settings,
-  Menu,
-  Home,
-  Users,
-  FileText,
-} from 'lucide-react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store/slices';
-import { Navbar } from './Navbar';
+import { Outlet } from 'react-router-dom';
+import  Navbar  from './Navbar';
 import { CollapsibleSidebar } from './CollapsibleSidebar';
 
 export const Layout = () => {
