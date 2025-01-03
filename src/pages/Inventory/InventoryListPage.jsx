@@ -20,7 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import API from '../../api/api';
 import InventoryModal from '../../components/Inventory/InventoryModal';
 import { CollapsibleSidebar } from '../../components/layout/CollapsibleSidebar';
-import { Navbar } from '../../components/layout/Navbar';
+import  Navbar  from '../../components/layout/Navbar';
 
 const InventoryListPage = () => {
   const [inventory, setInventory] = useState([]);

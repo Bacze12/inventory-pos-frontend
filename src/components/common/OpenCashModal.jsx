@@ -13,6 +13,8 @@ import {
   FormLabel,
   useToast,
 } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
+import { useCash } from '../../context/CashContext';
 
 /**
  * OpenCashModal Component
@@ -23,6 +25,8 @@ import {
 export const OpenCashModal = ({ isOpen, onClose, onConfirm }) => {
   const [initialAmount, setInitialAmount] = useState('');
   const toast = useToast();
+  const navigate = useNavigate();
+  const { openCash } = useCash();
 
   const handleConfirm = () => {
     const numericAmount = parseFloat(initialAmount);
@@ -38,9 +42,9 @@ export const OpenCashModal = ({ isOpen, onClose, onConfirm }) => {
       return;
     }
 
-    onConfirm(numericAmount);
-    setInitialAmount('');
+    openCash(numericAmount);
     onClose();
+    navigate('/pos');
   };
 
   return (

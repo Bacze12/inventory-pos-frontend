@@ -25,3 +25,24 @@ export const fetchProducts = async (token) => {
 export const addProduct = async (product) => {
   // implementación de addProduct
 };
+
+export const updateProduct = async (id, product) => {
+  const { data } = await API.patch(`/products/${id}`, product);
+  return data;
+};
+
+export const createProduct = async (productData) => {
+  const response = await fetch(`${API}/products`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(productData),
+  });
+
+  if (!response.ok) {
+    throw new Error('Error al crear el producto');
+  }
+
+  return response.json();
+};

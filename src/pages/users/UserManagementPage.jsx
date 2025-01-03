@@ -28,7 +28,7 @@ import {
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { CollapsibleSidebar } from '../../components/layout/CollapsibleSidebar';
-import { Navbar } from '../../components/layout/Navbar';
+import  Navbar  from '../../components/layout/Navbar';
 import API from '../../api/api';
 import { useNavigate } from 'react-router-dom';
 

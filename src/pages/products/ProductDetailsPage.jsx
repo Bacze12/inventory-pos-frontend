@@ -17,7 +17,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { CollapsibleSidebar } from '../../components/layout/CollapsibleSidebar';
-import { Navbar } from '../../components/layout/Navbar';
+import  Navbar  from '../../components/layout/Navbar';
 import { useParams } from 'react-router-dom';
 import API from '../../api/api';
 import { Line } from 'react-chartjs-2';

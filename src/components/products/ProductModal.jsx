@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { createProduct, updateProduct } from '../../api/products';
 import Quagga from 'quagga';
 import { isMobile, isTablet } from 'react-device-detect';
 import { FiCamera } from "react-icons/fi";
@@ -24,7 +25,7 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
   const [name, setName] = useState(initialData?.name || '');
   const [sku, setSku] = useState(initialData?.sku || '');
   const [scanning, setScanning] = useState(false);
-  const [purchasePrice, setPurchasePrice] = useState(initialData?.purchasePrice || '');
+  const [purchasePrice] = useState(initialData?.purchasePrice || '');
   const [marginPercent, setMarginPercent] = useState(initialData?.marginPercent || '');
   const [hasExtraTax, setHasExtraTax] = useState(initialData?.hasExtraTax || false);
   const [extraTaxRate, setExtraTaxRate] = useState(initialData?.extraTaxRate || '');
@@ -32,19 +33,43 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
   const [categoryId, setCategoryId] = useState(initialData?.categoryId || '');
   const [supplierId, setSupplierId] = useState(initialData?.supplierId || '');
   const [categories, setCategories] = useState([]);
+  const [formData] = useState(initialData || {});
   const [suppliers, setSuppliers] = useState([]);
+  const [netCost, setNetCost] = useState([]);
+  const [grossCost, setGrossCost] = useState([]);
+  const [grossSalePrice] = useState([]);
   const toast = useToast();
+  const [sellingPrice, setSellingPrice] = useState(initialData?.sellingPrice || '');
+  const [isActive, setIsActive] = useState(initialData?.isActive || true);
+  const [finalPrice, setFinalPrice] = useState(initialData?.finalPrice || '');
+  const [netSalePrice, setNetSalePrice] = useState([]);
 
   const API_URL = process.env.REACT_APP_API_URL;
 
-  const formatCurrency = (value) => {
-    if (!value) return '';
-    return `$${Number(value).toLocaleString('es-ES')}`;
-  };
-  const handlePurchasePriceChange = (e) => {
-    const value = e.target.value.replace(/[^0-9]/g, ''); // Eliminar caracteres no numéricos
-    setPurchasePrice(value);
-  };
+  
+    const handleNetCostChange = (e) => {
+      const value = parseFloat(e.target.value);
+      setNetCost(Math.round(value));
+      setGrossCost(Math.round(value * 1.19));
+    };
+    
+    const handleGrossCostChange = (e) => {
+      const value = parseFloat(e.target.value);
+      setGrossCost(Math.round(value));
+      setNetCost(Math.round(value / 1.19));
+    };
+
+    const handleNetSalePriceChange = (e) => {
+      const value = parseFloat(e.target.value);
+      setNetSalePrice(Math.round(value));
+      setFinalPrice(Math.round(value * 1.19));
+    };
+    
+    const handleGrossSalePriceChange = (e) => {
+      const value = parseFloat(e.target.value);
+      setFinalPrice(Math.round(value));
+      setNetSalePrice(Math.round(value / 1.19));
+    };
 
   const handleError = useCallback(
     (message, error) => {
@@ -60,6 +85,7 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
   );
 
   useEffect(() => {
+
     const fetchCategories = async () => {
       try {
         const response = await fetch(`${API_URL}categories`);
@@ -87,6 +113,16 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
     fetchCategories();
     fetchSuppliers();
   }, [API_URL, handleError]);
+
+  useEffect(() => {
+    setSellingPrice(Math.round(purchasePrice / 1.19));
+  }, [purchasePrice]);
+
+  useEffect(() => {
+    if (grossCost > 0) {
+      setMarginPercent(Math.round(((finalPrice * 100) / grossCost))-100);
+    }
+  }, [finalPrice, grossCost]);
 
   const startScanner = () => {
     setScanning(true);
@@ -157,21 +193,77 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
   };
 
   const handleSubmit = async () => {
+
     const productData = {
       name,
-      purchasePrice: purchasePrice ? parseFloat(purchasePrice) : 0,
-      marginPercent: marginPercent ? parseFloat(marginPercent) : 0,
+      purchasePrice: parseFloat(purchasePrice),
+      sellingPrice: parseFloat(sellingPrice),
+      finalPrice: parseFloat(finalPrice),
+      marginPercent: parseFloat(marginPercent),
       isIvaExempt,
-      categoryId: categoryId ? parseInt(categoryId, 10) : null,
-      supplierId: supplierId ? parseInt(supplierId, 10) : null,
+      isActive,
+      CategoryId: parseInt(categoryId, 10),
+      SupplierId: parseInt(supplierId, 10),
     };
 
     try {
-      await onSubmit(productData);
+      if (initialData) {
+        // Lógica para actualizar un producto existente
+        await updateProduct(initialData.id, formData);
+      } else {
+        // Lógica para agregar un nuevo producto
+        await createProduct(productData);
+      }
+      // Cerrar el modal o mostrar un mensaje de éxito
+      toast({
+      title: "Producto guardado.",
+      description: "El producto ha sido guardado exitosamente.",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+      });
+      onClose();
     } catch (error) {
-      handleError('Error al crear el producto:', error);
+      toast({
+      title: "Error al guardar el producto.",
+      description: "Ocurrió un error al guardar el producto. Por favor, inténtalo de nuevo.",
+      status: "error",
+      duration: 5000,
+      isClosable: true,
+    });
+
+    if (finalPrice % 10 !== 0) {
+      toast({
+        title: 'Error',
+        description: 'El valor de venta bruto debe ser múltiplo de 10.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
     }
-  };
+  
+    // Aquí puedes agregar el resto de la lógica para enviar el formulario
+    onSubmit({
+      name,
+      sku,
+      purchasePrice,
+      marginPercent,
+      hasExtraTax,
+      extraTaxRate,
+      sellingPrice,
+      isIvaExempt,
+      isActive,
+      categoryId,
+      supplierId,
+      netCost,
+      finalPrice,
+      grossCost,
+      netSalePrice,
+      grossSalePrice,
+    });
+  }
+};
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -186,7 +278,12 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
               <Input value={name} onChange={(e) => setName(e.target.value)} />
               </FormControl>
               <FormControl mb={4}>
-              <FormLabel leftIcon={<FiCamera/>}>Codigo de Barra</FormLabel>
+              <FormLabel>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <FiCamera style={{ marginRight: '8px' }} />
+                  Codigo de Barra
+                </div>
+              </FormLabel>
               <Input value={sku} onChange={(e) => setSku(e.target.value)} />
               {/* Muestra el botón solo si es móvil o tableta */}
               {(isMobile || isTablet) && (
@@ -235,18 +332,20 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
               <FormControl mb={4}>
                 <FormLabel textAlign="center">Costo Neto</FormLabel>
                 <Input
-                  type="tex"
-                  value={formatCurrency(purchasePrice)}
-                  onChange={handlePurchasePriceChange}
+                  type="number"
+                  value={netCost}
+                  onChange={handleNetCostChange}
+                  placeholder="$ 0"
                 />
               </FormControl>
               <FormControl> </FormControl>
               <FormControl mb={4}>
                 <FormLabel textAlign="center">Costo Bruto</FormLabel>
                 <Input
-                  type="text"
-                  value={formatCurrency(purchasePrice)}
-                  onChange={handlePurchasePriceChange}
+                  type="number"
+                  value={grossCost}
+                  onChange={handleGrossCostChange}
+                  placeholder="$ 0"
                 />
               </FormControl>
             </SimpleGrid>
@@ -255,9 +354,10 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
               <FormControl mb={4}>
                 <FormLabel textAlign="center">Venta Neto</FormLabel>
                 <Input
-                  type="tex"
-                  value={formatCurrency(purchasePrice)}
-                  onChange={handlePurchasePriceChange}
+                  type="number"
+                  value={netSalePrice}
+                  onChange={handleNetSalePriceChange}
+                  placeholder="$ 0"
                 />
               </FormControl>
               <FormControl>
@@ -272,9 +372,10 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
               <FormControl mb={4}>
                 <FormLabel textAlign="center">Venta Bruto</FormLabel>
                 <Input
-                  type="text"
-                  value={formatCurrency(purchasePrice)}
-                  onChange={handlePurchasePriceChange}
+                  type="number"
+                  value={finalPrice}
+                  placeholder="$ 0"
+                  onChange={handleGrossSalePriceChange}
                 />
               </FormControl>
             </SimpleGrid>
@@ -299,12 +400,20 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
               Exento de IVA
             </Checkbox>
           </FormControl>
+          <FormControl mb={4}>
+            <Checkbox
+              isChecked={isActive}
+              onChange={(e) => setIsActive(e.target.checked)}
+            >
+              Activo
+            </Checkbox>
+          </FormControl>
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
             {initialData ? 'Guardar Cambios' : 'Agregar'}
           </Button>
-          <Button variant="ghost" onClick={onClose}>
+          <Button onClick={onClose}>
             Cancelar
           </Button>
         </ModalFooter>

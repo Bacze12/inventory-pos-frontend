@@ -16,7 +16,7 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import API from '../../api/api';
 import { CollapsibleSidebar } from '../../components/layout/CollapsibleSidebar';
-import { Navbar } from '../../components/layout/Navbar';
+import  Navbar  from '../../components/layout/Navbar';
 
 const InventoryDetailsPage = () => {
   const { id } = useParams();

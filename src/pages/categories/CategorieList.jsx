@@ -20,7 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import API from '../../api/api';
 import CategoryModal from '../../components/categories/CategoriesModal';
 import { CollapsibleSidebar } from '../../components/layout/CollapsibleSidebar';
-import { Navbar } from '../../components/layout/Navbar';
+import  Navbar  from '../../components/layout/Navbar';
 
 const CategoriesListPage = () => {
   const [categories, setCategories] = useState([]);
