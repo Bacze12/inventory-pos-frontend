@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import axios from "axios";
-import { CollapsibleSidebar } from "../../components/layout/CollapsibleSidebar";
+import CollapsibleSidebar from "../../components/layout/CollapsibleSidebar";
 import  Navbar  from "../../components/layout/Navbar";
 import PaymentModal from "../../components/pos/PaymentModal";
 

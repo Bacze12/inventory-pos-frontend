@@ -3,7 +3,7 @@ import { Box, Flex, Grid, GridItem, Text, Heading, Button, Icon } from '@chakra-
 import { FaShoppingCart, FaChartBar, FaUsers, FaCog } from 'react-icons/fa';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { MdInventory } from 'react-icons/md';
-import { CollapsibleSidebar } from '../components/layout/CollapsibleSidebar';
+import CollapsibleSidebar from '../components/layout/CollapsibleSidebar';
 import  Navbar  from '../components/layout/Navbar';
 import { useNavigate } from 'react-router-dom';
 
@@ -31,6 +31,7 @@ const Home = () => {
           bg="gray.50"
           minH="100vh"
           ml={isSidebarOpen ? '240px' : '60px'} // Ajustar margen izquierdo según el estado de la barra lateral
+          mt="58px"
           transition="margin-left 0.3s"
         >
           {/* Encabezado */}

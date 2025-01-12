@@ -19,7 +19,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import API from '../../api/api';
 import SupplierModal from '../../components/suppliers/SupplierModal';
-import { CollapsibleSidebar } from '../../components/layout/CollapsibleSidebar';
+import CollapsibleSidebar from '../../components/layout/CollapsibleSidebar';
 import  Navbar  from '../../components/layout/Navbar';
 
 const SuppliersListPage = () => {
