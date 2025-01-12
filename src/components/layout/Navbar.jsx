@@ -8,29 +8,49 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  Text,
   useColorMode,
-  HStack
+  HStack,
+  Input,
+  InputGroup,
+  InputLeftElement,
 } from '@chakra-ui/react';
 import { Menu as MenuIcon, Sun, Moon, User, LogOut, DollarSign } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/slices/authSlice';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { SearchIcon } from '@chakra-ui/icons';
 
-const Navbar = ({ onMenuClick, username  }) => {
+const Navbar = ({ onMenuClick, username, isOpen }) => {
   const { colorMode, toggleColorMode } = useColorMode();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleLogout = () => {
     dispatch(logout());
     navigate('/login');
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+  };
+
   return (
-    <Box px={4} py={2} bg={colorMode === 'light' ? 'white' : 'gray.900'} borderBottomWidth="1px" shadow="sm" >
+    <Box 
+    position="fixed"
+    top={0}
+    left={0}
+    right={0}
+    height="70px"
+    zIndex={1000}
+    bg={colorMode === 'light' ? 'white' : 'gray.900'}
+    borderBottomWidth="1px"
+    shadow="sm"
+    px={4}
+    py={2}
+    >
       <Flex alignItems="center" justifyContent="space-between">
         <HStack spacing={4}>
           <IconButton
@@ -40,12 +60,23 @@ const Navbar = ({ onMenuClick, username  }) => {
             aria-label="open menu"
             icon={<MenuIcon />}
           />
-          <Link to="/home">
-            <Text fontSize="xl" fontWeight="bold">
-              SGI
-            </Text>
-          </Link>
         </HStack>
+
+        <Flex flex="1" justifyContent="center">
+          <form onSubmit={handleSearch}>
+            <InputGroup>
+            <InputLeftElement pointerEvents="none">
+              <SearchIcon color="gray.300" />
+            </InputLeftElement>
+            <Input
+              placeholder="Buscar productos, clientes, proveedores, categorías..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              width="400px"
+            />
+          </InputGroup>
+          </form>
+        </Flex>
 
         <HStack spacing={4}>
 

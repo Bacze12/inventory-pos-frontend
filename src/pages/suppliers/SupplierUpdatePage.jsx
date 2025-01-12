@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { useParams, useNavigate } from 'react-router-dom';
 import API from '../../api/api';
-import { CollapsibleSidebar } from '../../components/layout/CollapsibleSidebar';
+import CollapsibleSidebar from '../../components/layout/CollapsibleSidebar';
 import  Navbar  from '../../components/layout/Navbar';
 
 const SupplierUpdatePage = () => {

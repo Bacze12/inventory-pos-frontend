@@ -16,7 +16,7 @@ import {
   StatNumber,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { CollapsibleSidebar } from '../../components/layout/CollapsibleSidebar';
+import CollapsibleSidebar from '../../components/layout/CollapsibleSidebar';
 import  Navbar  from '../../components/layout/Navbar';
 import { useParams } from 'react-router-dom';
 import API from '../../api/api';

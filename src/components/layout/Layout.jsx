@@ -6,7 +6,7 @@ import {
 } from '@chakra-ui/react';
 import { Outlet } from 'react-router-dom';
 import  Navbar  from './Navbar';
-import { CollapsibleSidebar } from './CollapsibleSidebar';
+import CollapsibleSidebar from './CollapsibleSidebar';
 
 export const Layout = () => {
   const { isOpen, onToggle } = useDisclosure();
@@ -17,9 +17,10 @@ export const Layout = () => {
       <Box
         flex="1"
         ml={isOpen ? '240px' : '60px'}
+        pt="64px"
         transition="margin-left 0.3s"
       >
-        <Navbar onMenuClick={onToggle} userName={''} />
+        <Navbar onMenuClick={onToggle} isSidebarOpen={isOpen} userName={''} />
         <Box p={4}>
           <Outlet />
         </Box>
