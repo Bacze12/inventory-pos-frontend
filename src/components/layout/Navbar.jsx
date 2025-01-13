@@ -43,7 +43,7 @@ const Navbar = ({ onMenuClick, username, isOpen }) => {
     top={0}
     left={0}
     right={0}
-    height="70px"
+    height="60px"
     zIndex={1000}
     bg={colorMode === 'light' ? 'white' : 'gray.900'}
     borderBottomWidth="1px"

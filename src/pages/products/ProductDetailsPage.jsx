@@ -125,7 +125,7 @@ const ProductDetailsPage = () => {
       <Navbar onMenuClick={toggleSidebar} />
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
-        <Box flex="1" ml={isSidebarOpen ? '240px' : '60px'} p={6}>
+        <Box flex="1" ml={isSidebarOpen ? '240px' : '60px'} p={6} mt="60px">
           <Flex align="center" mb={4}>
             <Heading as="h1" size="lg" >
               <Text as="span">{product.name || 'Nombre no disponible'}</Text>

@@ -123,7 +123,7 @@ const ProductsPage = () => {
       <Navbar onMenuClick={toggleSidebar} />
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
-        <Box flex="1" ml={isSidebarOpen ? '240px' : '60px'} p={4}>
+        <Box flex="1" ml={isSidebarOpen ? '240px' : '60px'} p={4} mt="60px">
           <Flex justify="space-between" align="center" mb={4}>
             <Heading as="h1" size="lg">
               Productos
@@ -201,10 +201,10 @@ const ProductsPage = () => {
         </Box>
       </Flex>
 
-      {/* Modal de agregar producto */}
+      
       <ProductModal isOpen={isModalOpen} onClose={handleCloseModal} onSubmit={handleOpenModal} />
 
-      {/* Modal de confirmación de eliminación */}
+      
       <AlertDialog
         isOpen={isAlertOpen}
         leastDestructiveRef={cancelRef}

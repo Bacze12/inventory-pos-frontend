@@ -151,7 +151,7 @@ const UserManagementPage = () => {
       <Navbar onMenuClick={toggleSidebar} />
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
-        <Box flex="1" ml={isSidebarOpen ? '240px' : '60px'} p={6}>
+        <Box flex="1" ml={isSidebarOpen ? '240px' : '60px'} p={6} mt="58px">
           <Flex justify="space-between" align="center" mb={6}>
             <Heading as="h1" size="lg" >
               Gestión de Usuarios

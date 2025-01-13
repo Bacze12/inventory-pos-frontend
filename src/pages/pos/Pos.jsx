@@ -17,14 +17,13 @@ import {
   Divider,
   useDisclosure,
 } from "@chakra-ui/react";
-import { AddIcon, MinusIcon } from "@chakra-ui/icons";
+import { MinusIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import CollapsibleSidebar from "../../components/layout/CollapsibleSidebar";
 import  Navbar  from "../../components/layout/Navbar";
 import PaymentModal from "../../components/pos/PaymentModal";
 
 const SalesModule = () => {
-  const [products, setProducts] = useState([]);
   const [cart, setCart] = useState({});
   const [sku, setSku] = useState("");
   const [total, setTotal] = useState(0);
@@ -137,7 +136,7 @@ const SalesModule = () => {
       <Navbar onMenuClick={toggleSidebar} />
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
-        <Box flex="1" ml={isSidebarOpen ? "240px" : "60px"} p={6}>
+        <Box flex="1" ml={isSidebarOpen ? "240px" : "60px"} p={6} mt="58px">
           {error && (
             <Alert status="error" mb={4}>
               <AlertIcon />

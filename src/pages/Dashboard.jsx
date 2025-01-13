@@ -139,7 +139,7 @@ const DashboardPage = () => {
       <Navbar onMenuClick={toggleSidebar} />
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
-        <Box flex="1" ml={isSidebarOpen ? '240px' : '60px'} p={6}>
+        <Box flex="1" ml={isSidebarOpen ? '240px' : '60px'} p={6} mt="58px">
           <Heading size="lg" mb={6}>
             Dashboard
           </Heading>
