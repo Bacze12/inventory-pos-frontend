@@ -55,7 +55,7 @@ const CollapsibleSidebar = ({ isOpen, onToggle }) => {
   const [isMaintenanceOpen, setIsMaintenanceOpen] = useState(false);
 
   const bg = useColorModeValue('gray.100', 'gray.700');
-  const sidebarBg = useColorModeValue('white', 'gray.900');
+  const sidebarBg = useColorModeValue('white', 'gray.600');
   const activeBg = useColorModeValue('white.200');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
   const hoverBg = useColorModeValue('gray.200', 'gray.700');
@@ -156,17 +156,10 @@ const CollapsibleSidebar = ({ isOpen, onToggle }) => {
       w={isOpen ? '240px' : '60px'}
       h="100vh"
       pos="fixed"
-      top = "5"
-      zIndex="1200"
+      top = "49px"
       transition="width 0.3s"
     >
-      <Flex h="1" alignItems="center" mx="3" justifyContent="space-between">
-        <Box to="/home" onClick={() => navigate('/home')}>
-          <Text fontSize="xl" fontWeight="bold" alignItems={"center"}>
-            SGI
-          </Text>
-        </Box>
-      </Flex>
+      
       <Flex h="20" alignItems="center" mx="3" justifyContent="space-between">
         <IconButton
           aria-label="Toggle Sidebar"

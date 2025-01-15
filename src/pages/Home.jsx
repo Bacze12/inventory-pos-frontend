@@ -28,26 +28,26 @@ const Home = () => {
         <Box
           flex="1"
           p={6}
-          bg="gray.50"
           minH="100vh"
           ml={isSidebarOpen ? '240px' : '60px'} // Ajustar margen izquierdo según el estado de la barra lateral
-          mt="58px"
+          mt="40px"
           transition="margin-left 0.3s"
         >
           {/* Encabezado */}
           <Heading as="h1" size="lg" mb={2}>
             Bienvenido
           </Heading>
-          <Text fontSize="lg" color="gray.600" mb={6}>
+          <Text fontSize="lg" mb={6}>
             ¿Qué te gustaría hacer hoy?
           </Text>
 
           {/* Acciones principales */}
           <Grid templateColumns="repeat(4, 1fr)" gap={6} mb={10}>
             <GridItem
-              bg="white"
               shadow="md"
               rounded="md"
+              border="1px"
+              borderColor="gray.300"
               p={6}
               cursor="pointer"
               _hover={{ shadow: 'lg' }}
@@ -59,14 +59,15 @@ const Home = () => {
                   Ventas
                 </Text>
               </Flex>
-              <Text color="gray.600">Gestiona tus ventas y transacciones</Text>
+              <Text color="gray.950">Gestiona tus ventas y transacciones</Text>
             </GridItem>
 
             <GridItem
-              bg="white"
               shadow="md"
               rounded="md"
               p={6}
+              border="1px"
+              borderColor="gray.300"
               cursor="pointer"
               _hover={{ shadow: 'lg' }}
               onClick={() => navigate('/reportes')}
@@ -77,14 +78,15 @@ const Home = () => {
                   Reportes
                 </Text>
               </Flex>
-              <Text color="gray.600">Visualiza estadísticas y análisis</Text>
+              <Text color="gray.950">Visualiza estadísticas y análisis</Text>
             </GridItem>
 
             <GridItem
-              bg="white"
               shadow="md"
               rounded="md"
               p={6}
+              border="1px"
+              borderColor="gray.300"
               cursor="pointer"
               _hover={{ shadow: 'lg' }}
               onClick={() => navigate('/users')}
@@ -95,14 +97,15 @@ const Home = () => {
                   Usuarios
                 </Text>
               </Flex>
-              <Text color="gray.600">Administra usuarios y permisos</Text>
+              <Text color="gray.950">Administra usuarios y permisos</Text>
             </GridItem>
 
             <GridItem
-              bg="white"
               shadow="md"
               rounded="md"
               p={6}
+              border="1px"
+              borderColor="gray.300"
               cursor="pointer"
               _hover={{ shadow: 'lg' }}
               onClick={() => navigate('/configuracion')}
@@ -113,7 +116,7 @@ const Home = () => {
                   Configuración
                 </Text>
               </Flex>
-              <Text color="gray.600">Configura tu sistema</Text>
+              <Text color="gray.950">Configura tu sistema</Text>
             </GridItem>
           </Grid>
 

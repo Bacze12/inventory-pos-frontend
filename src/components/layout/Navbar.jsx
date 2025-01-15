@@ -13,6 +13,8 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  Text,
+  Link,
 } from '@chakra-ui/react';
 import { Menu as MenuIcon, Sun, Moon, User, LogOut, DollarSign } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -43,15 +45,23 @@ const Navbar = ({ onMenuClick, username, isOpen }) => {
     top={0}
     left={0}
     right={0}
-    height="70px"
-    zIndex={1000}
-    bg={colorMode === 'light' ? 'white' : 'gray.900'}
+    bg={colorMode === 'light' ? 'white' : 'gray.600'}
     borderBottomWidth="1px"
     shadow="sm"
-    px={4}
-    py={2}
+    py={1}
+    mb="50px"
     >
       <Flex alignItems="center" justifyContent="space-between">
+        <Flex h="1" alignItems="center" mx="3" justifyContent="space-between">
+          <Link to="/home" onClick={() => navigate('/home')}>
+            <Text fontSize="xl" fontWeight="bold" alignItems={"center"}>
+              SGI
+            </Text>
+          </Link>
+        </Flex>
+        <Flex h="1" alignItems="center" mx="1" justifyContent="space-between">
+          <Text > x </Text>
+        </Flex>
         <HStack spacing={4}>
           <IconButton
             display={{ base: 'flex', md: 'none' }}
