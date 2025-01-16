@@ -41,15 +41,9 @@ const Navbar = ({ onMenuClick, username, isOpen }) => {
 
   return (
     <Box 
-    position="fixed"
-    top={0}
-    left={0}
-    right={0}
     bg={colorMode === 'light' ? 'white' : 'gray.600'}
     borderBottomWidth="1px"
-    shadow="sm"
-    py={1}
-    mb="50px"
+    shadow="sm" 
     >
       <Flex alignItems="center" justifyContent="space-between">
         <Flex h="1" alignItems="center" mx="3" justifyContent="space-between">
@@ -74,15 +68,14 @@ const Navbar = ({ onMenuClick, username, isOpen }) => {
 
         <Flex flex="1" justifyContent="center">
           <form onSubmit={handleSearch}>
-            <InputGroup>
+            <InputGroup width="380px" size="sm">
             <InputLeftElement pointerEvents="none">
               <SearchIcon color="gray.300" />
             </InputLeftElement>
             <Input
-              placeholder="Buscar productos, clientes, proveedores, categorías..."
+              placeholder="Buscar Productos, Clientes, Proveedores, Categorías..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              width="400px"
             />
           </InputGroup>
           </form>

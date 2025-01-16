@@ -123,7 +123,7 @@ const ProductsPage = () => {
       <Navbar onMenuClick={toggleSidebar} />
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
-        <Box flex="1" ml={isSidebarOpen ? '240px' : '60px'} p={4}>
+        <Box flex="1" ml={isSidebarOpen ? '0px' : '0px'} p={4}>
           <Flex justify="space-between" align="center" mb={4}>
             <Heading as="h1" size="lg">
               Productos

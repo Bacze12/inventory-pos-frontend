@@ -86,7 +86,7 @@ const CategoriesListPage = () => {
       <Navbar onMenuClick={toggleSidebar} />
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
-        <Box flex="1" ml={isSidebarOpen ? '240px' : '60px'} p={4}>
+        <Box flex="1" ml={isSidebarOpen ? '0px' : '0px'} p={4}>
           <Heading mb={4}>Categorías</Heading>
           <Button colorScheme="blue" onClick={() => setIsModalOpen(true)} mb={4}>
             Crear Categoría

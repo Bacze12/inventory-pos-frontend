@@ -16,12 +16,11 @@ export const Layout = () => {
       <CollapsibleSidebar isOpen={isOpen} onToggle={onToggle} />
       <Box
         flex="1"
-        ml={isOpen ? '240px' : '60px'}
-        pt="64px"
+        ml={isOpen ? '150px' : '60px'}
         transition="margin-left 0.3s"
       >
         <Navbar onMenuClick={onToggle} isSidebarOpen={isOpen} userName={''} />
-        <Box p={4}>
+        <Box>
           <Outlet />
         </Box>
       </Box>

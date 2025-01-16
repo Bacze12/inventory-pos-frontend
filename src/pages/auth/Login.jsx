@@ -10,12 +10,16 @@ import {
   VStack,
   Link,
   Text, 
-  Spinner 
+  Spinner,
+  IconButton,
+  useColorMode,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import useAlert from '../../hooks/useAlert';
 import API from '../../api/api';
 import { useDispatch } from 'react-redux';
 import { login } from '../../store/slices/authSlice';
+import { Sun, Moon } from 'lucide-react';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -24,6 +28,11 @@ const LoginPage = () => {
   const { showAlert } = useAlert();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { colorMode, toggleColorMode } = useColorMode();
+
+  const boxBg = useColorModeValue('white', 'gray.700');
+  const boxColor = useColorModeValue('black', 'white');
+  const bgGradient = useColorModeValue('linear(to-t, green.300, gray.50)', 'linear(to-t, green.500, gray.500)');
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -62,15 +71,25 @@ const LoginPage = () => {
       display="flex"
       justifyContent="center"
       alignItems="center"
-      bgGradient="linear(to-r, blue.500, teal.500)"
+      bgGradient={bgGradient}
     >
+      <IconButton
+        position="absolute"
+        top="1rem"
+        right="1rem"
+        icon={colorMode === 'light' ? <Moon /> : <Sun />}
+        onClick={toggleColorMode}
+        variant="ghost"
+        aria-label="toggle theme"
+      />
       <Box
-        bg="white"
         p={8}
         rounded="md"
         shadow="lg"
         maxWidth="400px"
         w="full"
+        bg={boxBg}
+        color={boxColor}
       >
         <Heading as="h1" size="lg" textAlign="center" mb={6}>
           Inicio de Sesion
@@ -97,7 +116,7 @@ const LoginPage = () => {
             </FormControl>
             <Button
               type="submit"
-              colorScheme="teal"
+              colorScheme="green"
               width="full"
               isLoading={loading}
             >
@@ -107,13 +126,13 @@ const LoginPage = () => {
         </form>
         <Text mt={4} textAlign="center">
           ¿Se te olvido la contraseña?{' '}
-          <Link color="teal.500" onClick={() => navigate('/recover-password')}>
+          <Link color="green.500" onClick={() => navigate('/recover-password')}>
             Recuperar contraseña
           </Link>
         </Text>
         <Text mt={2} textAlign="center">
           ¿No tienes una cuenta?{' '}
-          <Link color="teal.500" onClick={() => navigate('/register')}>
+          <Link color="green.500" onClick={() => navigate('/register')}>
             Registrate
           </Link>
         </Text>

@@ -7,11 +7,12 @@ import Register from './pages/auth/Register';
 
 import CategoriesListPage from './pages/categories/CategorieList';
 import CategoryUpdatePage from './pages/categories/categoryUpdatePage';
-import SupplierListPage from './pages/suppliers/SupplierListPage'; // Import SupplierListPage
-import SupplierUpdatePage from './pages/suppliers/SupplierUpdatePage'; // Import SupplierUpdatePage
+import SupplierListPage from './pages/suppliers/SupplierListPage';
+import SupplierUpdatePage from './pages/suppliers/SupplierUpdatePage';
 import InventoryListPage from './pages/Inventory/InventoryListPage';
 import InventoryDetailsPage from './pages/Inventory/InventoryDetailsPage';
 import Dashboard from './pages/Dashboard';
+import SettingsPage from './pages/settings/SettingsPage';
 
 import Pos from './pages/pos/Pos';
 
@@ -48,6 +49,7 @@ const App = () => {
           <Route path="/inventory" element={<InventoryListPage />} />
           <Route path="/inventory/:id" element={<InventoryDetailsPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/settings" element={<SettingsPage />} />
 
           <Route path="/pos" element={<Pos />} />
 

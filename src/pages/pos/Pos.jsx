@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   Box,
   Table,
@@ -17,14 +17,14 @@ import {
   Divider,
   useDisclosure,
 } from "@chakra-ui/react";
-import { AddIcon, MinusIcon } from "@chakra-ui/icons";
+import { MinusIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import CollapsibleSidebar from "../../components/layout/CollapsibleSidebar";
 import  Navbar  from "../../components/layout/Navbar";
 import PaymentModal from "../../components/pos/PaymentModal";
+import * as Sentry from "@sentry/react";
 
 const SalesModule = () => {
-  const [products, setProducts] = useState([]);
   const [cart, setCart] = useState({});
   const [sku, setSku] = useState("");
   const [total, setTotal] = useState(0);
@@ -34,6 +34,7 @@ const SalesModule = () => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [paymentMethod, setPaymentMethod] = useState("cash");
+  const processPaymentButtonRef = useRef(null);
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
 
@@ -48,16 +49,32 @@ const SalesModule = () => {
     });
   };
 
-  const calculateSubtotal = (productId, finalPrice) => {
+  const calculateSubtotal = useCallback((productId, finalPrice) => {
     return (cart[productId] || 0) * (finalPrice || 0);
-  };
+  }, [cart]);
 
   useEffect(() => {
     const newTotal = selectedProducts.reduce((acc, product) => {
       return acc + calculateSubtotal(product.id, product.finalPrice);
     }, 0);
     setTotal(newTotal);
-  }, [cart, selectedProducts]);
+  }, [cart, selectedProducts, calculateSubtotal]);
+
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key === 'F1') {
+        e.preventDefault(); // Prevenir la acción predeterminada de F1
+        if (processPaymentButtonRef.current) {
+          processPaymentButtonRef.current.click();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, []);
 
   const handleSkuSearch = async () => {
     try {
@@ -73,7 +90,7 @@ const SalesModule = () => {
         setError("Producto no encontrado. Verifique el SKU e intente nuevamente.");
       }
     } catch (error) {
-      console.error("Error al buscar producto por SKU:", error);
+      Sentry.captureException(new Error("Error al buscar producto por SKU:", error));
       setError("Error al buscar producto. Por favor, inténtelo de nuevo.");
     }
   };
@@ -89,7 +106,7 @@ const SalesModule = () => {
       .map(([productId, quantity]) => {
         const product = selectedProducts.find((p) => p.id === parseInt(productId));
         if (!product) {
-          console.error(`Producto con ID ${productId} no encontrado en productos seleccionados.`);
+          Sentry.captureException(new Error(`Producto con ID ${productId} no encontrado en productos seleccionados.`));
           return null;
         }
         return {
@@ -102,7 +119,7 @@ const SalesModule = () => {
 
     if (saleItems.length === 0) {
       setError("El carrito está vacío o contiene productos inválidos. Añade productos antes de procesar la venta.");
-      setTimeout(() => setError(null), 3000); // Oculta el error después de 3 segundos
+      setTimeout(() => setError(null), 5000); // Oculta el error después de 3 segundos
       return;
     }
 
@@ -125,7 +142,7 @@ const SalesModule = () => {
       setSelectedProducts([]);
       onClose();
     } catch (error) {
-      console.error("Error al procesar la venta:", error);
+      Sentry.captureException(new Error("Error al procesar la venta:", error));
       setError("Error al procesar la venta. Por favor, inténtelo de nuevo.");
       setTimeout(() => setError(null), 3000); // Oculta el error después de 3 segundos
     }
@@ -137,7 +154,7 @@ const SalesModule = () => {
       <Navbar onMenuClick={toggleSidebar} />
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
-        <Box flex="1" ml={isSidebarOpen ? "240px" : "60px"} p={6}>
+        <Box flex="1" ml={isSidebarOpen ? "0px" : "0px"} p={6}>
           {error && (
             <Alert status="error" mb={4}>
               <AlertIcon />
@@ -205,7 +222,7 @@ const SalesModule = () => {
                   onKeyPress={(e) => e.key === "Enter" && handleSkuSearch()}
                   width="400px"
                 />
-                <Button colorScheme="blue" onClick={handleSkuSearch} ml={2}>
+                <Button colorScheme="green" onClick={handleSkuSearch} ml={2}>
                   Añadir
                 </Button>
               </Flex>
@@ -218,7 +235,7 @@ const SalesModule = () => {
                   ${total}
                 </Text>
               </Flex>
-              <Button colorScheme="blue" w="100%" mt={4} onClick={handleCreateSale}>
+              <Button ref={processPaymentButtonRef} colorScheme="green" w="100%" mt={4} onClick={handleCreateSale}>
                 Procesar Pago
               </Button>
             </Box>

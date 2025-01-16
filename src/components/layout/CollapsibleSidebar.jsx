@@ -46,7 +46,7 @@ const NavItems = [
   //{ name: 'Usuarios', icon: Users, path: '/users' },
   //{ name: 'categorias', icon: Tags, path: '/categories' },
   //{ name: 'Proveedores', icon: Tags, path: '/suppliers' }, // Agregar la ruta de proveedores
-  { name: 'Configuración', icon: Settings, path: '/system-configuration' },
+  { name: 'Configuración', icon: Settings, path: '/settings' },
 ];
 
 const CollapsibleSidebar = ({ isOpen, onToggle }) => {
@@ -55,7 +55,7 @@ const CollapsibleSidebar = ({ isOpen, onToggle }) => {
   const [isMaintenanceOpen, setIsMaintenanceOpen] = useState(false);
 
   const bg = useColorModeValue('gray.100', 'gray.700');
-  const sidebarBg = useColorModeValue('white', 'gray.600');
+  const sidebarBg = useColorModeValue('linear(to-t, green.300, gray.50)', 'gray.600');
   const activeBg = useColorModeValue('white.200');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
   const hoverBg = useColorModeValue('gray.200', 'gray.700');
@@ -91,11 +91,11 @@ const CollapsibleSidebar = ({ isOpen, onToggle }) => {
           mr={isOpen ? '4' : '0'}
           fontSize="16"
           as={item.icon}
-          color={isActive ? 'blue.500' : undefined}
+          color={isActive ? 'green.500' : undefined}
         />
         {isOpen && (
         <>
-        <Text color={isActive ? 'blue.500' : undefined}>{item.name}</Text>
+        <Text color={isActive ? 'green.500' : undefined}>{item.name}</Text>
         <Icon as={isMaintenanceOpen ? ChevronUpIcon : ChevronDownIcon} ml="auto" />
         </>
         )}
@@ -141,9 +141,9 @@ const CollapsibleSidebar = ({ isOpen, onToggle }) => {
           mr={isOpen ? '4' : '0'}
           fontSize="16"
           as={item.icon}
-          color={isActive ? 'blue.500' : undefined}
+          color={isActive ? 'green.500' : undefined}
         />
-        {isOpen && <Text color={isActive ? 'blue.500' : undefined}>{item.name}</Text>}
+        {isOpen && <Text color={isActive ? 'green.500' : undefined}>{item.name}</Text>}
       </Flex>
     );
   };
@@ -153,10 +153,8 @@ const CollapsibleSidebar = ({ isOpen, onToggle }) => {
       bg={sidebarBg}
       borderRight="1px"
       borderRightColor={borderColor}
-      w={isOpen ? '240px' : '60px'}
+      w={isOpen ? '210px' : '60px'}
       h="100vh"
-      pos="fixed"
-      top = "49px"
       transition="width 0.3s"
     >
       

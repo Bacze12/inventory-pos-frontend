@@ -79,7 +79,7 @@ const CategoryUpdatePage = () => {
       <Navbar onMenuClick={toggleSidebar} />
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
-        <Box flex="1" ml={isSidebarOpen ? '240px' : '60px'} p={4}>
+        <Box flex="1" ml={isSidebarOpen ? '0px' : '0px'} p={4}>
           <Box p={6} bg="white" borderRadius="md" shadow="sm">
             <FormControl mb={4}>
               <FormLabel>Nombre</FormLabel>

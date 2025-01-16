@@ -27,10 +27,9 @@ const Home = () => {
         {/* Contenido principal */}
         <Box
           flex="1"
-          p={6}
+          p={5}
           minH="100vh"
-          ml={isSidebarOpen ? '240px' : '60px'} // Ajustar margen izquierdo según el estado de la barra lateral
-          mt="40px"
+          ml={isSidebarOpen ? '0px' : '0px'} // Ajustar margen izquierdo según el estado de la barra lateral
           transition="margin-left 0.3s"
         >
           {/* Encabezado */}
@@ -47,7 +46,7 @@ const Home = () => {
               shadow="md"
               rounded="md"
               border="1px"
-              borderColor="gray.300"
+              borderColor="gray.200"
               p={6}
               cursor="pointer"
               _hover={{ shadow: 'lg' }}
@@ -67,7 +66,7 @@ const Home = () => {
               rounded="md"
               p={6}
               border="1px"
-              borderColor="gray.300"
+              borderColor="gray.200"
               cursor="pointer"
               _hover={{ shadow: 'lg' }}
               onClick={() => navigate('/reportes')}
@@ -86,7 +85,7 @@ const Home = () => {
               rounded="md"
               p={6}
               border="1px"
-              borderColor="gray.300"
+              borderColor="gray.200"
               cursor="pointer"
               _hover={{ shadow: 'lg' }}
               onClick={() => navigate('/users')}
@@ -105,7 +104,7 @@ const Home = () => {
               rounded="md"
               p={6}
               border="1px"
-              borderColor="gray.300"
+              borderColor="gray.200"
               cursor="pointer"
               _hover={{ shadow: 'lg' }}
               onClick={() => navigate('/configuracion')}
@@ -127,7 +126,7 @@ const Home = () => {
           <Flex gap={4}>
             <Button
               leftIcon={<AiOutlinePlus />}
-              colorScheme="blue"
+              colorScheme="green"
               variant="outline"
               flex="1"
               onClick={() => navigate('/nueva-venta')}
@@ -136,7 +135,7 @@ const Home = () => {
             </Button>
             <Button
               leftIcon={<FaChartBar />}
-              colorScheme="blue"
+              colorScheme="green"
               variant="outline"
               flex="1"
               onClick={() => navigate('/reporte-diario')}
@@ -145,7 +144,7 @@ const Home = () => {
             </Button>
             <Button
               leftIcon={<MdInventory />}
-              colorScheme="blue"
+              colorScheme="green"
               variant="outline"
               flex="1"
               onClick={() => navigate('/inventario')}

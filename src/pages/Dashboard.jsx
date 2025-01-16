@@ -25,6 +25,7 @@ import { Chart, CategoryScale, LinearScale, PointElement, LineElement, BarElemen
 import CollapsibleSidebar from '../components/layout/CollapsibleSidebar';
 import  Navbar  from '../components/layout/Navbar';
 import API from '../api/api';
+import * as Sentry from '@sentry/react';
 
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
@@ -93,7 +94,7 @@ const DashboardPage = () => {
           ],
         });
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        Sentry.captureException(new Error('Error fetching dashboard data:', error));
       } finally {
         setIsLoading(false);
       }
@@ -139,7 +140,7 @@ const DashboardPage = () => {
       <Navbar onMenuClick={toggleSidebar} />
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
-        <Box flex="1" ml={isSidebarOpen ? '240px' : '60px'} p={6}>
+        <Box flex="1" ml={isSidebarOpen ? '0px' : '0px'} p={6}>
           <Heading size="lg" mb={6}>
             Dashboard
           </Heading>

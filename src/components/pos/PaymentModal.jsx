@@ -9,16 +9,17 @@ import {
   ModalCloseButton,
   Button,
   Input,
-  Select,
   Text,
-  Flex,
   Box,
+  Grid,
 } from "@chakra-ui/react";
 
 const PaymentModal = ({ isOpen, onClose, total, onPayment, paymentMethod, setPaymentMethod }) => {
   const [amountReceived, setAmountReceived] = useState(0);
 
   const change = Math.max(amountReceived - total, 0);
+
+  const quickAmounts = [50000, 40000, 30000];
 
   const handleConfirmPayment = () => {
     if (amountReceived < total) {
@@ -34,39 +35,79 @@ const PaymentModal = ({ isOpen, onClose, total, onPayment, paymentMethod, setPay
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Process Payment</ModalHeader>
+        <ModalHeader>Pago</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Box mb={4}>
             <Text fontSize="lg">Total: ${total}</Text>
           </Box>
           <Box mb={4}>
-            <Text mb={2}>Payment Method:</Text>
-            <Select
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-            >
-              <option value="cash">Cash</option>
-              <option value="card">Card</option>
-              <option value="transfer">Transfer</option>
-            </Select>
+            <Text mb={2} fontWeight="medium">Metodo de Pago:</Text>
+            <Grid templateColumns="repeat(4, 1fr)" gap={4}>
+              <Button
+                colorScheme={paymentMethod === 'cash' ? 'blue' : 'gray'}
+                onClick={() => setPaymentMethod('cash')}
+              >
+                Efectivo
+              </Button>
+              <Button
+                colorScheme={paymentMethod === 'card' ? 'blue' : 'gray'}
+                onClick={() => setPaymentMethod('card')}
+              >
+                Tarjeta
+              </Button>
+              <Button
+                colorScheme={paymentMethod === 'transfer' ? 'blue' : 'gray'}
+                onClick={() => setPaymentMethod('transfer')}
+              >
+                Transferencia
+              </Button>
+            </Grid>
           </Box>
+          {paymentMethod === 'cash' && (
+            <>
           <Box mb={4}>
-            <Text mb={2}>Amount Received:</Text>
+            <Text mb={2}>Monto recibido:</Text>
             <Input
               type="number"
               value={amountReceived}
               onChange={(e) => setAmountReceived(Number(e.target.value))}
-              placeholder="Enter amount received"
+              placeholder="Ingresa el monto recibido"
             />
           </Box>
-          <Flex justify="space-between" mt={4}>
-            <Text>Change: ${change}</Text>
-          </Flex>
+
+          <Box mb={4}>
+            <Text mb={2} fontWeight="medium">
+              Montos rápidos:
+            </Text>
+            <Grid templateColumns="repeat(3, 1fr)" gap={4}>
+              {quickAmounts.map((amount) => (
+                <Button
+                  key={amount}
+                  onClick={() => setAmountReceived(amount)}
+                  colorScheme="gray"
+                >
+                  ${amount.toLocaleString()}
+                </Button>
+              ))}
+            </Grid>
+          </Box>
+
+          <Box mt={4} textAlign="center">
+              <Text fontSize="xl" fontWeight="bold" color="green.500">
+                Vuelto: ${change.toLocaleString()}
+              </Text>
+          </Box>
+          </>
+          )}
         </ModalBody>
+
         <ModalFooter>
+          <Button variant="ghost" mr={3} onClick={onClose}>
+            Cancelar (ESC)
+          </Button>
           <Button colorScheme="blue" onClick={handleConfirmPayment}>
-            Confirm Payment
+            Confirmar Pago
           </Button>
         </ModalFooter>
       </ModalContent>

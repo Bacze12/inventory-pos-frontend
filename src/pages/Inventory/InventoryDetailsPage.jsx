@@ -89,7 +89,7 @@ const InventoryDetailsPage = () => {
         <Navbar onMenuClick={toggleSidebar} />
         <Flex>
           <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
-          <Center flex="1" ml={isSidebarOpen ? '240px' : '60px'} h="100vh">
+          <Center flex="1" ml={isSidebarOpen ? '0px' : '0px'} h="100vh">
             <Alert status="error">
               <AlertIcon />
               {error}
