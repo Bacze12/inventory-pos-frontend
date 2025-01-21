@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
+import  PrivateRoute  from './components/PrivateRoute';
 
 import Home from './pages/Home';
 import LoginPage from './pages/auth/Login';
@@ -24,35 +25,32 @@ const SalesListPage = lazy(() => import('./pages/sales/SalesListPage'));
 const SaleDetailsPage = lazy(() => import('./pages/sales/SaleDetailsPage'));
 const UserManagementPage = lazy(() => import('./pages/users/UserManagementPage'));
 
+
 const App = () => {
   return (
     <Router>
       <Suspense fallback={<div>Loading...</div>}>
         <Routes element={<Layout />}>
-          <Route path="/" element={<LoginPage />} />
+        <Route path="/" element={<LoginPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/products" element={<ProductListPage />} />
-          <Route path="/products/:id" element={<ProductDetailsPage />} />
-          <Route path="/products/:id/edit" element={<UpdateProductPage />} />
-          <Route path="/add-sale" element={<AddSalePage />} />
-          <Route path="/sales" element={<SalesListPage />} />
-          <Route path="/sales/:id" element={<SaleDetailsPage />} />
-          <Route path="/home" element={<Home />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/users" element={<UserManagementPage />} />
-
-          <Route path="/categories" element={<CategoriesListPage />} />
-          <Route path="/categories/:id/edit" element={<CategoryUpdatePage />} />
-          <Route path="/suppliers" element={<SupplierListPage />} />
-          <Route path="/suppliers/:id" element={<SupplierUpdatePage />} />
-          <Route path="/inventory" element={<InventoryListPage />} />
-          <Route path="/inventory/:id" element={<InventoryDetailsPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/pos" element={<Pos />} />
-
-
-
+          <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
+          <Route path="/categories" element={<PrivateRoute><CategoriesListPage /></PrivateRoute>} />
+          <Route path="/categories/:id/edit" element={<PrivateRoute><CategoryUpdatePage /></PrivateRoute>} />
+          <Route path="/suppliers" element={<PrivateRoute><SupplierListPage /></PrivateRoute>} />
+          <Route path="/suppliers/:id" element={<PrivateRoute><SupplierUpdatePage /></PrivateRoute>} />
+          <Route path="/inventory" element={<PrivateRoute><InventoryListPage /></PrivateRoute>} />
+          <Route path="/inventory/:id" element={<PrivateRoute><InventoryDetailsPage /></PrivateRoute>} />
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
+          <Route path="/pos" element={<PrivateRoute><Pos /></PrivateRoute>} />
+          <Route path="/products" element={<PrivateRoute><ProductListPage /></PrivateRoute>} />
+          <Route path="/products/:id" element={<PrivateRoute><ProductDetailsPage /></PrivateRoute>} />
+          <Route path="/products/:id/edit" element={<PrivateRoute><UpdateProductPage /></PrivateRoute>} />
+          <Route path="/add-sale" element={<PrivateRoute><AddSalePage /></PrivateRoute>} />
+          <Route path="/sales" element={<PrivateRoute><SalesListPage /></PrivateRoute>} />
+          <Route path="/sales/:id" element={<PrivateRoute><SaleDetailsPage /></PrivateRoute>} />
+          <Route path="/users" element={<PrivateRoute><UserManagementPage /></PrivateRoute>} />
         </Routes>
       </Suspense>
     </Router>
