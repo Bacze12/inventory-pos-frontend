@@ -38,7 +38,7 @@ const LoginPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await API.post('/auth/login', { email, password });
+      const response = await API.post('/auth/login', { businessName, email, password });
       const { token, user } = response.data;
       
       // Guardar el token
@@ -96,6 +96,15 @@ const LoginPage = () => {
         </Heading>
         <form onSubmit={handleLogin}>
           <VStack spacing={4}>
+            <FormControl id="businessName" isRequired>
+              <FormLabel>BusinessName</FormLabel>
+              <Input
+                type="text"
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
+                placeholder="Escriba su BusinessName"
+              />
+            </FormControl>
             <FormControl id="email" isRequired>
               <FormLabel>Correo</FormLabel>
               <Input
