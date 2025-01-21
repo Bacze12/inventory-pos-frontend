@@ -145,7 +145,6 @@ const DashboardPage = () => {
             Dashboard
           </Heading>
 
-          {/* Statistics Section */}
           <SimpleGrid columns={[1, 2, 4]} spacing={6} mb={8}>
             <Stat bg={bgColor} p={4} shadow="sm" borderRadius="lg">
               <StatLabel>Total de Ventas</StatLabel>
@@ -164,7 +163,6 @@ const DashboardPage = () => {
             </Stat>
           </SimpleGrid>
 
-          {/* Sales Chart */}
           <SimpleGrid columns={[1, 2]} spacing={8} mb={6}>
               <Stack spacing={4}>
                     <Box mb={8} bg={bgColor} p={6} borderRadius="lg" shadow="sm" maxW="800px">
