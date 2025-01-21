@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Box,
   VStack,
@@ -22,7 +22,6 @@ import {
 import { MdInventory } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
-import { useState, useEffect } from 'react';
 
 
 
@@ -50,9 +49,14 @@ const NavItems = [
 ];
 
 const CollapsibleSidebar = ({ isOpen, onToggle }) => {
-  const navigate = useNavigate();
-  const user = useSelector((state) => state.auth.user);
   const [isMaintenanceOpen, setIsMaintenanceOpen] = useState(false);
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.auth.user) || JSON.parse(localStorage.getItem('user'));
+  const token = localStorage.getItem('token');
+
+  const toggleMaintenance = () => {
+    setIsMaintenanceOpen(!isMaintenanceOpen);
+  };
 
   const bg = useColorModeValue('gray.100', 'gray.700');
   const sidebarBg = useColorModeValue('linear(to-t, green.300, gray.50)', 'gray.600');
@@ -60,14 +64,18 @@ const CollapsibleSidebar = ({ isOpen, onToggle }) => {
   const borderColor = useColorModeValue('gray.200', 'gray.700');
   const hoverBg = useColorModeValue('gray.200', 'gray.700');
 
-  useEffect(() => {
-    if (!isOpen) {
-      setIsMaintenanceOpen(false);
-    }
-  }, [isOpen]);
+  
 
   const NavItem = ({ item }) => {
     const isActive = window.location.pathname === item.path;
+
+    const handleNavigation = (path) => {
+      if (user && token) {
+        navigate(path);
+      } else {
+        navigate('/login');
+      }
+    };
 
     if (item.roles && !item.roles.includes(user?.role || '')) {
       return null;
@@ -85,7 +93,7 @@ const CollapsibleSidebar = ({ isOpen, onToggle }) => {
         cursor="pointer"
         bg={isActive ? activeBg : 'transparent'}
         _hover={{ bg }}
-        onClick={() => setIsMaintenanceOpen(!isMaintenanceOpen)}
+        onClick={() =>  handleNavigation(item.path)}
       >
         <Icon
           mr={isOpen ? '4' : '0'}
