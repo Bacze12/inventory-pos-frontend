@@ -5,6 +5,7 @@ const API = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true
 });
 
 // Interceptor para agregar el token de autenticación
@@ -14,6 +15,7 @@ API.interceptors.request.use((config) => {
   if (token && user) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  config.withCredentials = true;
   return config;
 });
 
