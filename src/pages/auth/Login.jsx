@@ -54,6 +54,7 @@ const LoginPage = () => {
         description: '¡Bienvenido de vuelta!'
       });
       navigate('/home');
+
     } catch (error) {
       showAlert({
         title: 'Error al iniciar sesión',
