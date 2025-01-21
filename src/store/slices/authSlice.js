@@ -16,6 +16,7 @@ const authSlice = createSlice({
           state.isLoading = false;
           state.user = action.payload;
           state.error = null;
+          localStorage.setItem('user', JSON.stringify(action.payload));
       },
       loginFailure: (state, action) => {
           state.isLoading = false;
@@ -24,6 +25,7 @@ const authSlice = createSlice({
       logout: (state) => {
           state.user = null;
           state.error = null;
+          localStorage.removeItem('user');
           localStorage.removeItem('token');
       }
   }

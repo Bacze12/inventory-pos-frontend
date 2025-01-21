@@ -7,8 +7,6 @@ const PrivateRoute = ({ children }) => {
     const user = useSelector((state) => state.auth.user);
     const token = localStorage.getItem('token');
     const location = useLocation();
-    
-    // Verificar si está cargando el estado de autenticación
     const isLoading = useSelector((state) => state.auth.isLoading);
 
     console.log('Auth state:', { user, token, currentPath: location.pathname });
