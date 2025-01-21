@@ -18,7 +18,7 @@ import {
 import useAlert from '../../hooks/useAlert';
 import API from '../../api/api';
 import { useDispatch } from 'react-redux';
-import { login } from '../../store/slices/authSlice';
+import { loginStart, loginSuccess, loginFailure } from '../../store/slices/authSlice';
 import { Sun, Moon } from 'lucide-react';
 
 const LoginPage = () => {
@@ -39,14 +39,19 @@ const LoginPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
+      dispatch(loginStart());
       const response = await API.post('/auth/login', { businessName, email, password });
       const { token, user } = response.data;
+
+      if (!token || !user) {
+        throw new Error('Respuesta del servidor incompleta');
+    }
       
       // Guardar el token
       localStorage.setItem('token', token);
       
       // Actualizar el estado de Redux
-      await dispatch(login(user));
+      dispatch(loginSuccess(user));
       
       showAlert({
         title: 'Inicio de sesión exitoso',
@@ -56,6 +61,7 @@ const LoginPage = () => {
       navigate('/home');
 
     } catch (error) {
+      dispatch(loginFailure(error.message));
       showAlert({
         title: 'Error al iniciar sesión',
         description: error.response?.data?.message || 'Credenciales incorrectas',
