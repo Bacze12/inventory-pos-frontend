@@ -24,6 +24,7 @@ import { Sun, Moon } from 'lucide-react';
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [businessName, setBusinessName] = useState('')
   const [loading, setLoading] = useState(false);
   const { showAlert } = useAlert();
   const navigate = useNavigate();
