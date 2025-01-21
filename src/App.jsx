@@ -34,7 +34,7 @@ const App = () => {
         <Route path="/" element={<LoginPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
+          <Route path="/home" element={<Home />} />
           <Route path="/categories" element={<PrivateRoute><CategoriesListPage /></PrivateRoute>} />
           <Route path="/categories/:id/edit" element={<PrivateRoute><CategoryUpdatePage /></PrivateRoute>} />
           <Route path="/suppliers" element={<PrivateRoute><SupplierListPage /></PrivateRoute>} />
