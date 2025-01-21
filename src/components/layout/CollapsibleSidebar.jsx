@@ -49,14 +49,12 @@ const NavItems = [
 ];
 
 const CollapsibleSidebar = ({ isOpen, onToggle }) => {
-  const [isMaintenanceOpen, setIsMaintenanceOpen] = useState(false);
+  const [isMaintenanceOpen] = useState(false);
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user) || JSON.parse(localStorage.getItem('user'));
   const token = localStorage.getItem('token');
 
-  const toggleMaintenance = () => {
-    setIsMaintenanceOpen(!isMaintenanceOpen);
-  };
+
 
   const bg = useColorModeValue('gray.100', 'gray.700');
   const sidebarBg = useColorModeValue('linear(to-t, green.300, gray.50)', 'gray.600');
