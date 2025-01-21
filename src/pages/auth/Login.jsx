@@ -46,7 +46,7 @@ const LoginPage = () => {
       localStorage.setItem('token', token);
       
       // Actualizar el estado de Redux
-      dispatch(login(user));
+      await dispatch(login(user));
       
       showAlert({
         title: 'Inicio de sesión exitoso',
