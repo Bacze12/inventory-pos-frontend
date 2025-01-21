@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'https://inventory-pos-i3po.onrender.com',
+  baseURL: process.env.REACT_APP_API_URL || 'https://pos-backend-production-e60d.up.railway.app/',
   headers: {
     'Content-Type': 'application/json',
   },
