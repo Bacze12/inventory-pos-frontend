@@ -50,7 +50,7 @@ const Home = () => {
               p={6}
               cursor="pointer"
               _hover={{ shadow: 'lg' }}
-              onClick={() => navigate('/ventas')}
+              onClick={() => navigate('/dashboard')}
             >
               <Flex align="center" mb={4}>
                 <Icon as={FaShoppingCart} boxSize={6} color="blue.500" />
