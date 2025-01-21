@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Box,
   VStack,
@@ -51,8 +51,16 @@ const NavItems = [
 const CollapsibleSidebar = ({ isOpen, onToggle }) => {
   const [isMaintenanceOpen] = useState(false);
   const navigate = useNavigate();
-  const user = useSelector((state) => state.auth.user) || JSON.parse(localStorage.getItem('user'));
+  const userFromRedux = useSelector((state) => state.auth.user);
+  const userFromStorage = JSON.parse(localStorage.getItem('user'));
   const token = localStorage.getItem('token');
+  const user = userFromRedux || userFromStorage;
+
+  useEffect(() => {
+    if (!user || !token) {
+      navigate('/login');
+    }
+  }, [user, token, navigate]);
 
 
 
@@ -68,9 +76,11 @@ const CollapsibleSidebar = ({ isOpen, onToggle }) => {
     const isActive = window.location.pathname === item.path;
 
     const handleNavigation = (path) => {
+      // Simplificar la verificación
       if (user && token) {
         navigate(path);
       } else {
+        console.log('No autenticado, redirigiendo a login');
         navigate('/login');
       }
     };
@@ -78,6 +88,8 @@ const CollapsibleSidebar = ({ isOpen, onToggle }) => {
     if (item.roles && !item.roles.includes(user?.role || '')) {
       return null;
     }
+
+    
 
     if (item.children) {
       return (
