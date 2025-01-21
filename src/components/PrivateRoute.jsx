@@ -20,7 +20,6 @@ const PrivateRoute = ({ children }) => {
     }
 
     if (!user || !token) {
-        // Guarda la ruta actual para redireccionar después del login
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 

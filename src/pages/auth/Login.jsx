@@ -49,8 +49,6 @@ const LoginPage = () => {
       
       // Guardar el token
       localStorage.setItem('token', token);
-      
-      // Actualizar el estado de Redux
       dispatch(loginSuccess(user));
       
       showAlert({
