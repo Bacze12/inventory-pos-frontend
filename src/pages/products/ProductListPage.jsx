@@ -133,7 +133,6 @@ const ProductsPage = () => {
             </Button>
           </Flex>
 
-          {/* Filtros */}
           <Flex mb={4} gap={4}>
             <Select
               placeholder="Filtrar por categoría"
@@ -159,7 +158,6 @@ const ProductsPage = () => {
             </Select>
           </Flex>
 
-          {/* Tabla de productos */}
           <Table variant="simple">
             <Thead>
               <Tr>

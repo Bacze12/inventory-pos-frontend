@@ -1,10 +1,10 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
 import { Layout } from './components/layout/Layout';
+
+import Home from './pages/Home';
 import LoginPage from './pages/auth/Login';
 import Register from './pages/auth/Register';
-
 import CategoriesListPage from './pages/categories/CategorieList';
 import CategoryUpdatePage from './pages/categories/categoryUpdatePage';
 import SupplierListPage from './pages/suppliers/SupplierListPage';
@@ -13,7 +13,6 @@ import InventoryListPage from './pages/Inventory/InventoryListPage';
 import InventoryDetailsPage from './pages/Inventory/InventoryDetailsPage';
 import Dashboard from './pages/Dashboard';
 import SettingsPage from './pages/settings/SettingsPage';
-
 import Pos from './pages/pos/Pos';
 
 
@@ -44,14 +43,15 @@ const App = () => {
 
           <Route path="/categories" element={<CategoriesListPage />} />
           <Route path="/categories/:id/edit" element={<CategoryUpdatePage />} />
-          <Route path="/suppliers" element={<SupplierListPage />} /> {/* Add SupplierListPage route */}
-          <Route path="/suppliers/:id" element={<SupplierUpdatePage />} /> {/* Add SupplierUpdatePage route */}
+          <Route path="/suppliers" element={<SupplierListPage />} />
+          <Route path="/suppliers/:id" element={<SupplierUpdatePage />} />
           <Route path="/inventory" element={<InventoryListPage />} />
           <Route path="/inventory/:id" element={<InventoryDetailsPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/settings" element={<SettingsPage />} />
-
           <Route path="/pos" element={<Pos />} />
+
+
 
         </Routes>
       </Suspense>

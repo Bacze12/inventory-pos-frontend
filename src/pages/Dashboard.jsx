@@ -136,7 +136,7 @@ const DashboardPage = () => {
   }
 
   return (
-    <Box bg="gray.50" minH="100vh">
+    <Box minH="100vh">
       <Navbar onMenuClick={toggleSidebar} />
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
