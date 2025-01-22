@@ -22,7 +22,7 @@ import {
 } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
 import CollapsibleSidebar from '../../components/layout/CollapsibleSidebar';
-import  Navbar  from '../../components/layout/Navbar';
+import Navbar from '../../components/layout/Navbar';
 import { useNavigate } from 'react-router-dom';
 import API from '../../api/api';
 import ProductModal from '../../components/products/ProductModal';
@@ -46,15 +46,18 @@ const ProductsPage = () => {
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
 
-  const handleError = useCallback((message, error) => {
-    toast({
-      title: message,
-      description: error.message,
-      status: 'error',
-      duration: 3000,
-      isClosable: true,
-    });
-  }, [toast]);
+  const handleError = useCallback(
+    (message, error) => {
+      toast({
+        title: message,
+        description: error.message,
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    },
+    [toast]
+  );
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -69,7 +72,12 @@ const ProductsPage = () => {
     const fetchCategories = async () => {
       try {
         const response = await API.get('/categories');
-        setCategories(response.data);
+        setCategories(
+          response.data.map((category) => ({
+            id: category._id, // MongoDB devuelve _id como string
+            name: category.name,
+          }))
+        );
       } catch (error) {
         handleError('Error al cargar categorías:', error);
       }
@@ -78,7 +86,12 @@ const ProductsPage = () => {
     const fetchSuppliers = async () => {
       try {
         const response = await API.get('/suppliers');
-        setSuppliers(response.data);
+        setSuppliers(
+          response.data.map((supplier) => ({
+            id: supplier._id, // MongoDB devuelve _id como string
+            name: supplier.name,
+          }))
+        );
       } catch (error) {
         handleError('Error al cargar proveedores:', error);
       }
@@ -113,8 +126,8 @@ const ProductsPage = () => {
 
   const filteredProducts = products.filter((product) => {
     return (
-      (selectedCategory === '' || product.categoryId === parseInt(selectedCategory)) &&
-      (selectedSupplier === '' || product.supplierId === parseInt(selectedSupplier))
+      (selectedCategory === '' || product.categoryId === selectedCategory) &&
+      (selectedSupplier === '' || product.supplierId === selectedSupplier)
     );
   });
 
