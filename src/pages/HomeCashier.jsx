@@ -118,40 +118,83 @@ const HomeCashier = () => {
                 <Text color="gray.950">Configura tu sistema</Text>
                 </GridItem>
             </Grid>
+            <Grid templateColumns="repeat(4, 1fr)" gap={6} mb={10}>
+                <GridItem
+                shadow="md"
+                rounded="md"
+                border="1px"
+                borderColor="gray.200"
+                p={6}
+                cursor="pointer"
+                _hover={{ shadow: 'lg' }}
+                onClick={() => navigate('/')}
+                >
+                <Flex align="center" mb={4}>
+                    <Icon as={FaShoppingCart} boxSize={6} color="blue.500" />
+                    <Text fontWeight="bold" ml={4}>
+                    POS
+                    </Text>
+                </Flex>
+                <Text color="gray.950">Genera tus ventas aqui</Text>
+                </GridItem>
 
-            {/* Accesos rápidos */}
-            <Heading size="md" mb={4}>
-                Accesos Rápidos
-            </Heading>
-            <Flex gap={4}>
-                <Button
-                leftIcon={<AiOutlinePlus />}
-                colorScheme="green"
-                variant="outline"
-                flex="1"
-                onClick={() => navigate('/pos')}
+                <GridItem
+                shadow="md"
+                rounded="md"
+                p={6}
+                border="1px"
+                borderColor="gray.200"
+                cursor="pointer"
+                _hover={{ shadow: 'lg' }}
+                onClick={() => navigate('/reportes')}
                 >
-                Nueva Venta
-                </Button>
-                <Button
-                leftIcon={<FaChartBar />}
-                colorScheme="green"
-                variant="outline"
-                flex="1"
-                onClick={() => navigate('/reporte-diario')}
+                <Flex align="center" mb={4}>
+                    <Icon as={FaChartBar} boxSize={6} color="green.500" />
+                    <Text fontWeight="bold" ml={4}>
+                    Reportes
+                    </Text>
+                </Flex>
+                <Text color="gray.950">Visualiza estadísticas y análisis</Text>
+                </GridItem>
+
+                <GridItem
+                shadow="md"
+                rounded="md"
+                p={6}
+                border="1px"
+                borderColor="gray.200"
+                cursor="pointer"
+                _hover={{ shadow: 'lg' }}
+                onClick={() => navigate('/users')}
                 >
-                Reporte Diario
-                </Button>
-                <Button
-                leftIcon={<MdInventory />}
-                colorScheme="green"
-                variant="outline"
-                flex="1"
-                onClick={() => navigate('/inventory')}
+                <Flex align="center" mb={4}>
+                    <Icon as={FaUsers} boxSize={6} color="purple.500" />
+                    <Text fontWeight="bold" ml={4}>
+                    Usuarios
+                    </Text>
+                </Flex>
+                <Text color="gray.950">Administra usuarios y permisos</Text>
+                </GridItem>
+
+                <GridItem
+                shadow="md"
+                rounded="md"
+                p={6}
+                border="1px"
+                borderColor="gray.200"
+                cursor="pointer"
+                _hover={{ shadow: 'lg' }}
+                onClick={() => navigate('/settings')}
                 >
-                Inventario
-                </Button>
-            </Flex>
+                <Flex align="center" mb={4}>
+                    <Icon as={FaCog} boxSize={6} color="orange.500" />
+                    <Text fontWeight="bold" ml={4}>
+                    Configuración
+                    </Text>
+                </Flex>
+                <Text color="gray.950">Configura tu sistema</Text>
+                </GridItem>
+            </Grid>
             </Box>
         </Flex>
         </Box>
