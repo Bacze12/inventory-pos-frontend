@@ -38,6 +38,8 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
   const [finalPrice, setFinalPrice] = useState('');
   const [stock, setStock] = useState(initialData?.stock || '');
   const [isActive, setIsActive] = useState(initialData?.isActive || true);
+  const [grossCost, setGrossCost] = useState('');
+  const [netCost, setNetCost] = useState('');
   const toast = useToast();
 
   // Cálculo de precios dinámico
@@ -45,16 +47,20 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
     if (purchasePrice && marginPercent) {
       const marginMultiplier = 1 + marginPercent / 100;
       const calculatedSellingPrice = purchasePrice * marginMultiplier;
-      const calculatedFinalPrice = isIvaExempt
-        ? calculatedSellingPrice
-        : calculatedSellingPrice * 1.19;
+
+      const calculatedGrossCost = purchasePrice * marginMultiplier;
+      const calculatedNetCost = isIvaExempt
+        ? calculatedGrossCost
+        : calculatedGrossCost * 1.19;
 
       const calculatedExtraTax = hasExtraTax && extraTaxRate
-        ? calculatedFinalPrice * (extraTaxRate / 100)
+        ? calculatedNetCost * (extraTaxRate / 100)
         : 0;
 
-      setSellingPrice(calculatedSellingPrice.toFixed(2));
-      setFinalPrice((calculatedFinalPrice + calculatedExtraTax).toFixed(2));
+      setSellingPrice(calculatedGrossCost.toFixed(2));
+      setFinalPrice((calculatedNetCost + calculatedExtraTax).toFixed(2));
+      setGrossCost(calculatedGrossCost.toFixed(2)); // Costo Bruto
+      setNetCost((calculatedNetCost + calculatedExtraTax).toFixed(2)); // Costo Neto
     }
   }, [purchasePrice, marginPercent, isIvaExempt, hasExtraTax, extraTaxRate]);
 
@@ -93,49 +99,6 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
     fetchCategories();
     fetchSuppliers();
   }, [toast]);
-
-  // Escaneo de código de barras
-  const startScanner = () => {
-    Quagga.init(
-      {
-        inputStream: {
-          type: 'LiveStream',
-          target: document.querySelector('#scanner-container'),
-          constraints: {
-            facingMode: 'environment',
-          },
-        },
-        decoder: {
-          readers: ['ean_reader'],
-        },
-      },
-      (err) => {
-        if (err) {
-          toast({
-            title: 'Error al iniciar el escáner',
-            description: err.message,
-            status: 'error',
-            duration: 3000,
-            isClosable: true,
-          });
-          return;
-        }
-        Quagga.start();
-      }
-    );
-
-    Quagga.onDetected((data) => {
-      setSku(data.codeResult.code);
-      toast({
-        title: 'Código detectado',
-        description: `Código de barras: ${data.codeResult.code}`,
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-      Quagga.stop();
-    });
-  };
 
   const handleSubmit = async () => {
     if (!name || !categoryId || !supplierId || !purchasePrice || !marginPercent) {
@@ -205,39 +168,6 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
           <FormControl mb={4}>
             <FormLabel>Código de Barra</FormLabel>
             <Input value={sku} onChange={(e) => setSku(e.target.value)} />
-            {(isMobile || isTablet) && (
-              <Button mt={2} onClick={startScanner}>
-                Escanear <FiCamera />
-              </Button>
-            )}
-          </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Categoría</FormLabel>
-            <Select
-              placeholder="Seleccionar"
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-            >
-              {categories.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.name}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Proveedor</FormLabel>
-            <Select
-              placeholder="Seleccionar"
-              value={supplierId}
-              onChange={(e) => setSupplierId(e.target.value)}
-            >
-              {suppliers.map((supplier) => (
-                <option key={supplier._id} value={supplier._id}>
-                  {supplier.name}
-                </option>
-              ))}
-            </Select>
           </FormControl>
           <FormControl mb={4}>
             <FormLabel>Stock</FormLabel>
@@ -263,50 +193,16 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               onChange={(e) => setMarginPercent(e.target.value)}
             />
           </FormControl>
-          {hasExtraTax && (
-            <FormControl mb={4}>
-              <FormLabel>Tasa Extra (%)</FormLabel>
-              <Input
-                type="number"
-                value={extraTaxRate}
-                onChange={(e) => setExtraTaxRate(e.target.value)}
-              />
-            </FormControl>
-          )}
           <SimpleGrid columns={2} spacing={5} mt={5} border="1px solid #ccc" p={3} borderRadius="md">
             <FormControl>
-              <FormLabel>Precio Neto Calculado</FormLabel>
-              <Input isReadOnly value={`$ ${sellingPrice}`} />
+              <FormLabel>Costo Bruto</FormLabel>
+              <Input isReadOnly value={`$ ${grossCost}`} />
             </FormControl>
             <FormControl>
-              <FormLabel>Precio Final Calculado</FormLabel>
-              <Input isReadOnly value={`$ ${finalPrice}`} />
+              <FormLabel>Costo Neto</FormLabel>
+              <Input isReadOnly value={`$ ${netCost}`} />
             </FormControl>
           </SimpleGrid>
-          <FormControl mt={4}>
-            <Checkbox
-              isChecked={isIvaExempt}
-              onChange={(e) => setIsIvaExempt(e.target.checked)}
-            >
-              Exento de IVA
-            </Checkbox>
-          </FormControl>
-          <FormControl mt={4}>
-            <Checkbox
-              isChecked={isActive}
-              onChange={(e) => setIsActive(e.target.checked)}
-            >
-              Activo
-            </Checkbox>
-          </FormControl>
-          <FormControl mt={4}>
-            <Checkbox
-              isChecked={hasExtraTax}
-              onChange={(e) => setHasExtraTax(e.target.checked)}
-            >
-              Agregar Tasa Extra
-            </Checkbox>
-          </FormControl>
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
