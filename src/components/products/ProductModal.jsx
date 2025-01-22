@@ -47,7 +47,9 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
 
   const handleNetCostChange = (e) => {
     const value = parseFloat(e.target.value);
-    setNetCost(Math.round(value));
+    if (!isNaN(value)) {
+      setNetCost(value);
+    }
     setGrossCost(Math.round(value * 1.19));
   };
     
