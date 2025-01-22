@@ -180,7 +180,6 @@ const UserManagementPage = () => {
             <Table variant="simple">
               <Thead bg="gray.100">
                 <Tr>
-                  <Th>ID</Th>
                   <Th>Correo</Th>
                   <Th>Nombre</Th>
                   <Th>Rol</Th>
@@ -190,7 +189,6 @@ const UserManagementPage = () => {
               <Tbody>
                 {filteredUsers.map((user) => (
                   <Tr key={user.id}>
-                    <Td>{user.id}</Td>
                     <Td>{user.email}</Td>
                     <Td>{user.name}</Td>
                     <Td>{user.role}</Td>
