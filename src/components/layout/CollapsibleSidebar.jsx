@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   VStack,
@@ -24,7 +24,7 @@ import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 
 const NavItems = [
   { name: 'Home', icon: Home, path: '/home' },
-  { name: 'Home Cashier', icon: Home, path: '/home-cajera', roles: ['cashier, ADMIN'] },
+  { name: 'Home Cashier', icon: Home, path: '/home-cajera', roles: ['cashier'] },
   { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
   { name: 'POS', icon: ShoppingCart, path: '/pos' },
   {
@@ -42,6 +42,7 @@ const NavItems = [
 ];
 
 const CollapsibleSidebar = ({ isOpen, onToggle }) => {
+  const [isMaintenanceOpen] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem('token'); // Solo dependemos del token
 
@@ -87,7 +88,7 @@ const CollapsibleSidebar = ({ isOpen, onToggle }) => {
             cursor="pointer"
             bg={isActive ? activeBg : 'transparent'}
             _hover={{ bg }}
-            onClick={() => handleNavigation(item.path)}
+            onClick={() =>  handleNavigation(item.path)}
           >
             <Icon
               mr={isOpen ? '4' : '0'}
@@ -96,13 +97,13 @@ const CollapsibleSidebar = ({ isOpen, onToggle }) => {
               color={isActive ? 'green.500' : undefined}
             />
             {isOpen && (
-              <>
-                <Text color={isActive ? 'green.500' : undefined}>{item.name}</Text>
-                <Icon as={ChevronDownIcon} ml="auto" />
-              </>
+            <>
+            <Text color={isActive ? 'green.500' : undefined}>{item.name}</Text>
+            <Icon as={isMaintenanceOpen ? ChevronUpIcon : ChevronDownIcon} ml="auto" />
+            </>
             )}
           </Flex>
-          <Collapse in={isOpen} animateOpacity>
+          <Collapse in={isMaintenanceOpen} animateOpacity>
             <Box pl={8}>
               {item.children.map((child) => (
                 <Flex
