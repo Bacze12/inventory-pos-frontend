@@ -22,23 +22,76 @@ import API from '../../api/api';
 const ProductModal = ({ initialData, isOpen, onClose }) => {
   const [name, setName] = useState(initialData?.name || '');
   const [sku, setSku] = useState(initialData?.sku || '');
-  const [netCost, setNetCost] = useState(initialData?.purchasePrice || '');
-  const [grossCost, setGrossCost] = useState('');
+  const [purchasePrice, setPurchasePrice] = useState(initialData?.purchasePrice || '');
   const [marginPercent, setMarginPercent] = useState(initialData?.marginPercent || '');
-  const [netSalePrice, setNetSalePrice] = useState('');
-  const [grossSalePrice, setGrossSalePrice] = useState('');
-  const [stock, setStock] = useState(initialData?.stock || '');
+  const [hasExtraTax, setHasExtraTax] = useState(initialData?.hasExtraTax || false);
+  const [extraTaxRate, setExtraTaxRate] = useState(initialData?.extraTaxRate || '');
+  const [isIvaExempt, setIsIvaExempt] = useState(initialData?.isIvaExempt || false);
   const [categoryId, setCategoryId] = useState(initialData?.categoryId || '');
   const [supplierId, setSupplierId] = useState(initialData?.supplierId || '');
   const [categories, setCategories] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
-  const [isIvaExempt, setIsIvaExempt] = useState(initialData?.isIvaExempt || false);
-  const [hasExtraTax, setHasExtraTax] = useState(initialData?.hasExtraTax || false);
-  const [extraTaxRate, setExtraTaxRate] = useState(initialData?.extraTaxRate || '');
+  const [sellingPrice, setSellingPrice] = useState('');
+  const [finalPrice, setFinalPrice] = useState('');
+  const [grossCost, setGrossCost] = useState(initialData?.grossCost || '');
+  const [netCost, setNetCost] = useState(initialData?.purchasePrice || '');
+  const [netSalePrice, setNetSalePrice] = useState('');
+  const [grossSalePrice, setGrossSalePrice] = useState('');
+  const [stock, setStock] = useState(initialData?.stock || '');
   const [isActive, setIsActive] = useState(initialData?.isActive || true);
   const toast = useToast();
 
-  // Cargar categorías y proveedores
+  // Recalcular valores cuando un campo cambia
+  const recalculateValues = (field, value) => {
+    let purchase = parseFloat(netCost) || 0;
+    let margin = parseFloat(marginPercent) / 100 || 0;
+    let gross = parseFloat(grossCost) || 0;
+    let netSale = parseFloat(netSalePrice) || 0;
+    let grossSale = parseFloat(grossSalePrice) || 0;
+
+    switch (field) {
+      case 'netCost':
+        purchase = parseFloat(value) || 0;
+        gross = purchase * (1 + margin);
+        netSale = gross;
+        grossSale = isIvaExempt ? netSale : netSale * 1.19;
+        break;
+      case 'marginPercent':
+        margin = parseFloat(value) / 100 || 0;
+        gross = purchase * (1 + margin);
+        netSale = gross;
+        grossSale = isIvaExempt ? netSale : netSale * 1.19;
+        break;
+      case 'grossCost':
+        gross = parseFloat(value) || 0;
+        purchase = gross / (1 + margin);
+        netSale = gross;
+        grossSale = isIvaExempt ? netSale : netSale * 1.19;
+        break;
+      case 'netSalePrice':
+        netSale = parseFloat(value) || 0;
+        gross = netSale;
+        purchase = gross / (1 + margin);
+        grossSale = isIvaExempt ? netSale : netSale * 1.19;
+        break;
+      case 'grossSalePrice':
+        grossSale = parseFloat(value) || 0;
+        netSale = isIvaExempt ? grossSale : grossSale / 1.19;
+        gross = netSale;
+        purchase = gross / (1 + margin);
+        break;
+      default:
+        break;
+    }
+
+    setNetCost(value !== '' ? purchase.toFixed(2) : '');
+    setGrossCost(value !== '' ? gross.toFixed(2) : '');
+    setNetSalePrice(value !== '' ? netSale.toFixed(2) : '');
+    setGrossSalePrice(value !== '' ? grossSale.toFixed(2) : '');
+    setSellingPrice(value !== '' ? gross.toFixed(2) : '');
+    setFinalPrice(value !== '' ? grossSale.toFixed(2) : '');
+  };
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -74,44 +127,12 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
     fetchSuppliers();
   }, [toast]);
 
-  // Recalcular valores al perder el foco
-  const recalculateValues = (field) => {
-    const net = parseFloat(netCost) || 0;
-    const margin = parseFloat(marginPercent) / 100 || 0;
-    const gross = parseFloat(grossCost) || 0;
-    const saleNet = parseFloat(netSalePrice) || 0;
-    const saleGross = parseFloat(grossSalePrice) || 0;
-
-    if (field === 'netCost') {
-      const newGrossCost = net * (1 + margin);
-      const newNetSale = newGrossCost;
-      const newGrossSale = isIvaExempt ? newNetSale : newNetSale * 1.19;
-      setGrossCost(newGrossCost.toFixed(2));
-      setNetSalePrice(newNetSale.toFixed(2));
-      setGrossSalePrice(newGrossSale.toFixed(2));
-    } else if (field === 'marginPercent') {
-      const newGrossCost = net * (1 + margin);
-      const newNetSale = newGrossCost;
-      const newGrossSale = isIvaExempt ? newNetSale : newNetSale * 1.19;
-      setGrossCost(newGrossCost.toFixed(2));
-      setNetSalePrice(newNetSale.toFixed(2));
-      setGrossSalePrice(newGrossSale.toFixed(2));
-    } else if (field === 'grossSalePrice') {
-      const newNetSale = isIvaExempt ? saleGross : saleGross / 1.19;
-      const newGrossCost = newNetSale;
-      const newNetCost = newGrossCost / (1 + margin);
-      setNetSalePrice(newNetSale.toFixed(2));
-      setGrossCost(newGrossCost.toFixed(2));
-      setNetCost(newNetCost.toFixed(2));
-    }
-  };
-
   const handleSubmit = async () => {
     if (!name || !categoryId || !supplierId || !netCost || !marginPercent) {
       toast({
-        title: 'Error de validación',
-        description: 'Todos los campos obligatorios deben ser completados.',
-        status: 'error',
+        title: "Error de validación",
+        description: "Todos los campos obligatorios deben ser completados.",
+        status: "error",
         duration: 3000,
         isClosable: true,
       });
@@ -125,6 +146,8 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
       marginPercent: parseFloat(marginPercent),
       hasExtraTax,
       extraTaxRate: parseFloat(extraTaxRate) || 0,
+      sellingPrice: parseFloat(sellingPrice),
+      finalPrice: parseFloat(finalPrice),
       stock: parseInt(stock, 10),
       isIvaExempt,
       isActive,
@@ -139,9 +162,9 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
 
       if (response && response._id) {
         toast({
-          title: 'Producto guardado',
-          description: 'El producto se ha guardado con éxito.',
-          status: 'success',
+          title: "Producto guardado",
+          description: "El producto se ha guardado con éxito.",
+          status: "success",
           duration: 3000,
           isClosable: true,
         });
@@ -153,9 +176,9 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
       console.error('Error al guardar el producto:', error);
 
       toast({
-        title: 'Error al guardar el producto',
-        description: error.message || 'Ocurrió un error inesperado.',
-        status: 'error',
+        title: "Error al guardar el producto",
+        description: error.message || "Ocurrió un error inesperado.",
+        status: "error",
         duration: 3000,
         isClosable: true,
       });
@@ -169,15 +192,24 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
         <ModalHeader>{initialData ? 'Editar Producto' : 'Agregar Producto'}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {/* Inputs para datos */}
+          <SimpleGrid columns={2} spacing={5} mb={5}>
+            <FormControl>
+              <FormLabel>Nombre</FormLabel>
+              <Input value={name} onChange={(e) => setName(e.target.value)} />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Código de Barra</FormLabel>
+              <Input value={sku} onChange={(e) => setSku(e.target.value)} />
+            </FormControl>
+          </SimpleGrid>
+
           <SimpleGrid columns={2} spacing={5} mb={5}>
             <FormControl>
               <FormLabel>Costo Neto</FormLabel>
               <Input
                 type="number"
                 value={netCost}
-                onBlur={() => recalculateValues('netCost')}
-                onChange={(e) => setNetCost(e.target.value)}
+                onChange={(e) => recalculateValues('netCost', e.target.value)}
               />
             </FormControl>
             <FormControl>
@@ -185,19 +217,18 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               <Input
                 type="number"
                 value={grossCost}
-                onBlur={() => recalculateValues('grossCost')}
-                onChange={(e) => setGrossCost(e.target.value)}
+                onChange={(e) => recalculateValues('grossCost', e.target.value)}
               />
             </FormControl>
           </SimpleGrid>
+
           <SimpleGrid columns={2} spacing={5} mb={5}>
             <FormControl>
               <FormLabel>Venta Neto</FormLabel>
               <Input
                 type="number"
                 value={netSalePrice}
-                onBlur={() => recalculateValues('netSalePrice')}
-                onChange={(e) => setNetSalePrice(e.target.value)}
+                onChange={(e) => recalculateValues('netSalePrice', e.target.value)}
               />
             </FormControl>
             <FormControl>
@@ -205,19 +236,18 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               <Input
                 type="number"
                 value={grossSalePrice}
-                onBlur={() => recalculateValues('grossSalePrice')}
-                onChange={(e) => setGrossSalePrice(e.target.value)}
+                onChange={(e) => recalculateValues('grossSalePrice', e.target.value)}
               />
             </FormControl>
           </SimpleGrid>
+
           <SimpleGrid columns={2} spacing={5} mb={5}>
             <FormControl>
               <FormLabel>Margen (%)</FormLabel>
               <Input
                 type="number"
                 value={marginPercent}
-                onBlur={() => recalculateValues('marginPercent')}
-                onChange={(e) => setMarginPercent(e.target.value)}
+                onChange={(e) => recalculateValues('marginPercent', e.target.value)}
               />
             </FormControl>
             <FormControl>
@@ -229,6 +259,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               />
             </FormControl>
           </SimpleGrid>
+
           <FormControl>
             <FormLabel>Categoría</FormLabel>
             <Select
@@ -243,6 +274,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               ))}
             </Select>
           </FormControl>
+
           <FormControl>
             <FormLabel>Proveedor</FormLabel>
             <Select
@@ -257,6 +289,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               ))}
             </Select>
           </FormControl>
+
           <FormControl>
             <Checkbox isChecked={hasExtraTax} onChange={(e) => setHasExtraTax(e.target.checked)}>
               Tiene Impuesto Extra
@@ -284,8 +317,8 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
           </FormControl>
         </ModalBody>
         <ModalFooter>
-          <Button onClick={handleSubmit} colorScheme="blue">
-            Guardar
+          <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
+            {initialData ? 'Guardar Cambios' : 'Agregar'}
           </Button>
           <Button onClick={onClose}>Cancelar</Button>
         </ModalFooter>
