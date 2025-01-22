@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createProduct, updateProduct } from '../../api/products';
 import Quagga from 'quagga';
 import { isMobile, isTablet } from 'react-device-detect';
@@ -16,6 +16,7 @@ import {
   Input,
   Button,
   Checkbox,
+  Select,
   useToast,
   SimpleGrid,
 } from '@chakra-ui/react';
@@ -23,15 +24,16 @@ import API from '../../api/api';
 
 const ProductModal = ({ initialData, isOpen, onClose }) => {
   const [name, setName] = useState(initialData?.name || '');
+  const [sku, setSku] = useState(initialData?.sku || '');
   const [purchasePrice, setPurchasePrice] = useState(initialData?.purchasePrice || '');
   const [marginPercent, setMarginPercent] = useState(initialData?.marginPercent || '');
-  const [hasExtraTax] = useState(initialData?.hasExtraTax || false);
-  const [extraTaxRate] = useState(initialData?.extraTaxRate || '');
+  const [hasExtraTax, setHasExtraTax] = useState(initialData?.hasExtraTax || false);
+  const [extraTaxRate, setExtraTaxRate] = useState(initialData?.extraTaxRate || '');
   const [isIvaExempt, setIsIvaExempt] = useState(initialData?.isIvaExempt || false);
-  const [categoryId] = useState(initialData?.categoryId || '');
-  const [supplierId] = useState(initialData?.supplierId || '');
-  const [setCategories] = useState([]);
-  const [setSuppliers] = useState([]);
+  const [categoryId, setCategoryId] = useState(initialData?.categoryId || '');
+  const [supplierId, setSupplierId] = useState(initialData?.supplierId || '');
+  const [categories, setCategories] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
   const [sellingPrice, setSellingPrice] = useState('');
   const [finalPrice, setFinalPrice] = useState('');
   const [isActive, setIsActive] = useState(initialData?.isActive || true);
@@ -158,7 +160,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
       isIvaExempt,
       isActive,
       categoryId,
-      supplier : supplierId,
+      supplier: supplierId,
     };
 
     try {
