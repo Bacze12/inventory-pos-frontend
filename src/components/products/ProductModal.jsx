@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createProduct, updateProduct } from '../../api/products';
 import { isMobile, isTablet } from 'react-device-detect';
-import { FiCamera } from "react-icons/fi";
 import {
   Modal,
   ModalOverlay,
@@ -43,23 +42,50 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
   const [isActive, setIsActive] = useState(initialData?.isActive || true);
   const toast = useToast();
 
-  // Recalcular valores según el campo modificado
-  useEffect(() => {
-    const recalculateValues = () => {
-      const purchase = parseFloat(netCost) || 0;
-      const margin = parseFloat(marginPercent) / 100 || 0;
-      const gross = purchase * (1 + margin);
-      const netSale = gross;
-      const grossSale = isIvaExempt ? netSale : netSale * 1.19;
+  // Recalcular valores cuando un campo cambia
+  const recalculateValues = (field, value) => {
+    let purchase = parseFloat(netCost) || 0;
+    let margin = parseFloat(marginPercent) / 100 || 0;
+    let gross = parseFloat(grossCost) || 0;
+    let netSale = parseFloat(netSalePrice) || 0;
+    let grossSale = parseFloat(grossSalePrice) || 0;
 
-      setGrossCost(gross.toFixed(2));
-      setNetSalePrice(netSale.toFixed(2));
-      setGrossSalePrice(grossSale.toFixed(2));
-      setSellingPrice(gross.toFixed(2));
-      setFinalPrice(grossSale.toFixed(2));
-    };
-    recalculateValues();
-  }, [netCost, marginPercent, isIvaExempt]);
+    switch (field) {
+      case 'netCost':
+        purchase = parseFloat(value) || 0;
+        gross = purchase * (1 + margin);
+        netSale = gross;
+        grossSale = isIvaExempt ? netSale : netSale * 1.19;
+        break;
+      case 'marginPercent':
+        margin = parseFloat(value) / 100 || 0;
+        gross = purchase * (1 + margin);
+        netSale = gross;
+        grossSale = isIvaExempt ? netSale : netSale * 1.19;
+        break;
+      case 'grossSalePrice':
+        grossSale = parseFloat(value) || 0;
+        netSale = isIvaExempt ? grossSale : grossSale / 1.19;
+        gross = netSale;
+        purchase = gross / (1 + margin);
+        break;
+      case 'grossCost':
+        gross = parseFloat(value) || 0;
+        purchase = gross / (1 + margin);
+        netSale = gross;
+        grossSale = isIvaExempt ? netSale : netSale * 1.19;
+        break;
+      default:
+        break;
+    }
+
+    setNetCost(purchase.toFixed(2));
+    setGrossCost(gross.toFixed(2));
+    setNetSalePrice(netSale.toFixed(2));
+    setGrossSalePrice(grossSale.toFixed(2));
+    setSellingPrice(gross.toFixed(2));
+    setFinalPrice(grossSale.toFixed(2));
+  };
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -95,25 +121,6 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
     fetchCategories();
     fetchSuppliers();
   }, [toast]);
-
-  const handleFieldChange = (field, value) => {
-    switch (field) {
-      case 'netCost':
-        setNetCost(value);
-        break;
-      case 'grossCost':
-        setGrossCost(value);
-        break;
-      case 'netSalePrice':
-        setNetSalePrice(value);
-        break;
-      case 'grossSalePrice':
-        setGrossSalePrice(value);
-        break;
-      default:
-        break;
-    }
-  };
 
   const handleSubmit = async () => {
     if (!name || !categoryId || !supplierId || !netCost || !marginPercent) {
@@ -193,42 +200,11 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
 
           <SimpleGrid columns={2} spacing={5} mb={5}>
             <FormControl>
-              <FormLabel>Categoría</FormLabel>
-              <Select
-                placeholder="Seleccionar"
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
-              >
-                {categories.map((category) => (
-                  <option key={category._id} value={category._id}>
-                    {category.name}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl>
-              <FormLabel>Proveedor</FormLabel>
-              <Select
-                placeholder="Seleccionar"
-                value={supplierId}
-                onChange={(e) => setSupplierId(e.target.value)}
-              >
-                {suppliers.map((supplier) => (
-                  <option key={supplier._id} value={supplier._id}>
-                    {supplier.name}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-          </SimpleGrid>
-
-          <SimpleGrid columns={2} spacing={5} mb={5}>
-            <FormControl>
               <FormLabel>Costo Neto</FormLabel>
               <Input
                 type="number"
                 value={netCost}
-                onChange={(e) => handleFieldChange('netCost', e.target.value)}
+                onChange={(e) => recalculateValues('netCost', e.target.value)}
               />
             </FormControl>
             <FormControl>
@@ -236,7 +212,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               <Input
                 type="number"
                 value={grossCost}
-                onChange={(e) => handleFieldChange('grossCost', e.target.value)}
+                onChange={(e) => recalculateValues('grossCost', e.target.value)}
               />
             </FormControl>
           </SimpleGrid>
@@ -247,7 +223,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               <Input
                 type="number"
                 value={netSalePrice}
-                onChange={(e) => handleFieldChange('netSalePrice', e.target.value)}
+                onChange={(e) => recalculateValues('netSalePrice', e.target.value)}
               />
             </FormControl>
             <FormControl>
@@ -255,7 +231,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               <Input
                 type="number"
                 value={grossSalePrice}
-                onChange={(e) => handleFieldChange('grossSalePrice', e.target.value)}
+                onChange={(e) => recalculateValues('grossSalePrice', e.target.value)}
               />
             </FormControl>
           </SimpleGrid>
@@ -266,7 +242,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               <Input
                 type="number"
                 value={marginPercent}
-                onChange={(e) => setMarginPercent(e.target.value)}
+                onChange={(e) => recalculateValues('marginPercent', e.target.value)}
               />
             </FormControl>
             <FormControl>
@@ -278,6 +254,36 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               />
             </FormControl>
           </SimpleGrid>
+
+          <FormControl>
+            <FormLabel>Categoría</FormLabel>
+            <Select
+              placeholder="Seleccionar"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+            >
+              {categories.map((category) => (
+                <option key={category._id} value={category._id}>
+                  {category.name}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Proveedor</FormLabel>
+            <Select
+              placeholder="Seleccionar"
+              value={supplierId}
+              onChange={(e) => setSupplierId(e.target.value)}
+            >
+              {suppliers.map((supplier) => (
+                <option key={supplier._id} value={supplier._id}>
+                  {supplier.name}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
 
           <FormControl>
             <Checkbox isChecked={hasExtraTax} onChange={(e) => setHasExtraTax(e.target.checked)}>
