@@ -17,6 +17,7 @@ import {
   SimpleGrid,
 } from '@chakra-ui/react';
 import API from '../../api/api';
+import { createProduct, updateProduct } from '../../api/products';
 
 const ProductModal = ({ initialData, isOpen, onClose }) => {
   const [name, setName] = useState(initialData?.name || '');
@@ -71,46 +72,51 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
   }, [toast]);
 
   const handleNetCostChange = (value) => {
-    setNetCost(value);
-    const gross = hasExtraTax ? Math.ceil(value * 1.19) : Math.ceil(value);
+    const net = Math.ceil(parseFloat(value) || 0);
+    setNetCost(net);
+    const gross = hasExtraTax ? Math.ceil(net * 1.19) : net;
     setGrossCost(gross);
-    const netSale = Math.ceil(value * (1 + marginPercent / 100));
+    const netSale = Math.ceil(net * (1 + marginPercent / 100));
     setNetSalePrice(netSale);
-    const grossSale = hasExtraTax ? Math.ceil(netSale * 1.19) : Math.ceil(netSale);
+    const grossSale = hasExtraTax ? Math.ceil(netSale * 1.19) : netSale;
     setGrossSalePrice(grossSale);
   };
 
   const handleGrossCostChange = (value) => {
-    setGrossCost(value);
-    const net = hasExtraTax ? Math.ceil(value / 1.19) : Math.ceil(value);
+    const gross = Math.ceil(parseFloat(value) || 0);
+    setGrossCost(gross);
+    const net = hasExtraTax ? Math.ceil(gross / 1.19) : gross;
     setNetCost(net);
     const netSale = Math.ceil(net * (1 + marginPercent / 100));
     setNetSalePrice(netSale);
-    const grossSale = hasExtraTax ? Math.ceil(netSale * 1.19) : Math.ceil(netSale);
+    const grossSale = hasExtraTax ? Math.ceil(netSale * 1.19) : netSale;
     setGrossSalePrice(grossSale);
   };
 
   const handleNetSalePriceChange = (value) => {
-    setNetSalePrice(value);
-    const grossSale = hasExtraTax ? Math.ceil(value * 1.19) : Math.ceil(value);
+    const netSale = Math.ceil(parseFloat(value) || 0);
+    setNetSalePrice(netSale);
+    const grossSale = hasExtraTax ? Math.ceil(netSale * 1.19) : netSale;
     setGrossSalePrice(grossSale);
-    const margin = Math.ceil(((value - netCost) / netCost) * 100);
+    const margin = netCost > 0 ? Math.ceil(((netSale - netCost) / netCost) * 100) : 0;
     setMarginPercent(margin);
   };
 
   const handleGrossSalePriceChange = (value) => {
-    setGrossSalePrice(value);
-    const netSale = hasExtraTax ? Math.ceil(value / 1.19) : Math.ceil(value);
+    const grossSale = Math.ceil(parseFloat(value) || 0);
+    setGrossSalePrice(grossSale);
+    const netSale = hasExtraTax ? Math.ceil(grossSale / 1.19) : grossSale;
     setNetSalePrice(netSale);
-    const margin = Math.ceil(((netSale - netCost) / netCost) * 100);
+    const margin = netCost > 0 ? Math.ceil(((netSale - netCost) / netCost) * 100) : 0;
     setMarginPercent(margin);
   };
 
   const handleMarginChange = (value) => {
-    setMarginPercent(value);
-    const netSale = Math.ceil(netCost * (1 + value / 100));
+    const margin = Math.ceil(parseFloat(value) || 0);
+    setMarginPercent(margin);
+    const netSale = Math.ceil(netCost * (1 + margin / 100));
     setNetSalePrice(netSale);
-    const grossSale = hasExtraTax ? Math.ceil(netSale * 1.19) : Math.ceil(netSale);
+    const grossSale = hasExtraTax ? Math.ceil(netSale * 1.19) : netSale;
     setGrossSalePrice(grossSale);
   };
 
