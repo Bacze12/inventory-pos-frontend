@@ -28,9 +28,7 @@ const NavItems = [
   { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
   { name: 'POS', icon: ShoppingCart, path: '/pos' },
   {
-    name: 'Mantenimiento',
-    icon: MdInventory,
-    children: [
+    name: 'Mantenimiento', icon: MdInventory, children: [
       { name: 'Productos', icon: Tags, path: '/products' },
       { name: 'Inventario', icon: MdInventory, path: '/inventory' },
       { name: 'Usuarios', icon: Users, path: '/users' },
@@ -42,7 +40,7 @@ const NavItems = [
 ];
 
 const CollapsibleSidebar = ({ isOpen, onToggle }) => {
-  const [isMaintenanceOpen] = useState(false);
+  const [isMaintenanceOpen, setIsMaintenanceOpen] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem('token'); // Solo dependemos del token
 
@@ -52,6 +50,10 @@ const CollapsibleSidebar = ({ isOpen, onToggle }) => {
       navigate('/login');
     }
   }, [token, navigate]);
+
+  const toggleMaintenance = () => {
+    setIsMaintenanceOpen(!isMaintenanceOpen);
+  };
 
   const bg = useColorModeValue('gray.100', 'gray.700');
   const sidebarBg = useColorModeValue('linear(to-t, green.300, gray.50)', 'gray.600');
@@ -88,7 +90,7 @@ const CollapsibleSidebar = ({ isOpen, onToggle }) => {
           cursor="pointer"
           bg={isActive ? activeBg : 'transparent'}
           _hover={{ bg }}
-          onClick={() =>  handleNavigation(item.path)}
+          onClick={() =>  setIsMaintenanceOpen(!isMaintenanceOpen)}
         >
           <Icon
             mr={isOpen ? '4' : '0'}
