@@ -55,10 +55,10 @@ const HomeCashier = () => {
                 <Flex align="center" mb={4}>
                     <Icon as={FaShoppingCart} boxSize={6} color="blue.500" />
                     <Text fontWeight="bold" ml={4}>
-                    Ventas
+                    POS
                     </Text>
                 </Flex>
-                <Text color="gray.950">Gestiona tus ventas y transacciones</Text>
+                <Text color="gray.950">Genera tus ventas aqui</Text>
                 </GridItem>
 
                 <GridItem
