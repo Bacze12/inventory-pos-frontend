@@ -31,8 +31,8 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
   const [hasExtraTax, setHasExtraTax] = useState(initialData?.hasExtraTax || false);
   const [extraTaxRate, setExtraTaxRate] = useState(initialData?.extraTaxRate || '');
   const [isIvaExempt, setIsIvaExempt] = useState(initialData?.isIvaExempt || false);
-  const [categoryId, setCategoryId] = useState(initialData?.categoryId || '');
-  const [supplierId, setSupplierId] = useState(initialData?.supplierId || '');
+  const [categoryId, setCategoryId] = useState(initialData?.categoryId?.toString() || '');
+  const [supplierId, setSupplierId] = useState(initialData?.supplierId?.toString() || '');
   const [categories, setCategories] = useState([]);
   const [formData] = useState(initialData || {});
   const [suppliers, setSuppliers] = useState([]);
@@ -217,8 +217,8 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
       marginPercent: parseFloat(marginPercent) || 0,
       isIvaExempt,
       isActive,
-      categoryId: Number(categoryId),
-      supplierId: Number(supplierId)
+      categoryId: parseInt(categoryId, 10) || null,
+      supplierId: parseInt(supplierId, 10) || null,
     };
 
     console.log('Datos del producto a enviar:', productData);
@@ -247,6 +247,28 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
       duration: 5000,
       isClosable: true,
     });
+
+    if (!categoryId || isNaN(parseInt(categoryId, 10))) {
+      toast({
+        title: "Error de validación",
+        description: "La categoría es obligatoria.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+    
+    if (!supplierId || isNaN(parseInt(supplierId, 10))) {
+      toast({
+        title: "Error de validación",
+        description: "El proveedor es obligatorio.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
 
     console.log('Validando finalPrice:', finalPrice);
     if (finalPrice % 10 !== 0) {
