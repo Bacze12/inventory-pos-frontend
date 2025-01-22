@@ -200,10 +200,14 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
       supplierId: parseInt(supplierId, 10) || null,
     };
 
+    console.log('Datos del producto a enviar:', productData);
+
     try {
       if (initialData) {
+        console.log('Actualizando producto:', initialData.id);
         await updateProduct(initialData.id, formData);
       } else {
+        console.log('Creando nuevo producto');
         await createProduct(productData);
       }
       toast({
@@ -222,7 +226,8 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
       duration: 5000,
       isClosable: true,
     });
-
+    
+    console.log('Validando finalPrice:', finalPrice);
     if (finalPrice % 10 !== 0) {
       toast({
         title: 'Error',
