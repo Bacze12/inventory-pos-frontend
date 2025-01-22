@@ -28,7 +28,9 @@ const RegisterModal = ({ isOpen, onClose, onSubmit }) => {
   const toast = useToast();
 
   const handleRegister = () => {
-    if (!name || !email || !password) {
+    const tenantId = localStorage.getItem('tenantId'); // Obtener el tenantId del almacenamiento local
+
+    if (!name || !email || !password || !tenantId) {
       toast({
         title: 'Campos incompletos',
         description: 'Por favor, completa todos los campos.',
@@ -50,7 +52,7 @@ const RegisterModal = ({ isOpen, onClose, onSubmit }) => {
       return;
     }
 
-    onSubmit({ name, email, password });
+    onSubmit({ name, email, password, tenantId });
     onClose();
     setName('');
     setEmail('');

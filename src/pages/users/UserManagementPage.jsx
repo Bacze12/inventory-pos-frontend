@@ -102,6 +102,9 @@ const UserManagementPage = () => {
   };
 
   const handleCreateUser = async () => {
+    const tenantId = localStorage.getItem('tenantId'); // Obtener el tenantId del almacenamiento local
+    const newUserWithTenantId = { ...newUser, tenantId }; // Incluir el tenantId en los datos del nuevo usuario
+
     if (!newUser.email || !newUser.name || !newUser.password || !newUser.role) {
       toast({
         title: 'Todos los campos son requeridos.',
@@ -113,7 +116,7 @@ const UserManagementPage = () => {
     }
 
     try {
-      await API.post('/auth/register', newUser);
+      await API.post('/users', newUserWithTenantId);
       toast({
         title: 'Usuario creado con éxito.',
         status: 'success',
