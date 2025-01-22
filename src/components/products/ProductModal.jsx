@@ -13,32 +13,28 @@ import {
   Button,
   Checkbox,
   Select,
-  SimpleGrid,
   useToast,
+  SimpleGrid,
 } from '@chakra-ui/react';
 import API from '../../api/api';
 
 const ProductModal = ({ initialData, isOpen, onClose }) => {
   const [name, setName] = useState(initialData?.name || '');
   const [sku, setSku] = useState(initialData?.sku || '');
-  const [costNet, setCostNet] = useState(initialData?.purchasePrice || '');
-  const [costGross, setCostGross] = useState('');
-  const [saleNet, setSaleNet] = useState('');
-  const [saleGross, setSaleGross] = useState('');
-  const [margin, setMargin] = useState('');
+  const [netCost, setNetCost] = useState(initialData?.netCost || '');
+  const [grossCost, setGrossCost] = useState(initialData?.grossCost || '');
+  const [netSalePrice, setNetSalePrice] = useState(initialData?.netSalePrice || '');
+  const [grossSalePrice, setGrossSalePrice] = useState(initialData?.grossSalePrice || '');
+  const [marginPercent, setMarginPercent] = useState(initialData?.marginPercent || '');
   const [stock, setStock] = useState(initialData?.stock || '');
   const [categoryId, setCategoryId] = useState(initialData?.categoryId || '');
   const [supplierId, setSupplierId] = useState(initialData?.supplierId || '');
   const [categories, setCategories] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
-  const [hasExtraTax, setHasExtraTax] = useState(false);
-  const [isIvaExempt, setIsIvaExempt] = useState(false);
+  const [hasExtraTax, setHasExtraTax] = useState(initialData?.hasExtraTax || false);
+  const [isIvaExempt, setIsIvaExempt] = useState(initialData?.isIvaExempt || false);
   const toast = useToast();
 
-  // Constants
-  const IVA_RATE = 0.19; // 19%
-
-  // Fetch categories and suppliers on load
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -74,76 +70,75 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
     fetchSuppliers();
   }, [toast]);
 
-  // Recalculate values when inputs change
-  useEffect(() => {
-    if (costNet) {
-      const net = parseFloat(costNet) || 0;
-      const gross = isIvaExempt ? net : net * (1 + IVA_RATE);
-      setCostGross(gross.toFixed(2));
-
-      if (margin) {
-        const marginRate = parseFloat(margin) / 100 || 0;
-        const saleNetCalc = net * (1 + marginRate);
-        const saleGrossCalc = isIvaExempt ? saleNetCalc : saleNetCalc * (1 + IVA_RATE);
-        setSaleNet(saleNetCalc.toFixed(2));
-        setSaleGross(saleGrossCalc.toFixed(2));
-      }
-    }
-  }, [costNet, margin, isIvaExempt]);
-
-  const handleCostGrossChange = (value) => {
-    const gross = parseFloat(value) || 0;
-    const net = isIvaExempt ? gross : gross / (1 + IVA_RATE);
-    setCostNet(net.toFixed(2));
-    setCostGross(value);
+  const handleNetCostChange = (value) => {
+    setNetCost(value);
+    const gross = hasExtraTax ? Math.ceil(value * 1.19) : Math.ceil(value);
+    setGrossCost(gross);
+    const netSale = Math.ceil(value * (1 + marginPercent / 100));
+    setNetSalePrice(netSale);
+    const grossSale = hasExtraTax ? Math.ceil(netSale * 1.19) : Math.ceil(netSale);
+    setGrossSalePrice(grossSale);
   };
 
-  const handleSaleNetChange = (value) => {
-    const net = parseFloat(value) || 0;
-    const marginCalc = ((net / parseFloat(costNet || 1)) - 1) * 100;
-    const gross = isIvaExempt ? net : net * (1 + IVA_RATE);
-    setSaleNet(value);
-    setSaleGross(gross.toFixed(2));
-    setMargin(marginCalc.toFixed(2));
+  const handleGrossCostChange = (value) => {
+    setGrossCost(value);
+    const net = hasExtraTax ? Math.ceil(value / 1.19) : Math.ceil(value);
+    setNetCost(net);
+    const netSale = Math.ceil(net * (1 + marginPercent / 100));
+    setNetSalePrice(netSale);
+    const grossSale = hasExtraTax ? Math.ceil(netSale * 1.19) : Math.ceil(netSale);
+    setGrossSalePrice(grossSale);
   };
 
-  const handleSaleGrossChange = (value) => {
-    const gross = parseFloat(value) || 0;
-    const net = isIvaExempt ? gross : gross / (1 + IVA_RATE);
-    const marginCalc = ((net / parseFloat(costNet || 1)) - 1) * 100;
-    setSaleGross(value);
-    setSaleNet(net.toFixed(2));
-    setMargin(marginCalc.toFixed(2));
+  const handleNetSalePriceChange = (value) => {
+    setNetSalePrice(value);
+    const grossSale = hasExtraTax ? Math.ceil(value * 1.19) : Math.ceil(value);
+    setGrossSalePrice(grossSale);
+    const margin = Math.ceil(((value - netCost) / netCost) * 100);
+    setMarginPercent(margin);
+  };
+
+  const handleGrossSalePriceChange = (value) => {
+    setGrossSalePrice(value);
+    const netSale = hasExtraTax ? Math.ceil(value / 1.19) : Math.ceil(value);
+    setNetSalePrice(netSale);
+    const margin = Math.ceil(((netSale - netCost) / netCost) * 100);
+    setMarginPercent(margin);
   };
 
   const handleMarginChange = (value) => {
-    const marginRate = parseFloat(value) / 100 || 0;
-    const net = parseFloat(costNet) || 0;
-    const saleNetCalc = net * (1 + marginRate);
-    const saleGrossCalc = isIvaExempt ? saleNetCalc : saleNetCalc * (1 + IVA_RATE);
-    setMargin(value);
-    setSaleNet(saleNetCalc.toFixed(2));
-    setSaleGross(saleGrossCalc.toFixed(2));
+    setMarginPercent(value);
+    const netSale = Math.ceil(netCost * (1 + value / 100));
+    setNetSalePrice(netSale);
+    const grossSale = hasExtraTax ? Math.ceil(netSale * 1.19) : Math.ceil(netSale);
+    setGrossSalePrice(grossSale);
   };
 
   const handleSubmit = async () => {
     const productData = {
       name,
       sku,
-      purchasePrice: parseFloat(costNet),
-      sellingPrice: parseFloat(saleNet),
-      marginPercent: parseFloat(margin),
-      stock: parseInt(stock, 10) || 0,
+      netCost: parseInt(netCost, 10),
+      grossCost: parseInt(grossCost, 10),
+      netSalePrice: parseInt(netSalePrice, 10),
+      grossSalePrice: parseInt(grossSalePrice, 10),
+      marginPercent: parseInt(marginPercent, 10),
+      stock: parseInt(stock, 10),
       categoryId,
       supplierId,
-      isActive: true,
+      hasExtraTax,
+      isIvaExempt,
     };
 
     try {
-      await createProduct(productData);
+      if (initialData) {
+        await updateProduct(initialData.id, productData);
+      } else {
+        await createProduct(productData);
+      }
       toast({
         title: 'Producto guardado',
-        description: 'El producto ha sido guardado exitosamente.',
+        description: 'El producto se ha guardado con éxito.',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -175,51 +170,51 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
             <FormLabel>SKU</FormLabel>
             <Input value={sku} onChange={(e) => setSku(e.target.value)} />
           </FormControl>
-          <SimpleGrid columns={2} spacing={5}>
+          <SimpleGrid columns={2} spacing={5} mb={4}>
             <FormControl>
               <FormLabel>Costo Neto</FormLabel>
               <Input
                 type="number"
-                value={costNet}
-                onChange={(e) => setCostNet(e.target.value)}
+                value={netCost}
+                onChange={(e) => handleNetCostChange(e.target.value)}
               />
             </FormControl>
             <FormControl>
               <FormLabel>Costo Bruto</FormLabel>
               <Input
                 type="number"
-                value={costGross}
-                onChange={(e) => handleCostGrossChange(e.target.value)}
+                value={grossCost}
+                onChange={(e) => handleGrossCostChange(e.target.value)}
               />
             </FormControl>
           </SimpleGrid>
-          <SimpleGrid columns={2} spacing={5}>
+          <SimpleGrid columns={3} spacing={5} mb={4}>
             <FormControl>
               <FormLabel>Venta Neto</FormLabel>
               <Input
                 type="number"
-                value={saleNet}
-                onChange={(e) => handleSaleNetChange(e.target.value)}
+                value={netSalePrice}
+                onChange={(e) => handleNetSalePriceChange(e.target.value)}
               />
             </FormControl>
             <FormControl>
               <FormLabel>Venta Bruto</FormLabel>
               <Input
                 type="number"
-                value={saleGross}
-                onChange={(e) => handleSaleGrossChange(e.target.value)}
+                value={grossSalePrice}
+                onChange={(e) => handleGrossSalePriceChange(e.target.value)}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Margen (%)</FormLabel>
+              <Input
+                type="number"
+                value={marginPercent}
+                onChange={(e) => handleMarginChange(e.target.value)}
               />
             </FormControl>
           </SimpleGrid>
-          <FormControl mt={4}>
-            <FormLabel>Margen (%)</FormLabel>
-            <Input
-              type="number"
-              value={margin}
-              onChange={(e) => handleMarginChange(e.target.value)}
-            />
-          </FormControl>
-          <FormControl mt={4}>
+          <FormControl mb={4}>
             <FormLabel>Stock</FormLabel>
             <Input
               type="number"
@@ -227,33 +222,51 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               onChange={(e) => setStock(e.target.value)}
             />
           </FormControl>
-          <FormControl mt={4}>
-            <FormLabel>Categoría</FormLabel>
-            <Select
-              placeholder="Seleccionar"
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
+          <SimpleGrid columns={2} spacing={5} mb={4}>
+            <FormControl>
+              <FormLabel>Categoría</FormLabel>
+              <Select
+                placeholder="Seleccionar"
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+              >
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl>
+              <FormLabel>Proveedor</FormLabel>
+              <Select
+                placeholder="Seleccionar"
+                value={supplierId}
+                onChange={(e) => setSupplierId(e.target.value)}
+              >
+                {suppliers.map((supplier) => (
+                  <option key={supplier.id} value={supplier.id}>
+                    {supplier.name}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+          </SimpleGrid>
+          <FormControl mb={4}>
+            <Checkbox
+              isChecked={hasExtraTax}
+              onChange={(e) => setHasExtraTax(e.target.checked)}
             >
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </Select>
+              Tiene Impuesto Extra
+            </Checkbox>
           </FormControl>
-          <FormControl mt={4}>
-            <FormLabel>Proveedor</FormLabel>
-            <Select
-              placeholder="Seleccionar"
-              value={supplierId}
-              onChange={(e) => setSupplierId(e.target.value)}
+          <FormControl mb={4}>
+            <Checkbox
+              isChecked={isIvaExempt}
+              onChange={(e) => setIsIvaExempt(e.target.checked)}
             >
-              {suppliers.map((supplier) => (
-                <option key={supplier.id} value={supplier.id}>
-                  {supplier.name}
-                </option>
-              ))}
-            </Select>
+              Exento de IVA
+            </Checkbox>
           </FormControl>
         </ModalBody>
         <ModalFooter>
