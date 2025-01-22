@@ -24,7 +24,7 @@ import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 
 const NavItems = [
   { name: 'Home', icon: Home, path: '/home' },
-  { name: 'Home Cashier', icon: Home, path: '/home-cajera', roles: ['cashier'] },
+  { name: 'Home Cashier', icon: Home, path: '/home-cajera', roles: ['cashier, ADMIN'] },
   { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
   { name: 'POS', icon: ShoppingCart, path: '/pos' },
   {
