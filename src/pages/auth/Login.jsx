@@ -40,7 +40,15 @@ const LoginPage = () => {
     setLoading(true);
     try {
       dispatch(loginStart());
+
+      // Datos enviados al backend
+      console.log('Datos enviados al backend:', { businessName, email, password });
+      
       const response = await API.post('/auth/login', { businessName, email, password });
+
+      // Respuesta del backend 
+      console.log('Respuesta del backend:', response.data);
+      
       const { token, user } = response.data;
 
       if (!token || !user) {
@@ -50,6 +58,8 @@ const LoginPage = () => {
       // Guardar el token
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
+      console.log('Token guardado:', token);
+      console.log('Usuario guardado:', user);
       dispatch(loginSuccess(user));
       
       showAlert({
@@ -61,6 +71,10 @@ const LoginPage = () => {
 
     } catch (error) {
       dispatch(loginFailure(error.message));
+      console.error('Error al iniciar sesión:', error);
+      if (error.response) {
+      console.error('Detalles del error:', error.response.data);
+      }
       showAlert({
         title: 'Error al iniciar sesión',
         description: error.response?.data?.message || 'Credenciales incorrectas',
