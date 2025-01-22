@@ -79,53 +79,53 @@ const CollapsibleSidebar = ({ isOpen, onToggle }) => {
     if (item.children) {
       return (
         <Box key={item.name}>
-          <Flex
-            align="center"
-            p="4"
-            mx={isOpen ? '4' : '2'}
-            borderRadius="lg"
-            role="group"
-            cursor="pointer"
-            bg={isActive ? activeBg : 'transparent'}
-            _hover={{ bg }}
-            onClick={() =>  handleNavigation(item.path)}
-          >
-            <Icon
-              mr={isOpen ? '4' : '0'}
-              fontSize="16"
-              as={item.icon}
-              color={isActive ? 'green.500' : undefined}
-            />
-            {isOpen && (
-            <>
-            <Text color={isActive ? 'green.500' : undefined}>{item.name}</Text>
-            <Icon as={isMaintenanceOpen ? ChevronUpIcon : ChevronDownIcon} ml="auto" />
-            </>
-            )}
-          </Flex>
-          <Collapse in={isMaintenanceOpen} animateOpacity>
-            <Box pl={8}>
-              {item.children.map((child) => (
-                <Flex
-                  key={child.name}
-                  align="center"
-                  p="4"
-                  mx={isOpen ? '4' : '2'}
-                  borderRadius="lg"
-                  role="group"
-                  cursor="pointer"
-                  bg={window.location.pathname === child.path ? bg : 'transparent'}
-                  _hover={{ bg }}
-                  onClick={() => navigate(child.path)}
-                >
-                  <Text>{child.name}</Text>
-                </Flex>
-              ))}
-            </Box>
-          </Collapse>
-        </Box>
-      );
-    }
+        <Flex
+          align="center"
+          p="4"
+          mx={isOpen ? '4' : '2'}
+          borderRadius="lg"
+          role="group"
+          cursor="pointer"
+          bg={isActive ? activeBg : 'transparent'}
+          _hover={{ bg }}
+          onClick={() =>  handleNavigation(item.path)}
+        >
+          <Icon
+            mr={isOpen ? '4' : '0'}
+            fontSize="16"
+            as={item.icon}
+            color={isActive ? 'green.500' : undefined}
+          />
+          {isOpen && (
+          <>
+          <Text color={isActive ? 'green.500' : undefined}>{item.name}</Text>
+          <Icon as={isMaintenanceOpen ? ChevronUpIcon : ChevronDownIcon} ml="auto" />
+          </>
+          )}
+        </Flex>
+        <Collapse in={isMaintenanceOpen} animateOpacity>
+              <Box pl={8}>
+                {item.children.map((child) => (
+                  <Flex
+                    key={child.name}
+                    align="center"
+                    p="4"
+                    mx={isOpen ? '4' : '2'}
+                    borderRadius="lg"
+                    role="group"
+                    cursor="pointer"
+                    bg={window.location.pathname === child.path ? bg : 'transparent'}
+                    _hover={{ bg }}
+                    onClick={() => navigate(child.path)}
+                  >
+                    <Text>{child.name}</Text>
+                  </Flex>
+                ))}
+              </Box>
+            </Collapse>
+          </Box>
+        );
+      }
 
     return (
       <Flex
