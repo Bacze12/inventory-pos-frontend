@@ -129,7 +129,7 @@ const Home = () => {
               colorScheme="green"
               variant="outline"
               flex="1"
-              onClick={() => navigate('/nueva-venta')}
+              onClick={() => navigate('/pos')}
             >
               Nueva Venta
             </Button>
