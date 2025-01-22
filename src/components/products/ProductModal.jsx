@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { createProduct, updateProduct } from '../../api/products';
-import Quagga from 'quagga';
 import { isMobile, isTablet } from 'react-device-detect';
 import { FiCamera } from "react-icons/fi";
 import {
@@ -37,34 +36,30 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
   const [sellingPrice, setSellingPrice] = useState('');
   const [finalPrice, setFinalPrice] = useState('');
   const [grossCost, setGrossCost] = useState('');
-  const [netCost, setNetCost] = useState('');
+  const [netCost, setNetCost] = useState(initialData?.purchasePrice || '');
   const [netSalePrice, setNetSalePrice] = useState('');
   const [grossSalePrice, setGrossSalePrice] = useState('');
   const [isActive, setIsActive] = useState(initialData?.isActive || true);
   const toast = useToast();
 
-  // Cálculo de precios dinámico
+  // Recalcular valores según el campo modificado
   useEffect(() => {
-    if (purchasePrice && marginPercent) {
+    if (netCost && marginPercent) {
       const marginMultiplier = 1 + marginPercent / 100;
-      const calculatedNetCost = parseFloat(purchasePrice);
-      const calculatedGrossCost = calculatedNetCost * marginMultiplier;
-
+      const calculatedGrossCost = parseFloat(netCost) * marginMultiplier;
       const calculatedNetSalePrice = calculatedGrossCost;
       const calculatedGrossSalePrice = isIvaExempt
         ? calculatedNetSalePrice
         : calculatedNetSalePrice * 1.19;
 
-      setNetCost(calculatedNetCost.toFixed(2));
       setGrossCost(calculatedGrossCost.toFixed(2));
       setNetSalePrice(calculatedNetSalePrice.toFixed(2));
       setGrossSalePrice(calculatedGrossSalePrice.toFixed(2));
       setSellingPrice(calculatedGrossCost.toFixed(2));
       setFinalPrice(calculatedGrossSalePrice.toFixed(2));
     }
-  }, [purchasePrice, marginPercent, isIvaExempt]);
+  }, [netCost, marginPercent, isIvaExempt]);
 
-  // Cargar categorías y proveedores
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -100,8 +95,12 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
     fetchSuppliers();
   }, [toast]);
 
+  const handleNetCostChange = (value) => {
+    setNetCost(value);
+  };
+
   const handleSubmit = async () => {
-    if (!name || !categoryId || !supplierId || !purchasePrice || !marginPercent) {
+    if (!name || !categoryId || !supplierId || !netCost || !marginPercent) {
       toast({
         title: "Error de validación",
         description: "Todos los campos obligatorios deben ser completados.",
@@ -115,7 +114,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
     const productData = {
       name,
       sku,
-      purchasePrice: parseFloat(purchasePrice),
+      purchasePrice: parseFloat(netCost),
       marginPercent: parseFloat(marginPercent),
       hasExtraTax,
       extraTaxRate: parseFloat(extraTaxRate) || 0,
@@ -178,7 +177,11 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
           <SimpleGrid columns={2} spacing={5} mb={5}>
             <FormControl>
               <FormLabel>Costo Neto</FormLabel>
-              <Input value={`$ ${netCost}`} isReadOnly />
+              <Input
+                type="number"
+                value={netCost}
+                onChange={(e) => handleNetCostChange(e.target.value)}
+              />
             </FormControl>
             <FormControl>
               <FormLabel>Costo Bruto</FormLabel>
@@ -204,14 +207,6 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
                 type="number"
                 value={marginPercent}
                 onChange={(e) => setMarginPercent(e.target.value)}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Precio de Compra</FormLabel>
-              <Input
-                type="number"
-                value={purchasePrice}
-                onChange={(e) => setPurchasePrice(e.target.value)}
               />
             </FormControl>
           </SimpleGrid>
