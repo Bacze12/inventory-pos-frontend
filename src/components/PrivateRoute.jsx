@@ -1,16 +1,18 @@
-import React from 'react';
+import React from 'react'; 
 import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Spinner, Center } from '@chakra-ui/react';
 
 const PrivateRoute = ({ children }) => {
-    const user = useSelector((state) => state.auth.user);
-    const token = localStorage.getItem('token');
+    // Obtén el token desde el estado global de Redux
+    const token = useSelector((state) => state.auth.token);
     const location = useLocation();
     const isLoading = useSelector((state) => state.auth.isLoading);
 
-    console.log('Auth state:', { user, token, currentPath: location.pathname });
+    // Depuración: muestra el estado actual de autenticación
+    console.log('Auth state:', { token, currentPath: location.pathname });
 
+    // Muestra un spinner mientras se carga la autenticación
     if (isLoading) {
         return (
             <Center h="100vh">
@@ -19,11 +21,12 @@ const PrivateRoute = ({ children }) => {
         );
     }
 
-    if (!user || !token) {
-        // Guarda la ruta actual para redireccionar después del login
+    // Si no hay token, redirige al login
+    if (!token) {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
+    // Si hay token, muestra los hijos de esta ruta
     return children;
 };
 
