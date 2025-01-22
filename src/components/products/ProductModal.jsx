@@ -188,6 +188,27 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
 
   const handleSubmit = async () => {
 
+    // Validación de campos requeridos
+    console.log('Valores originales:', {
+      categoryId,
+      supplierId,
+      purchasePrice,
+      sellingPrice,
+      name
+    });
+
+    // Validar campos obligatorios
+    if (!name || !categoryId || !supplierId) {
+      toast({
+        title: "Error de validación",
+        description: "Todos los campos son obligatorios",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
     const productData = {
       name,
       purchasePrice: parseFloat(purchasePrice) || 0,
@@ -196,8 +217,8 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
       marginPercent: parseFloat(marginPercent) || 0,
       isIvaExempt,
       isActive,
-      categoryId: parseInt(categoryId, 10) || null,
-      supplierId: parseInt(supplierId, 10) || null,
+      categoryId: Number(categoryId),
+      supplierId: Number(supplierId)
     };
 
     console.log('Datos del producto a enviar:', productData);
@@ -226,7 +247,7 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
       duration: 5000,
       isClosable: true,
     });
-    
+
     console.log('Validando finalPrice:', finalPrice);
     if (finalPrice % 10 !== 0) {
       toast({
