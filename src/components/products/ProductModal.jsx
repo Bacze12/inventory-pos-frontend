@@ -37,6 +37,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
   const [sellingPrice, setSellingPrice] = useState('');
   const [finalPrice, setFinalPrice] = useState('');
   const [isActive, setIsActive] = useState(initialData?.isActive || true);
+  const [stock, setStock] = useState(initialData?.stock || 0);
   const toast = useToast();
 
   // Cálculo de precios dinámico
@@ -93,86 +94,41 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
     fetchSuppliers();
   }, [toast]);
 
-  // Escaneo de código de barras
-  const startScanner = () => {
-    Quagga.init(
-      {
-        inputStream: {
-          type: 'LiveStream',
-          target: document.querySelector('#scanner-container'),
-          constraints: {
-            facingMode: 'environment',
-          },
-        },
-        decoder: {
-          readers: ['ean_reader'],
-        },
-      },
-      (err) => {
-        if (err) {
-          toast({
-            title: 'Error al iniciar el escáner',
-            description: err.message,
-            status: 'error',
-            duration: 3000,
-            isClosable: true,
-          });
-          return;
-        }
-        Quagga.start();
-      }
-    );
-
-    Quagga.onDetected((data) => {
-      setSku(data.codeResult.code);
+  const handleSubmit = async () => {
+    if (!name || !categoryId || !supplierId || !purchasePrice || !marginPercent || stock === null) {
       toast({
-        title: 'Código detectado',
-        description: `Código de barras: ${data.codeResult.code}`,
-        status: 'success',
+        title: "Error de validación",
+        description: "Todos los campos obligatorios deben ser completados.",
+        status: "error",
         duration: 3000,
         isClosable: true,
       });
-      Quagga.stop();
-    });
-  };
+      return;
+    }
 
-  const handleSubmit = async () => {
-  if (!name || !categoryId || !supplierId || !purchasePrice || !marginPercent) {
-    toast({
-      title: "Error de validación",
-      description: "Todos los campos obligatorios deben ser completados.",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
-    return;
-  }
+    const productData = {
+      name,
+      sku,
+      purchasePrice: parseFloat(purchasePrice),
+      marginPercent: parseFloat(marginPercent),
+      hasExtraTax,
+      extraTaxRate: hasExtraTax ? parseFloat(extraTaxRate) || 0 : 0,
+      sellingPrice: parseFloat(sellingPrice),
+      finalPrice: parseFloat(finalPrice),
+      isIvaExempt,
+      isActive,
+      categoryId,
+      supplier: supplierId,
+      stock: parseInt(stock),
+    };
 
-  const productData = {
-    name,
-    sku,
-    purchasePrice: parseFloat(purchasePrice),
-    marginPercent: parseFloat(marginPercent),
-    hasExtraTax,
-    extraTaxRate: parseFloat(extraTaxRate) || 0,
-    sellingPrice: parseFloat(sellingPrice),
-    finalPrice: parseFloat(finalPrice),
-    isIvaExempt,
-    isActive,
-    categoryId,
-    supplier: supplierId,
-  };
+    try {
+      const response = initialData
+        ? await updateProduct(initialData.id, productData)
+        : await createProduct(productData);
 
-  try {
-    const response = initialData
-      ? await updateProduct(initialData.id, productData)
-      : await createProduct(productData);
+      console.log('Respuesta del backend:', response);
 
-    // Depuración: Verifica qué retorna el backend
-    console.log('Respuesta del backend:', response);
-
-    // Si el backend retorna un statusCode 201
-    if (response && response.statusCode === 201) {
       toast({
         title: "Producto guardado",
         description: "El producto se ha guardado con éxito.",
@@ -181,23 +137,18 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
         isClosable: true,
       });
       onClose();
-    } else {
-      throw new Error('Error inesperado en la respuesta del backend.');
+    } catch (error) {
+      console.error('Error al guardar el producto:', error);
+
+      toast({
+        title: "Error al guardar el producto",
+        description: error.response?.data?.message || "Ocurrió un error inesperado.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
-  } catch (error) {
-    console.error('Error al guardar el producto:', error);
-
-    toast({
-      title: "Error al guardar el producto",
-      description: error.response?.data?.message || "Ocurrió un error inesperado.",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
-  }
-};
-
-
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -206,81 +157,40 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
         <ModalHeader>{initialData ? 'Editar Producto' : 'Agregar Producto'}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
+          {/* Nombre */}
           <FormControl mb={4}>
             <FormLabel>Nombre</FormLabel>
             <Input value={name} onChange={(e) => setName(e.target.value)} />
           </FormControl>
+          {/* Stock */}
           <FormControl mb={4}>
-            <FormLabel>Código de Barra</FormLabel>
-            <Input value={sku} onChange={(e) => setSku(e.target.value)} />
-            {(isMobile || isTablet) && (
-              <Button mt={2} onClick={startScanner}>
-                Escanear <FiCamera />
-              </Button>
-            )}
-          </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Categoría</FormLabel>
-            <Select
-              placeholder="Seleccionar"
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-            >
-              {categories.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.name}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Proveedor</FormLabel>
-            <Select
-              placeholder="Seleccionar"
-              value={supplierId}
-              onChange={(e) => setSupplierId(e.target.value)}
-            >
-              {suppliers.map((supplier) => (
-                <option key={supplier._id} value={supplier._id}>
-                  {supplier.name}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Precio de Compra</FormLabel>
+            <FormLabel>Stock</FormLabel>
             <Input
               type="number"
-              value={purchasePrice}
-              onChange={(e) => setPurchasePrice(e.target.value)}
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
             />
           </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Margen (%)</FormLabel>
-            <Input
-              type="number"
-              value={marginPercent}
-              onChange={(e) => setMarginPercent(e.target.value)}
-            />
-          </FormControl>
-          <SimpleGrid columns={2} spacing={5} mt={5} border="1px solid #ccc" p={3} borderRadius="md">
-            <FormControl>
-              <FormLabel>Precio Neto Calculado</FormLabel>
-              <Input isReadOnly value={`$ ${sellingPrice}`} />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Precio Final Calculado</FormLabel>
-              <Input isReadOnly value={`$ ${finalPrice}`} />
-            </FormControl>
-          </SimpleGrid>
+          {/* Has Extra Tax */}
           <FormControl mt={4}>
             <Checkbox
-              isChecked={isIvaExempt}
-              onChange={(e) => setIsIvaExempt(e.target.checked)}
+              isChecked={hasExtraTax}
+              onChange={(e) => setHasExtraTax(e.target.checked)}
             >
-              Exento de IVA
+              ¿Aplicar impuesto adicional?
             </Checkbox>
           </FormControl>
+          {/* ExtraTaxRate */}
+          {hasExtraTax && (
+            <FormControl mb={4}>
+              <FormLabel>Tasa de Impuesto Adicional (%)</FormLabel>
+              <Input
+                type="number"
+                value={extraTaxRate}
+                onChange={(e) => setExtraTaxRate(e.target.value)}
+              />
+            </FormControl>
+          )}
           <FormControl mt={4}>
             <Checkbox
               isChecked={isActive}
