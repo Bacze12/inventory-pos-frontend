@@ -158,7 +158,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
       isIvaExempt,
       isActive,
       categoryId,
-      supplierId,
+      supplier : supplierId,
     };
 
     try {
