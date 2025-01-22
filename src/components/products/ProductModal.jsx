@@ -137,10 +137,22 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
   };
 
   const handleSubmit = async () => {
+    // Validar campos obligatorios y formato de ObjectId
     if (!name || !categoryId || !supplierId || !purchasePrice || !marginPercent) {
       toast({
         title: "Error de validación",
         description: "Todos los campos obligatorios deben ser completados.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (supplierId.length !== 24) {
+      toast({
+        title: "Error de validación",
+        description: "El proveedor seleccionado no es válido.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -162,6 +174,9 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
       categoryId,
       supplier: supplierId,
     };
+
+    // Depuración: Verificar datos antes de enviar
+    console.log('Datos del producto a enviar:', productData);
 
     try {
       if (initialData) {
@@ -216,7 +231,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               onChange={(e) => setCategoryId(e.target.value)}
             >
               {categories.map((category) => (
-                <option key={category.id} value={category.id}>
+                <option key={category._id} value={category._id}>
                   {category.name}
                 </option>
               ))}
@@ -230,7 +245,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               onChange={(e) => setSupplierId(e.target.value)}
             >
               {suppliers.map((supplier) => (
-                <option key={supplier.id} value={supplier.id}>
+                <option key={supplier._id} value={supplier._id}>
                   {supplier.name}
                 </option>
               ))}
