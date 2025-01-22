@@ -137,7 +137,6 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
   };
 
   const handleSubmit = async () => {
-  // Validar campos obligatorios y formato de ObjectId
   if (!name || !categoryId || !supplierId || !purchasePrice || !marginPercent) {
     toast({
       title: "Error de validación",
@@ -164,19 +163,16 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
     supplier: supplierId,
   };
 
-  console.log('Datos del producto a enviar:', productData);
-
   try {
-    // Llamada al backend
     const response = initialData
       ? await updateProduct(initialData.id, productData)
       : await createProduct(productData);
 
-    // Depurar respuesta del backend
+    // Depuración: Verifica qué retorna el backend
     console.log('Respuesta del backend:', response);
 
-    // Validar que la respuesta contiene lo esperado
-    if (response && response._id) {
+    // Si el backend retorna un statusCode 201
+    if (response && response.statusCode === 201) {
       toast({
         title: "Producto guardado",
         description: "El producto se ha guardado con éxito.",
@@ -186,21 +182,21 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
       });
       onClose();
     } else {
-      // Si no hay un ID en la respuesta, lanzar un error
-      throw new Error('La respuesta del backend no contiene el producto creado.');
+      throw new Error('Error inesperado en la respuesta del backend.');
     }
   } catch (error) {
-    console.error('Error al guardar el producto:', error.message);
+    console.error('Error al guardar el producto:', error);
 
     toast({
       title: "Error al guardar el producto",
-      description: error.message || "Ocurrió un error inesperado.",
+      description: error.response?.data?.message || "Ocurrió un error inesperado.",
       status: "error",
       duration: 3000,
       isClosable: true,
     });
   }
 };
+
 
 
   return (
