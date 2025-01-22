@@ -32,17 +32,11 @@ export const updateProduct = async (id, product) => {
 };
 
 export const createProduct = async (productData) => {
-  const response = await fetch(`${API}/products`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(productData),
-  });
+  const response = await API.post('/products', productData);
 
   if (!response.ok) {
     throw new Error('Error al crear el producto');
   }
 
-  return response.json();
+  return response.data;
 };
