@@ -157,12 +157,10 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
         <ModalHeader>{initialData ? 'Editar Producto' : 'Agregar Producto'}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {/* Nombre */}
           <FormControl mb={4}>
             <FormLabel>Nombre</FormLabel>
             <Input value={name} onChange={(e) => setName(e.target.value)} />
           </FormControl>
-          {/* Stock */}
           <FormControl mb={4}>
             <FormLabel>Stock</FormLabel>
             <Input
@@ -171,7 +169,59 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               onChange={(e) => setStock(e.target.value)}
             />
           </FormControl>
-          {/* Has Extra Tax */}
+          <FormControl mb={4}>
+            <FormLabel>Código de Barra</FormLabel>
+            <Input value={sku} onChange={(e) => setSku(e.target.value)} />
+            {(isMobile || isTablet) && (
+              <Button mt={2} onClick={startScanner}>
+                Escanear <FiCamera />
+              </Button>
+            )}
+          </FormControl>
+          <FormControl mb={4}>
+            <FormLabel>Categoría</FormLabel>
+            <Select
+              placeholder="Seleccionar"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+            >
+              {categories.map((category) => (
+                <option key={category._id} value={category._id}>
+                  {category.name}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl mb={4}>
+            <FormLabel>Proveedor</FormLabel>
+            <Select
+              placeholder="Seleccionar"
+              value={supplierId}
+              onChange={(e) => setSupplierId(e.target.value)}
+            >
+              {suppliers.map((supplier) => (
+                <option key={supplier._id} value={supplier._id}>
+                  {supplier.name}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl mb={4}>
+            <FormLabel>Precio de Compra</FormLabel>
+            <Input
+              type="number"
+              value={purchasePrice}
+              onChange={(e) => setPurchasePrice(e.target.value)}
+            />
+          </FormControl>
+          <FormControl mb={4}>
+            <FormLabel>Margen (%)</FormLabel>
+            <Input
+              type="number"
+              value={marginPercent}
+              onChange={(e) => setMarginPercent(e.target.value)}
+            />
+          </FormControl>
           <FormControl mt={4}>
             <Checkbox
               isChecked={hasExtraTax}
@@ -180,7 +230,6 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               ¿Aplicar impuesto adicional?
             </Checkbox>
           </FormControl>
-          {/* ExtraTaxRate */}
           {hasExtraTax && (
             <FormControl mb={4}>
               <FormLabel>Tasa de Impuesto Adicional (%)</FormLabel>
@@ -191,6 +240,14 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               />
             </FormControl>
           )}
+          <FormControl mt={4}>
+            <Checkbox
+              isChecked={isIvaExempt}
+              onChange={(e) => setIsIvaExempt(e.target.checked)}
+            >
+              Exento de IVA
+            </Checkbox>
+          </FormControl>
           <FormControl mt={4}>
             <Checkbox
               isChecked={isActive}
