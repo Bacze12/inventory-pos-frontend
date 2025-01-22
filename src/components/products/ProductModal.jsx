@@ -137,53 +137,46 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
   };
 
   const handleSubmit = async () => {
-    // Validar campos obligatorios y formato de ObjectId
-    if (!name || !categoryId || !supplierId || !purchasePrice || !marginPercent) {
-      toast({
-        title: "Error de validación",
-        description: "Todos los campos obligatorios deben ser completados.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
+  // Validar campos obligatorios y formato de ObjectId
+  if (!name || !categoryId || !supplierId || !purchasePrice || !marginPercent) {
+    toast({
+      title: "Error de validación",
+      description: "Todos los campos obligatorios deben ser completados.",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    });
+    return;
+  }
 
-    if (supplierId.length !== 24) {
-      toast({
-        title: "Error de validación",
-        description: "El proveedor seleccionado no es válido.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
+  const productData = {
+    name,
+    sku,
+    purchasePrice: parseFloat(purchasePrice),
+    marginPercent: parseFloat(marginPercent),
+    hasExtraTax,
+    extraTaxRate: parseFloat(extraTaxRate) || 0,
+    sellingPrice: parseFloat(sellingPrice),
+    finalPrice: parseFloat(finalPrice),
+    isIvaExempt,
+    isActive,
+    categoryId,
+    supplier: supplierId,
+  };
 
-    const productData = {
-      name,
-      sku,
-      purchasePrice: parseFloat(purchasePrice),
-      marginPercent: parseFloat(marginPercent),
-      hasExtraTax,
-      extraTaxRate: parseFloat(extraTaxRate) || 0,
-      sellingPrice: parseFloat(sellingPrice),
-      finalPrice: parseFloat(finalPrice),
-      isIvaExempt,
-      isActive,
-      categoryId,
-      supplier: supplierId,
-    };
+  console.log('Datos del producto a enviar:', productData);
 
-    // Depuración: Verificar datos antes de enviar
-    console.log('Datos del producto a enviar:', productData);
+  try {
+    // Llamada al backend
+    const response = initialData
+      ? await updateProduct(initialData.id, productData)
+      : await createProduct(productData);
 
-    try {
-      if (initialData) {
-        await updateProduct(initialData.id, productData);
-      } else {
-        await createProduct(productData);
-      }
+    // Depurar respuesta del backend
+    console.log('Respuesta del backend:', response);
+
+    // Validar que la respuesta contiene lo esperado
+    if (response && response._id) {
       toast({
         title: "Producto guardado",
         description: "El producto se ha guardado con éxito.",
@@ -192,16 +185,23 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
         isClosable: true,
       });
       onClose();
-    } catch (error) {
-      toast({
-        title: "Error al guardar el producto",
-        description: error.message,
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+    } else {
+      // Si no hay un ID en la respuesta, lanzar un error
+      throw new Error('La respuesta del backend no contiene el producto creado.');
     }
-  };
+  } catch (error) {
+    console.error('Error al guardar el producto:', error.message);
+
+    toast({
+      title: "Error al guardar el producto",
+      description: error.message || "Ocurrió un error inesperado.",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    });
+  }
+};
+
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
