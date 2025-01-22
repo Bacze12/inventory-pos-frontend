@@ -49,18 +49,16 @@ const LoginPage = () => {
       // Respuesta del backend 
       console.log('Respuesta del backend:', response.data);
       
-      const { token, user } = response.data;
+      const { access_token } = response.data;
 
-      if (!token || !user) {
+      if (!access_token) {
         throw new Error('Respuesta del servidor incompleta');
     }
       
       // Guardar el token
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      console.log('Token guardado:', token);
-      console.log('Usuario guardado:', user);
-      dispatch(loginSuccess(user));
+      localStorage.setItem('token', access_token);
+      console.log('Token guardado:', access_token);
+      dispatch(loginSuccess({ token: access_token }));
       
       showAlert({
         title: 'Inicio de sesión exitoso',
