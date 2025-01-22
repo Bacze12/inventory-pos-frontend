@@ -34,7 +34,6 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
   const [categoryId, setCategoryId] = useState(initialData?.categoryId?.toString() || '');
   const [supplierId, setSupplierId] = useState(initialData?.supplierId?.toString() || '');
   const [categories, setCategories] = useState([]);
-  const [formData] = useState(initialData || {});
   const [suppliers, setSuppliers] = useState([]);
   const [netCost, setNetCost] = useState([]);
   const [grossCost, setGrossCost] = useState([]);
@@ -210,23 +209,26 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
     }
 
     const productData = {
-      name,
-      purchasePrice: parseFloat(purchasePrice) || 0,
-      sellingPrice: parseFloat(sellingPrice) || 0,
-      finalPrice: parseFloat(finalPrice) || 0,
-      marginPercent: parseFloat(marginPercent) || 0,
+      name: name.trim(),
+      purchasePrice: Number(purchasePrice) || 0,
+      sellingPrice: Number(sellingPrice) || 0,
+      finalPrice: Number(finalPrice) || 0,
+      marginPercent: Number(marginPercent) || 0,
       isIvaExempt,
-      isActive,
-      categoryId: parseInt(categoryId, 10) || null,
-      supplierId: parseInt(supplierId, 10) || null,
+      hasExtraTax: false, // Agregar campo requerido
+      extraTaxRate: 0, // Agregar campo requerido
+      supplier: supplierId?.toString(), // Convertir a string según API
+      stock: 0, // Agregar campo requerido
+      categoryId: categoryId?.toString(), // Convertir a string según API
+      isActive
     };
 
-    console.log('Datos del producto a enviar:', productData);
+    console.log('Datos formateados según API:', productData);
 
     try {
       if (initialData) {
         console.log('Actualizando producto:', initialData.id);
-        await updateProduct(initialData.id, formData);
+        await updateProduct(initialData.id, productData);
       } else {
         console.log('Creando nuevo producto');
         await createProduct(productData);
