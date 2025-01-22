@@ -55,7 +55,12 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
     const fetchSuppliers = async () => {
       try {
         const response = await API.get('/suppliers');
-        setSuppliers(response.data);
+         setSuppliers(
+        response.data.map((supplier) => ({
+          id: supplier._id, // MongoDB usa _id como string
+          name: supplier.name,
+        }))
+      );
       } catch (error) {
         toast({
           title: 'Error al cargar proveedores',
