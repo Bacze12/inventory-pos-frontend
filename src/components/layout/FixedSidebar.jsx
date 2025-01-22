@@ -35,7 +35,7 @@ const NavItems: NavItem[] = [
   { name: 'POS', icon: ShoppingCart, path: '/pos' },
   { name: 'Productos', icon: Package, path: '/products' },
   { name: 'Ventas', icon: LineChart, path: '/sales' },
-  { name: 'Configuración', icon: Settings, path: '/settings', roles: ['admin'] },
+  { name: 'Configuración', icon: Settings, path: '/settings', roles: ['ADMIN'] },
   {name: 'Categorias', icon: Package, path: '/categories'},
 ];
 
