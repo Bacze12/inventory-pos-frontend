@@ -188,14 +188,16 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
 
     const productData = {
       name,
-      purchasePrice: parseFloat(purchasePrice),
-      sellingPrice: parseFloat(sellingPrice),
-      finalPrice: parseFloat(finalPrice),
-      marginPercent: parseFloat(marginPercent),
+      purchasePrice: parseFloat(purchasePrice) || 0,
+      sellingPrice: parseFloat(sellingPrice) || 0,
+      finalPrice: parseFloat(finalPrice) || 0,
+      marginPercent: parseFloat(marginPercent) || 0,
+      hasExtraTax,
+      extraTaxRate: parseFloat(extraTaxRate) || 0,
       isIvaExempt,
       isActive,
-      CategoryId: parseInt(categoryId, 10),
-      SupplierId: parseInt(supplierId, 10),
+      categoryId: parseInt(categoryId, 10) || null,
+      supplierId: parseInt(supplierId, 10) || null,
     };
 
     try {
