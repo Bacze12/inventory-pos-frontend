@@ -11,24 +11,12 @@ const API = axios.create({
 // Interceptor para agregar el token de autenticación
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-  const user = localStorage.getItem('user');
-  if (token && user) {
+  if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  config.withCredentials = true;
   return config;
+}, (error) => {
+  return Promise.reject(error);
 });
-
-// API.interceptors.response.use(
-//   (response) => response,
-//   (error) => {
-//     if (error.response?.status === 401) {
-//       localStorage.removeItem('token');
-//       localStorage.removeItem('user');
-//       window.location.href = '/login';
-//     }
-//     return Promise.reject(error);
-//   }
-// );
 
 export default API;
