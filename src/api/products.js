@@ -32,11 +32,20 @@ export const updateProduct = async (id, product) => {
 };
 
 export const createProduct = async (productData) => {
-  const response = await API.post('/products', productData);
+  try {
+    // Realiza la solicitud al backend
+    const response = await API.post('/products', productData);
 
-  if (!response.ok) {
-    throw new Error('Error al crear el producto');
+    // Verifica si la respuesta tiene un código de estado exitoso (201)
+    if (response.status !== 201) {
+      throw new Error(`Error al crear el producto: ${response.statusText || 'Estado inesperado'}`);
+    }
+
+    // Retorna los datos del producto creado
+    return response.data;
+  } catch (error) {
+    // Lanza un error si la solicitud falla
+    console.error('Error al crear el producto:', error);
+    throw new Error(error.response?.data?.message || 'Error al crear el producto');
   }
-
-  return response.data;
 };
