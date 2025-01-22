@@ -50,7 +50,7 @@ const Home = () => {
               p={6}
               cursor="pointer"
               _hover={{ shadow: 'lg' }}
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/')}
             >
               <Flex align="center" mb={4}>
                 <Icon as={FaShoppingCart} boxSize={6} color="blue.500" />
@@ -107,7 +107,7 @@ const Home = () => {
               borderColor="gray.200"
               cursor="pointer"
               _hover={{ shadow: 'lg' }}
-              onClick={() => navigate('/configuracion')}
+              onClick={() => navigate('/settings')}
             >
               <Flex align="center" mb={4}>
                 <Icon as={FaCog} boxSize={6} color="orange.500" />
@@ -147,7 +147,7 @@ const Home = () => {
               colorScheme="green"
               variant="outline"
               flex="1"
-              onClick={() => navigate('/inventario')}
+              onClick={() => navigate('/inventory')}
             >
               Inventario
             </Button>
