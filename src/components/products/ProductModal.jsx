@@ -190,27 +190,24 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
 
     const productData = {
       name,
+      price: parseFloat(sellingPrice) || 0,
+      categoryId,
+      supplierId,
       purchasePrice: parseFloat(purchasePrice) || 0,
-      sellingPrice: parseFloat(sellingPrice) || 0,
       finalPrice: parseFloat(finalPrice) || 0,
       marginPercent: parseFloat(marginPercent) || 0,
       hasExtraTax,
       extraTaxRate: parseFloat(extraTaxRate) || 0,
       isIvaExempt,
       isActive,
-      categoryId: parseInt(categoryId, 10) || null,
-      supplierId: parseInt(supplierId, 10) || null,
     };
 
     try {
       if (initialData) {
-        // Lógica para actualizar un producto existente
         await updateProduct(initialData.id, formData);
       } else {
-        // Lógica para agregar un nuevo producto
         await createProduct(productData);
       }
-      // Cerrar el modal o mostrar un mensaje de éxito
       toast({
       title: "Producto guardado.",
       description: "El producto ha sido guardado exitosamente.",
