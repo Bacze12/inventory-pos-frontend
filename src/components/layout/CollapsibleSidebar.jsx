@@ -51,9 +51,7 @@ const CollapsibleSidebar = ({ isOpen, onToggle }) => {
     }
   }, [token, navigate]);
 
-  const toggleMaintenance = () => {
-    setIsMaintenanceOpen(!isMaintenanceOpen);
-  };
+
 
   const bg = useColorModeValue('gray.100', 'gray.700');
   const sidebarBg = useColorModeValue('linear(to-t, green.300, gray.50)', 'gray.600');
@@ -63,15 +61,6 @@ const CollapsibleSidebar = ({ isOpen, onToggle }) => {
 
   const NavItem = ({ item }) => {
     const isActive = window.location.pathname === item.path;
-
-    const handleNavigation = (path) => {
-      if (token) {
-        navigate(path);
-      } else {
-        console.log('No autenticado, redirigiendo a login');
-        navigate('/login');
-      }
-    };
 
     // Si el elemento tiene roles, verificamos que sean compatibles (ajustado según sea necesario)
     if (item.roles && !item.roles.includes('default')) {
