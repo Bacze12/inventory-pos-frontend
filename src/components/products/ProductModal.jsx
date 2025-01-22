@@ -20,6 +20,7 @@ import {
   useToast,
   SimpleGrid,
 } from '@chakra-ui/react';
+import API from '../../api/api';
 
 const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
   const [name, setName] = useState(initialData?.name || '');
@@ -44,32 +45,29 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
   const [finalPrice, setFinalPrice] = useState(initialData?.finalPrice || '');
   const [netSalePrice, setNetSalePrice] = useState([]);
 
-  const API_URL = process.env.REACT_APP_API_URL;
-
-  
-    const handleNetCostChange = (e) => {
-      const value = parseFloat(e.target.value);
-      setNetCost(Math.round(value));
-      setGrossCost(Math.round(value * 1.19));
-    };
+  const handleNetCostChange = (e) => {
+    const value = parseFloat(e.target.value);
+    setNetCost(Math.round(value));
+    setGrossCost(Math.round(value * 1.19));
+  };
     
-    const handleGrossCostChange = (e) => {
-      const value = parseFloat(e.target.value);
-      setGrossCost(Math.round(value));
-      setNetCost(Math.round(value / 1.19));
-    };
+  const handleGrossCostChange = (e) => {
+    const value = parseFloat(e.target.value);
+    setGrossCost(Math.round(value));
+    setNetCost(Math.round(value / 1.19));
+  };
 
-    const handleNetSalePriceChange = (e) => {
-      const value = parseFloat(e.target.value);
-      setNetSalePrice(Math.round(value));
-      setFinalPrice(Math.round(value * 1.19));
-    };
+  const handleNetSalePriceChange = (e) => {
+    const value = parseFloat(e.target.value);
+    setNetSalePrice(Math.round(value));
+    setFinalPrice(Math.round(value * 1.19));
+  };
     
-    const handleGrossSalePriceChange = (e) => {
-      const value = parseFloat(e.target.value);
-      setFinalPrice(Math.round(value));
-      setNetSalePrice(Math.round(value / 1.19));
-    };
+  const handleGrossSalePriceChange = (e) => {
+    const value = parseFloat(e.target.value);
+    setFinalPrice(Math.round(value));
+    setNetSalePrice(Math.round(value / 1.19));
+  };
 
   const handleError = useCallback(
     (message, error) => {
@@ -88,11 +86,8 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
 
     const fetchCategories = async () => {
       try {
-        const response = await fetch(`${API_URL}categories`);
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setCategories(data);
-        }
+        const response = await API.get('/categories');
+        setCategories(response.data);
       } catch (error) {
         handleError('Error al cargar categorías:', error);
       }
@@ -100,11 +95,8 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
 
     const fetchSuppliers = async () => {
       try {
-        const response = await fetch(`${API_URL}suppliers`);
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setSuppliers(data);
-        }
+        const response = await API.get('/suppliers');
+        setSuppliers(response.data);
       } catch (error) {
         handleError('Error al cargar proveedores:', error);
       }
@@ -112,7 +104,7 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
 
     fetchCategories();
     fetchSuppliers();
-  }, [API_URL, handleError]);
+  }, [handleError]);
 
   useEffect(() => {
     setSellingPrice(Math.round(purchasePrice / 1.19));
