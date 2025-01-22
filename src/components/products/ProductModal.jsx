@@ -36,8 +36,8 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
   const [suppliers, setSuppliers] = useState([]);
   const [sellingPrice, setSellingPrice] = useState('');
   const [finalPrice, setFinalPrice] = useState('');
+  const [stock, setStock] = useState(initialData?.stock || '');
   const [isActive, setIsActive] = useState(initialData?.isActive || true);
-  const [stock, setStock] = useState(initialData?.stock || 0);
   const toast = useToast();
 
   // Cálculo de precios dinámico
@@ -94,8 +94,51 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
     fetchSuppliers();
   }, [toast]);
 
+  // Escaneo de código de barras
+  const startScanner = () => {
+    Quagga.init(
+      {
+        inputStream: {
+          type: 'LiveStream',
+          target: document.querySelector('#scanner-container'),
+          constraints: {
+            facingMode: 'environment',
+          },
+        },
+        decoder: {
+          readers: ['ean_reader'],
+        },
+      },
+      (err) => {
+        if (err) {
+          toast({
+            title: 'Error al iniciar el escáner',
+            description: err.message,
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+          });
+          return;
+        }
+        Quagga.start();
+      }
+    );
+
+    Quagga.onDetected((data) => {
+      setSku(data.codeResult.code);
+      toast({
+        title: 'Código detectado',
+        description: `Código de barras: ${data.codeResult.code}`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      Quagga.stop();
+    });
+  };
+
   const handleSubmit = async () => {
-    if (!name || !categoryId || !supplierId || !purchasePrice || !marginPercent || stock === null) {
+    if (!name || !categoryId || !supplierId || !purchasePrice || !marginPercent) {
       toast({
         title: "Error de validación",
         description: "Todos los campos obligatorios deben ser completados.",
@@ -112,14 +155,14 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
       purchasePrice: parseFloat(purchasePrice),
       marginPercent: parseFloat(marginPercent),
       hasExtraTax,
-      extraTaxRate: hasExtraTax ? parseFloat(extraTaxRate) || 0 : 0,
+      extraTaxRate: hasExtraTax ? parseFloat(extraTaxRate) : 0,
       sellingPrice: parseFloat(sellingPrice),
       finalPrice: parseFloat(finalPrice),
       isIvaExempt,
       isActive,
+      stock: parseInt(stock, 10),
       categoryId,
       supplier: supplierId,
-      stock: parseInt(stock),
     };
 
     try {
@@ -127,19 +170,17 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
         ? await updateProduct(initialData.id, productData)
         : await createProduct(productData);
 
-      console.log('Respuesta del backend:', response);
-
-      toast({
-        title: "Producto guardado",
-        description: "El producto se ha guardado con éxito.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-      onClose();
+      if (response) {
+        toast({
+          title: "Producto guardado",
+          description: "El producto se ha guardado con éxito.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        onClose();
+      }
     } catch (error) {
-      console.error('Error al guardar el producto:', error);
-
       toast({
         title: "Error al guardar el producto",
         description: error.response?.data?.message || "Ocurrió un error inesperado.",
@@ -160,14 +201,6 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
           <FormControl mb={4}>
             <FormLabel>Nombre</FormLabel>
             <Input value={name} onChange={(e) => setName(e.target.value)} />
-          </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Stock</FormLabel>
-            <Input
-              type="number"
-              value={stock}
-              onChange={(e) => setStock(e.target.value)}
-            />
           </FormControl>
           <FormControl mb={4}>
             <FormLabel>Código de Barra</FormLabel>
@@ -207,6 +240,14 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
             </Select>
           </FormControl>
           <FormControl mb={4}>
+            <FormLabel>Stock</FormLabel>
+            <Input
+              type="number"
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
+            />
+          </FormControl>
+          <FormControl mb={4}>
             <FormLabel>Precio de Compra</FormLabel>
             <Input
               type="number"
@@ -222,17 +263,9 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               onChange={(e) => setMarginPercent(e.target.value)}
             />
           </FormControl>
-          <FormControl mt={4}>
-            <Checkbox
-              isChecked={hasExtraTax}
-              onChange={(e) => setHasExtraTax(e.target.checked)}
-            >
-              ¿Aplicar impuesto adicional?
-            </Checkbox>
-          </FormControl>
           {hasExtraTax && (
             <FormControl mb={4}>
-              <FormLabel>Tasa de Impuesto Adicional (%)</FormLabel>
+              <FormLabel>Tasa Extra (%)</FormLabel>
               <Input
                 type="number"
                 value={extraTaxRate}
@@ -240,6 +273,16 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               />
             </FormControl>
           )}
+          <SimpleGrid columns={2} spacing={5} mt={5} border="1px solid #ccc" p={3} borderRadius="md">
+            <FormControl>
+              <FormLabel>Precio Neto Calculado</FormLabel>
+              <Input isReadOnly value={`$ ${sellingPrice}`} />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Precio Final Calculado</FormLabel>
+              <Input isReadOnly value={`$ ${finalPrice}`} />
+            </FormControl>
+          </SimpleGrid>
           <FormControl mt={4}>
             <Checkbox
               isChecked={isIvaExempt}
@@ -254,6 +297,14 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               onChange={(e) => setIsActive(e.target.checked)}
             >
               Activo
+            </Checkbox>
+          </FormControl>
+          <FormControl mt={4}>
+            <Checkbox
+              isChecked={hasExtraTax}
+              onChange={(e) => setHasExtraTax(e.target.checked)}
+            >
+              Agregar Tasa Extra
             </Checkbox>
           </FormControl>
         </ModalBody>
