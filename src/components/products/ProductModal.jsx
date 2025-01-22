@@ -36,33 +36,33 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
   const [suppliers, setSuppliers] = useState([]);
   const [sellingPrice, setSellingPrice] = useState('');
   const [finalPrice, setFinalPrice] = useState('');
-  const [stock, setStock] = useState(initialData?.stock || '');
-  const [isActive, setIsActive] = useState(initialData?.isActive || true);
   const [grossCost, setGrossCost] = useState('');
   const [netCost, setNetCost] = useState('');
+  const [netSalePrice, setNetSalePrice] = useState('');
+  const [grossSalePrice, setGrossSalePrice] = useState('');
+  const [isActive, setIsActive] = useState(initialData?.isActive || true);
   const toast = useToast();
 
   // Cálculo de precios dinámico
   useEffect(() => {
     if (purchasePrice && marginPercent) {
       const marginMultiplier = 1 + marginPercent / 100;
-      const calculatedSellingPrice = purchasePrice * marginMultiplier;
+      const calculatedNetCost = parseFloat(purchasePrice);
+      const calculatedGrossCost = calculatedNetCost * marginMultiplier;
 
-      const calculatedGrossCost = purchasePrice * marginMultiplier;
-      const calculatedNetCost = isIvaExempt
-        ? calculatedGrossCost
-        : calculatedGrossCost * 1.19;
+      const calculatedNetSalePrice = calculatedGrossCost;
+      const calculatedGrossSalePrice = isIvaExempt
+        ? calculatedNetSalePrice
+        : calculatedNetSalePrice * 1.19;
 
-      const calculatedExtraTax = hasExtraTax && extraTaxRate
-        ? calculatedNetCost * (extraTaxRate / 100)
-        : 0;
-
+      setNetCost(calculatedNetCost.toFixed(2));
+      setGrossCost(calculatedGrossCost.toFixed(2));
+      setNetSalePrice(calculatedNetSalePrice.toFixed(2));
+      setGrossSalePrice(calculatedGrossSalePrice.toFixed(2));
       setSellingPrice(calculatedGrossCost.toFixed(2));
-      setFinalPrice((calculatedNetCost + calculatedExtraTax).toFixed(2));
-      setGrossCost(calculatedGrossCost.toFixed(2)); // Costo Bruto
-      setNetCost((calculatedNetCost + calculatedExtraTax).toFixed(2)); // Costo Neto
+      setFinalPrice(calculatedGrossSalePrice.toFixed(2));
     }
-  }, [purchasePrice, marginPercent, isIvaExempt, hasExtraTax, extraTaxRate]);
+  }, [purchasePrice, marginPercent, isIvaExempt]);
 
   // Cargar categorías y proveedores
   useEffect(() => {
@@ -118,12 +118,11 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
       purchasePrice: parseFloat(purchasePrice),
       marginPercent: parseFloat(marginPercent),
       hasExtraTax,
-      extraTaxRate: hasExtraTax ? parseFloat(extraTaxRate) : 0,
+      extraTaxRate: parseFloat(extraTaxRate) || 0,
       sellingPrice: parseFloat(sellingPrice),
       finalPrice: parseFloat(finalPrice),
       isIvaExempt,
       isActive,
-      stock: parseInt(stock, 10),
       categoryId,
       supplier: supplierId,
     };
@@ -133,7 +132,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
         ? await updateProduct(initialData.id, productData)
         : await createProduct(productData);
 
-      if (response) {
+      if (response && response._id) {
         toast({
           title: "Producto guardado",
           description: "El producto se ha guardado con éxito.",
@@ -142,11 +141,15 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
           isClosable: true,
         });
         onClose();
+      } else {
+        throw new Error('Error inesperado en la respuesta del backend.');
       }
     } catch (error) {
+      console.error('Error al guardar el producto:', error);
+
       toast({
         title: "Error al guardar el producto",
-        description: error.response?.data?.message || "Ocurrió un error inesperado.",
+        description: error.message || "Ocurrió un error inesperado.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -161,48 +164,83 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
         <ModalHeader>{initialData ? 'Editar Producto' : 'Agregar Producto'}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <FormControl mb={4}>
-            <FormLabel>Nombre</FormLabel>
-            <Input value={name} onChange={(e) => setName(e.target.value)} />
-          </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Código de Barra</FormLabel>
-            <Input value={sku} onChange={(e) => setSku(e.target.value)} />
-          </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Stock</FormLabel>
-            <Input
-              type="number"
-              value={stock}
-              onChange={(e) => setStock(e.target.value)}
-            />
-          </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Precio de Compra</FormLabel>
-            <Input
-              type="number"
-              value={purchasePrice}
-              onChange={(e) => setPurchasePrice(e.target.value)}
-            />
-          </FormControl>
-          <FormControl mb={4}>
-            <FormLabel>Margen (%)</FormLabel>
-            <Input
-              type="number"
-              value={marginPercent}
-              onChange={(e) => setMarginPercent(e.target.value)}
-            />
-          </FormControl>
-          <SimpleGrid columns={2} spacing={5} mt={5} border="1px solid #ccc" p={3} borderRadius="md">
+          <SimpleGrid columns={2} spacing={5} mb={5}>
             <FormControl>
-              <FormLabel>Costo Bruto</FormLabel>
-              <Input isReadOnly value={`$ ${grossCost}`} />
+              <FormLabel>Nombre</FormLabel>
+              <Input value={name} onChange={(e) => setName(e.target.value)} />
             </FormControl>
             <FormControl>
-              <FormLabel>Costo Neto</FormLabel>
-              <Input isReadOnly value={`$ ${netCost}`} />
+              <FormLabel>Código de Barra</FormLabel>
+              <Input value={sku} onChange={(e) => setSku(e.target.value)} />
             </FormControl>
           </SimpleGrid>
+
+          <SimpleGrid columns={2} spacing={5} mb={5}>
+            <FormControl>
+              <FormLabel>Costo Neto</FormLabel>
+              <Input value={`$ ${netCost}`} isReadOnly />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Costo Bruto</FormLabel>
+              <Input value={`$ ${grossCost}`} isReadOnly />
+            </FormControl>
+          </SimpleGrid>
+
+          <SimpleGrid columns={2} spacing={5} mb={5}>
+            <FormControl>
+              <FormLabel>Venta Neto</FormLabel>
+              <Input value={`$ ${netSalePrice}`} isReadOnly />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Venta Bruto</FormLabel>
+              <Input value={`$ ${grossSalePrice}`} isReadOnly />
+            </FormControl>
+          </SimpleGrid>
+
+          <SimpleGrid columns={2} spacing={5} mb={5}>
+            <FormControl>
+              <FormLabel>Margen (%)</FormLabel>
+              <Input
+                type="number"
+                value={marginPercent}
+                onChange={(e) => setMarginPercent(e.target.value)}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Precio de Compra</FormLabel>
+              <Input
+                type="number"
+                value={purchasePrice}
+                onChange={(e) => setPurchasePrice(e.target.value)}
+              />
+            </FormControl>
+          </SimpleGrid>
+
+          <FormControl>
+            <Checkbox isChecked={hasExtraTax} onChange={(e) => setHasExtraTax(e.target.checked)}>
+              Tiene Impuesto Extra
+            </Checkbox>
+          </FormControl>
+          {hasExtraTax && (
+            <FormControl mb={4}>
+              <FormLabel>Tasa de Impuesto Extra</FormLabel>
+              <Input
+                type="number"
+                value={extraTaxRate}
+                onChange={(e) => setExtraTaxRate(e.target.value)}
+              />
+            </FormControl>
+          )}
+          <FormControl>
+            <Checkbox isChecked={isIvaExempt} onChange={(e) => setIsIvaExempt(e.target.checked)}>
+              Exento de IVA
+            </Checkbox>
+          </FormControl>
+          <FormControl>
+            <Checkbox isChecked={isActive} onChange={(e) => setIsActive(e.target.checked)}>
+              Activo
+            </Checkbox>
+          </FormControl>
         </ModalBody>
         <ModalFooter>
           <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
