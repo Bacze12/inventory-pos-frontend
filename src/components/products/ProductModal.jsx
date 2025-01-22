@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { createProduct, updateProduct } from '../../api/products';
 import {
   Modal,
   ModalOverlay,
@@ -14,31 +13,32 @@ import {
   Button,
   Checkbox,
   Select,
-  useToast,
   SimpleGrid,
+  useToast,
 } from '@chakra-ui/react';
 import API from '../../api/api';
 
 const ProductModal = ({ initialData, isOpen, onClose }) => {
   const [name, setName] = useState(initialData?.name || '');
   const [sku, setSku] = useState(initialData?.sku || '');
-  const [purchasePrice, setPurchasePrice] = useState(initialData?.purchasePrice || '');
-  const [netCost, setNetCost] = useState(initialData?.purchasePrice || '');
-  const [grossCost, setGrossCost] = useState('');
-  const [netSalePrice, setNetSalePrice] = useState('');
-  const [grossSalePrice, setGrossSalePrice] = useState('');
-  const [marginPercent, setMarginPercent] = useState(initialData?.marginPercent || '');
-  const [hasExtraTax, setHasExtraTax] = useState(initialData?.hasExtraTax || false);
-  const [extraTaxRate, setExtraTaxRate] = useState(initialData?.extraTaxRate || '');
-  const [isIvaExempt, setIsIvaExempt] = useState(initialData?.isIvaExempt || false);
+  const [costNet, setCostNet] = useState(initialData?.purchasePrice || '');
+  const [costGross, setCostGross] = useState('');
+  const [saleNet, setSaleNet] = useState('');
+  const [saleGross, setSaleGross] = useState('');
+  const [margin, setMargin] = useState('');
+  const [stock, setStock] = useState(initialData?.stock || '');
   const [categoryId, setCategoryId] = useState(initialData?.categoryId || '');
   const [supplierId, setSupplierId] = useState(initialData?.supplierId || '');
-  const [stock, setStock] = useState(initialData?.stock || '');
   const [categories, setCategories] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
+  const [hasExtraTax, setHasExtraTax] = useState(false);
+  const [isIvaExempt, setIsIvaExempt] = useState(false);
   const toast = useToast();
 
-  // Load categories and suppliers
+  // Constants
+  const IVA_RATE = 0.19; // 19%
+
+  // Fetch categories and suppliers on load
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -74,90 +74,76 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
     fetchSuppliers();
   }, [toast]);
 
-  // Dynamic calculations
-  const handleNetCostChange = (value) => {
-    const parsedValue = parseFloat(value) || 0;
-    setNetCost(parsedValue);
-    const gross = isIvaExempt ? parsedValue : parsedValue * 1.19;
-    setGrossCost(gross.toFixed(2));
-    if (marginPercent) {
-      const netSale = parsedValue * (1 + marginPercent / 100);
-      setNetSalePrice(netSale.toFixed(2));
-      const grossSale = hasExtraTax
-        ? netSale * (1 + extraTaxRate / 100)
-        : netSale;
-      setGrossSalePrice(grossSale.toFixed(2));
+  // Recalculate values when inputs change
+  useEffect(() => {
+    if (costNet) {
+      const net = parseFloat(costNet) || 0;
+      const gross = isIvaExempt ? net : net * (1 + IVA_RATE);
+      setCostGross(gross.toFixed(2));
+
+      if (margin) {
+        const marginRate = parseFloat(margin) / 100 || 0;
+        const saleNetCalc = net * (1 + marginRate);
+        const saleGrossCalc = isIvaExempt ? saleNetCalc : saleNetCalc * (1 + IVA_RATE);
+        setSaleNet(saleNetCalc.toFixed(2));
+        setSaleGross(saleGrossCalc.toFixed(2));
+      }
     }
+  }, [costNet, margin, isIvaExempt]);
+
+  const handleCostGrossChange = (value) => {
+    const gross = parseFloat(value) || 0;
+    const net = isIvaExempt ? gross : gross / (1 + IVA_RATE);
+    setCostNet(net.toFixed(2));
+    setCostGross(value);
   };
 
-  const handleGrossCostChange = (value) => {
-    const parsedValue = parseFloat(value) || 0;
-    setGrossCost(parsedValue);
-    const net = isIvaExempt ? parsedValue : parsedValue / 1.19;
-    setNetCost(net.toFixed(2));
+  const handleSaleNetChange = (value) => {
+    const net = parseFloat(value) || 0;
+    const marginCalc = ((net / parseFloat(costNet || 1)) - 1) * 100;
+    const gross = isIvaExempt ? net : net * (1 + IVA_RATE);
+    setSaleNet(value);
+    setSaleGross(gross.toFixed(2));
+    setMargin(marginCalc.toFixed(2));
   };
 
-  const handleNetSalePriceChange = (value) => {
-    const parsedValue = parseFloat(value) || 0;
-    setNetSalePrice(parsedValue);
-    const cost = parseFloat(netCost) || 0;
-    const margin = ((parsedValue - cost) / cost) * 100;
-    setMarginPercent(margin.toFixed(2));
-    const grossSale = hasExtraTax
-      ? parsedValue * (1 + extraTaxRate / 100)
-      : parsedValue;
-    setGrossSalePrice(grossSale.toFixed(2));
-  };
-
-  const handleGrossSalePriceChange = (value) => {
-    const parsedValue = parseFloat(value) || 0;
-    setGrossSalePrice(parsedValue);
-    const netSale = hasExtraTax
-      ? parsedValue / (1 + extraTaxRate / 100)
-      : parsedValue;
-    setNetSalePrice(netSale.toFixed(2));
-    const cost = parseFloat(netCost) || 0;
-    const margin = ((netSale - cost) / cost) * 100;
-    setMarginPercent(margin.toFixed(2));
+  const handleSaleGrossChange = (value) => {
+    const gross = parseFloat(value) || 0;
+    const net = isIvaExempt ? gross : gross / (1 + IVA_RATE);
+    const marginCalc = ((net / parseFloat(costNet || 1)) - 1) * 100;
+    setSaleGross(value);
+    setSaleNet(net.toFixed(2));
+    setMargin(marginCalc.toFixed(2));
   };
 
   const handleMarginChange = (value) => {
-    const parsedValue = parseFloat(value) || 0;
-    setMarginPercent(parsedValue);
-    const cost = parseFloat(netCost) || 0;
-    const netSale = cost * (1 + parsedValue / 100);
-    setNetSalePrice(netSale.toFixed(2));
-    const grossSale = hasExtraTax
-      ? netSale * (1 + extraTaxRate / 100)
-      : netSale;
-    setGrossSalePrice(grossSale.toFixed(2));
+    const marginRate = parseFloat(value) / 100 || 0;
+    const net = parseFloat(costNet) || 0;
+    const saleNetCalc = net * (1 + marginRate);
+    const saleGrossCalc = isIvaExempt ? saleNetCalc : saleNetCalc * (1 + IVA_RATE);
+    setMargin(value);
+    setSaleNet(saleNetCalc.toFixed(2));
+    setSaleGross(saleGrossCalc.toFixed(2));
   };
 
   const handleSubmit = async () => {
     const productData = {
       name,
       sku,
-      purchasePrice: parseFloat(netCost),
-      marginPercent: parseFloat(marginPercent),
-      hasExtraTax,
-      extraTaxRate: hasExtraTax ? parseFloat(extraTaxRate) : 0,
-      sellingPrice: parseFloat(netSalePrice),
-      finalPrice: parseFloat(grossSalePrice),
-      isIvaExempt,
-      stock: parseInt(stock, 10),
+      purchasePrice: parseFloat(costNet),
+      sellingPrice: parseFloat(saleNet),
+      marginPercent: parseFloat(margin),
+      stock: parseInt(stock, 10) || 0,
       categoryId,
-      supplier: supplierId,
+      supplierId,
+      isActive: true,
     };
 
     try {
-      if (initialData) {
-        await updateProduct(initialData.id, productData);
-      } else {
-        await createProduct(productData);
-      }
+      await createProduct(productData);
       toast({
         title: 'Producto guardado',
-        description: 'El producto se ha guardado con éxito.',
+        description: 'El producto ha sido guardado exitosamente.',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -166,7 +152,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
     } catch (error) {
       toast({
         title: 'Error al guardar el producto',
-        description: error.message || 'Ocurrió un error inesperado.',
+        description: error.message,
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -181,64 +167,59 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
         <ModalHeader>{initialData ? 'Editar Producto' : 'Agregar Producto'}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <SimpleGrid columns={2} spacing={4} mb={4}>
-            <FormControl>
-              <FormLabel>Nombre</FormLabel>
-              <Input value={name} onChange={(e) => setName(e.target.value)} />
-            </FormControl>
-            <FormControl>
-              <FormLabel>SKU</FormLabel>
-              <Input value={sku} onChange={(e) => setSku(e.target.value)} />
-            </FormControl>
-          </SimpleGrid>
-
-          <SimpleGrid columns={2} spacing={4} mb={4}>
+          <FormControl mb={4}>
+            <FormLabel>Nombre</FormLabel>
+            <Input value={name} onChange={(e) => setName(e.target.value)} />
+          </FormControl>
+          <FormControl mb={4}>
+            <FormLabel>SKU</FormLabel>
+            <Input value={sku} onChange={(e) => setSku(e.target.value)} />
+          </FormControl>
+          <SimpleGrid columns={2} spacing={5}>
             <FormControl>
               <FormLabel>Costo Neto</FormLabel>
               <Input
                 type="number"
-                value={netCost}
-                onChange={(e) => handleNetCostChange(e.target.value)}
+                value={costNet}
+                onChange={(e) => setCostNet(e.target.value)}
               />
             </FormControl>
             <FormControl>
               <FormLabel>Costo Bruto</FormLabel>
               <Input
                 type="number"
-                value={grossCost}
-                onChange={(e) => handleGrossCostChange(e.target.value)}
+                value={costGross}
+                onChange={(e) => handleCostGrossChange(e.target.value)}
               />
             </FormControl>
           </SimpleGrid>
-
-          <SimpleGrid columns={3} spacing={4} mb={4}>
+          <SimpleGrid columns={2} spacing={5}>
             <FormControl>
               <FormLabel>Venta Neto</FormLabel>
               <Input
                 type="number"
-                value={netSalePrice}
-                onChange={(e) => handleNetSalePriceChange(e.target.value)}
+                value={saleNet}
+                onChange={(e) => handleSaleNetChange(e.target.value)}
               />
             </FormControl>
             <FormControl>
               <FormLabel>Venta Bruto</FormLabel>
               <Input
                 type="number"
-                value={grossSalePrice}
-                onChange={(e) => handleGrossSalePriceChange(e.target.value)}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Margen (%)</FormLabel>
-              <Input
-                type="number"
-                value={marginPercent}
-                onChange={(e) => handleMarginChange(e.target.value)}
+                value={saleGross}
+                onChange={(e) => handleSaleGrossChange(e.target.value)}
               />
             </FormControl>
           </SimpleGrid>
-
-          <FormControl mb={4}>
+          <FormControl mt={4}>
+            <FormLabel>Margen (%)</FormLabel>
+            <Input
+              type="number"
+              value={margin}
+              onChange={(e) => handleMarginChange(e.target.value)}
+            />
+          </FormControl>
+          <FormControl mt={4}>
             <FormLabel>Stock</FormLabel>
             <Input
               type="number"
@@ -246,63 +227,33 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               onChange={(e) => setStock(e.target.value)}
             />
           </FormControl>
-
-          <SimpleGrid columns={2} spacing={4} mb={4}>
-            <FormControl>
-              <FormLabel>Categoría</FormLabel>
-              <Select
-                placeholder="Seleccionar"
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
-              >
-                {categories.map((category) => (
-                  <option key={category._id} value={category._id}>
-                    {category.name}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl>
-              <FormLabel>Proveedor</FormLabel>
-              <Select
-                placeholder="Seleccionar"
-                value={supplierId}
-                onChange={(e) => setSupplierId(e.target.value)}
-              >
-                {suppliers.map((supplier) => (
-                  <option key={supplier._id} value={supplier._id}>
-                    {supplier.name}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-          </SimpleGrid>
-
-          <FormControl mb={4}>
-            <Checkbox
-              isChecked={hasExtraTax}
-              onChange={(e) => setHasExtraTax(e.target.checked)}
+          <FormControl mt={4}>
+            <FormLabel>Categoría</FormLabel>
+            <Select
+              placeholder="Seleccionar"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
             >
-              Tiene Impuesto Extra
-            </Checkbox>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </Select>
           </FormControl>
-          {hasExtraTax && (
-            <FormControl mb={4}>
-              <FormLabel>Tasa Extra (%)</FormLabel>
-              <Input
-                type="number"
-                value={extraTaxRate}
-                onChange={(e) => setExtraTaxRate(e.target.value)}
-              />
-            </FormControl>
-          )}
-          <FormControl mb={4}>
-            <Checkbox
-              isChecked={isIvaExempt}
-              onChange={(e) => setIsIvaExempt(e.target.checked)}
+          <FormControl mt={4}>
+            <FormLabel>Proveedor</FormLabel>
+            <Select
+              placeholder="Seleccionar"
+              value={supplierId}
+              onChange={(e) => setSupplierId(e.target.value)}
             >
-              Exento de IVA
-            </Checkbox>
+              {suppliers.map((supplier) => (
+                <option key={supplier.id} value={supplier.id}>
+                  {supplier.name}
+                </option>
+              ))}
+            </Select>
           </FormControl>
         </ModalBody>
         <ModalFooter>
