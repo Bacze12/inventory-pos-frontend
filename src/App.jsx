@@ -4,6 +4,7 @@ import { Layout } from './components/layout/Layout';
 import  PrivateRoute  from './components/PrivateRoute';
 
 import Home from './pages/Home';
+import HomeCashier from './pages/HomeCashier';
 import LoginPage from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import CategoriesListPage from './pages/categories/CategorieList';
@@ -35,6 +36,7 @@ const App = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
+          <Route path="/homecashier" element={<HomeCashier />} />
           <Route path="/categories" element={<PrivateRoute><CategoriesListPage /></PrivateRoute>} />
           <Route path="/categories/:id/edit" element={<PrivateRoute><CategoryUpdatePage /></PrivateRoute>} />
           <Route path="/suppliers" element={<PrivateRoute><SupplierListPage /></PrivateRoute>} />

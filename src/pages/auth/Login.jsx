@@ -65,6 +65,8 @@ const LoginPage = () => {
         status: 'success',
         description: '¡Bienvenido de vuelta!'
       });
+
+      
       navigate('/home');
 
     } catch (error) {
