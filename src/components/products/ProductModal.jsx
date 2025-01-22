@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { createProduct, updateProduct } from '../../api/products';
-import { isMobile, isTablet } from 'react-device-detect';
 import {
   Modal,
   ModalOverlay,
@@ -79,12 +78,12 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
         break;
     }
 
-    setNetCost(purchase.toFixed(2));
-    setGrossCost(gross.toFixed(2));
-    setNetSalePrice(netSale.toFixed(2));
-    setGrossSalePrice(grossSale.toFixed(2));
-    setSellingPrice(gross.toFixed(2));
-    setFinalPrice(grossSale.toFixed(2));
+    setNetCost(value !== '' ? purchase.toFixed(2) : '');
+    setGrossCost(value !== '' ? gross.toFixed(2) : '');
+    setNetSalePrice(value !== '' ? netSale.toFixed(2) : '');
+    setGrossSalePrice(value !== '' ? grossSale.toFixed(2) : '');
+    setSellingPrice(value !== '' ? gross.toFixed(2) : '');
+    setFinalPrice(value !== '' ? grossSale.toFixed(2) : '');
   };
 
   useEffect(() => {
