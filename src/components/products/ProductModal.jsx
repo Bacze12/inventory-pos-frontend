@@ -22,7 +22,7 @@ import {
 } from '@chakra-ui/react';
 import API from '../../api/api';
 
-const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
+const ProductModal = ({ initialData, isOpen, onClose }) => {
   const [name, setName] = useState(initialData?.name || '');
   const [sku, setSku] = useState(initialData?.sku || '');
   const [purchasePrice, setPurchasePrice] = useState(initialData?.purchasePrice || '');
@@ -36,22 +36,10 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
   const [suppliers, setSuppliers] = useState([]);
   const [sellingPrice, setSellingPrice] = useState('');
   const [finalPrice, setFinalPrice] = useState('');
+  const [isActive, setIsActive] = useState(initialData?.isActive || true);
   const toast = useToast();
 
-  const handleMarginChange = (e) => {
-    const value = parseFloat(e.target.value);
-    if (!isNaN(value)) {
-      setMarginPercent(value);
-    }
-  };
-
-  const handlePurchasePriceChange = (e) => {
-    const value = parseFloat(e.target.value);
-    if (!isNaN(value)) {
-      setPurchasePrice(value);
-    }
-  };
-
+  // Cálculo de precios dinámico
   useEffect(() => {
     if (purchasePrice && marginPercent) {
       const marginMultiplier = 1 + marginPercent / 100;
@@ -69,6 +57,7 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
     }
   }, [purchasePrice, marginPercent, isIvaExempt, hasExtraTax, extraTaxRate]);
 
+  // Cargar categorías y proveedores
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -104,6 +93,49 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
     fetchSuppliers();
   }, [toast]);
 
+  // Escaneo de código de barras
+  const startScanner = () => {
+    Quagga.init(
+      {
+        inputStream: {
+          type: 'LiveStream',
+          target: document.querySelector('#scanner-container'),
+          constraints: {
+            facingMode: 'environment',
+          },
+        },
+        decoder: {
+          readers: ['ean_reader'],
+        },
+      },
+      (err) => {
+        if (err) {
+          toast({
+            title: 'Error al iniciar el escáner',
+            description: err.message,
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+          });
+          return;
+        }
+        Quagga.start();
+      }
+    );
+
+    Quagga.onDetected((data) => {
+      setSku(data.codeResult.code);
+      toast({
+        title: 'Código detectado',
+        description: `Código de barras: ${data.codeResult.code}`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      Quagga.stop();
+    });
+  };
+
   const handleSubmit = async () => {
     if (!name || !categoryId || !supplierId || !purchasePrice || !marginPercent) {
       toast({
@@ -118,6 +150,7 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
 
     const productData = {
       name,
+      sku,
       purchasePrice: parseFloat(purchasePrice),
       marginPercent: parseFloat(marginPercent),
       hasExtraTax,
@@ -125,6 +158,7 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
       sellingPrice: parseFloat(sellingPrice),
       finalPrice: parseFloat(finalPrice),
       isIvaExempt,
+      isActive,
       categoryId,
       supplierId,
     };
@@ -166,11 +200,48 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
             <Input value={name} onChange={(e) => setName(e.target.value)} />
           </FormControl>
           <FormControl mb={4}>
+            <FormLabel>Código de Barra</FormLabel>
+            <Input value={sku} onChange={(e) => setSku(e.target.value)} />
+            {(isMobile || isTablet) && (
+              <Button mt={2} onClick={startScanner}>
+                Escanear <FiCamera />
+              </Button>
+            )}
+          </FormControl>
+          <FormControl mb={4}>
+            <FormLabel>Categoría</FormLabel>
+            <Select
+              placeholder="Seleccionar"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+            >
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl mb={4}>
+            <FormLabel>Proveedor</FormLabel>
+            <Select
+              placeholder="Seleccionar"
+              value={supplierId}
+              onChange={(e) => setSupplierId(e.target.value)}
+            >
+              {suppliers.map((supplier) => (
+                <option key={supplier.id} value={supplier.id}>
+                  {supplier.name}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl mb={4}>
             <FormLabel>Precio de Compra</FormLabel>
             <Input
               type="number"
               value={purchasePrice}
-              onChange={handlePurchasePriceChange}
+              onChange={(e) => setPurchasePrice(e.target.value)}
             />
           </FormControl>
           <FormControl mb={4}>
@@ -178,7 +249,7 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
             <Input
               type="number"
               value={marginPercent}
-              onChange={handleMarginChange}
+              onChange={(e) => setMarginPercent(e.target.value)}
             />
           </FormControl>
           <SimpleGrid columns={2} spacing={5} mt={5} border="1px solid #ccc" p={3} borderRadius="md">
@@ -197,6 +268,14 @@ const ProductModal = ({ initialData, isOpen, onClose, onSubmit }) => {
               onChange={(e) => setIsIvaExempt(e.target.checked)}
             >
               Exento de IVA
+            </Checkbox>
+          </FormControl>
+          <FormControl mt={4}>
+            <Checkbox
+              isChecked={isActive}
+              onChange={(e) => setIsActive(e.target.checked)}
+            >
+              Activo
             </Checkbox>
           </FormControl>
         </ModalBody>
