@@ -32,7 +32,7 @@ const CategoryUpdatePage = () => {
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const response = await API.get(`/categories/${id}`);
+        const response = await API.get(`/categories/${_id}`);
         setCategory(response.data);
         setName(response.data.name);
         setDescription(response.data.description);
@@ -48,7 +48,7 @@ const CategoryUpdatePage = () => {
 
   const handleSubmit = async () => {
     try {
-      await API.patch(`/categories/${id}`, { name });
+      await API.patch(`/categories/${_id}`, { name });
       navigate('/categories');
     } catch (err) {
       console.error(err.response?.data || err );
