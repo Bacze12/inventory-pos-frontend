@@ -127,7 +127,7 @@ const ProductsPage = () => {
   const filteredProducts = products.filter((product) => {
     return (
       (selectedCategory === '' || product.categoryId === selectedCategory) &&
-      (selectedSupplier === '' || product.supplierId === selectedSupplier)
+      (selectedSupplier === '' || product.supplier === selectedSupplier)
     );
   });
 
