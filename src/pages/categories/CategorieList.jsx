@@ -103,6 +103,7 @@ const CategoriesListPage = () => {
             </Thead>
             <Tbody>
               {categories.map((category) => (
+                console.log('ID de categoria:', category.id);
                 <Tr key={category.id}>
                   <Td>{category.id}</Td>
                   <Td>{category.name}</Td>
