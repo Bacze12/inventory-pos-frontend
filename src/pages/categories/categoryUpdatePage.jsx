@@ -1,4 +1,3 @@
-// CategoryUpdatePage.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -15,10 +14,10 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import API from '../../api/api';
 import CollapsibleSidebar from '../../components/layout/CollapsibleSidebar';
-import  Navbar  from '../../components/layout/Navbar';
+import Navbar from '../../components/layout/Navbar';
 
 const CategoryUpdatePage = () => {
-  const { _id } = useParams();
+  const { _id } = useParams(); // Obtenemos el ID de la categoría desde la URL
   const navigate = useNavigate();
   const [category, setCategory] = useState(null);
   const [name, setName] = useState('');
@@ -32,26 +31,29 @@ const CategoryUpdatePage = () => {
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const response = await API.get(`/categories/${_id}`);
-        setCategory(response.data);
-        setName(response.data.name);
-        setDescription(response.data.description);
+        const response = await API.get(`/categories/${_id}`); // Usamos _id directamente
+        setCategory(response.data); // Guardamos la categoría completa
+        setName(response.data.name); // Inicializamos el nombre
+        setDescription(response.data.description); // Inicializamos la descripción
       } catch (err) {
+        console.error(err.response?.data || err);
         setError('No se pudo cargar la categoría.');
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchCategory();
-  }, [_id]);
+    if (_id) {
+      fetchCategory();
+    }
+  }, [_id]); // Escucha cambios en _id
 
   const handleSubmit = async () => {
     try {
-      await API.patch(`/categories/${_id}`, { name });
-      navigate('/categories');
+      await API.patch(`/categories/${_id}`, { name, description }); // Incluye el campo "description"
+      navigate('/categories'); // Navega a la lista de categorías
     } catch (err) {
-      console.error(err.response?.data || err );
+      console.error(err.response?.data || err);
       setError('No se pudo actualizar la categoría.');
     }
   };
