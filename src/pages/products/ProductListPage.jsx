@@ -104,8 +104,8 @@ const ProductsPage = () => {
 
   const handleDeleteProduct = async () => {
     try {
-      await API.delete(`/products/${selectedProduct.id}`);
-      setProducts(products.filter((product) => product.id !== selectedProduct.id));
+      await API.delete(`/products/${selectedProduct._id}`);
+      setProducts(products.filter((product) => product._id !== selectedProduct._id));
       toast({
         title: 'Producto eliminado',
         description: 'El producto ha sido eliminado exitosamente.',
@@ -184,8 +184,8 @@ const ProductsPage = () => {
             <Tbody>
               {filteredProducts.map((product) => (
                 <Tr
-                  key={product.id}
-                  onClick={() => navigate(`/products/${product.id}`)}
+                  key={product._id}
+                  onClick={() => navigate(`/products/${product._id}`)}
                   cursor="pointer"
                   _hover={{ bg: 'gray.100' }}
                 >
