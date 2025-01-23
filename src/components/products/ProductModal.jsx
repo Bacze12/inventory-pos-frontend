@@ -138,7 +138,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
       hasExtraTax,
       isIvaExempt,
     };
-
+    console.log('Datos enviados al backend:', productData);
     try {
       if (initialData) {
         await updateProduct(initialData.id, productData);
