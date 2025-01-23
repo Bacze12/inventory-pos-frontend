@@ -44,7 +44,7 @@ const CategoryUpdatePage = () => {
     };
 
     fetchCategory();
-  }, [id]);
+  }, [_id]);
 
   const handleSubmit = async () => {
     try {
