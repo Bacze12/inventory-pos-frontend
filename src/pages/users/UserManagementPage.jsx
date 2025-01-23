@@ -75,30 +75,30 @@ const UserManagementPage = () => {
 
   // Activar o desactivar un usuario
   const toggleUserStatus = async (userId, isActive) => {
-    try {
-      const endpoint = isActive 
-        ? `/users/${userId}/active`;
-      
-      await API.patch(endpoint);
-      
-      toast({
-        title: `Usuario ${isActive ? 'desactivado' : 'reactivado'} con éxito.`,
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-      
-      fetchUsers();
-    } catch (error) {
-      toast({
-        title: 'Error al cambiar el estado del usuario.',
-        description: error.response?.data?.message || 'No se pudo actualizar el estado del usuario',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
+  try {
+    // Cambiar el estado (isActive) enviando un body en la solicitud
+    await API.patch(`/users/${userId}/active`, { isActive: !isActive });
+
+    toast({
+      title: `Usuario ${!isActive ? 'activado' : 'desactivado'} con éxito.`,
+      status: 'success',
+      duration: 3000,
+      isClosable: true,
+    });
+
+    // Refrescar la lista de usuarios después de cambiar el estado
+    fetchUsers();
+  } catch (error) {
+    toast({
+      title: 'Error al cambiar el estado del usuario.',
+      description: error.response?.data?.message || 'No se pudo actualizar el estado del usuario',
+      status: 'error',
+      duration: 3000,
+      isClosable: true,
+    });
+  }
+};
+
 
   const handleCreateUser = async () => {
     const tenantId = localStorage.getItem('tenantId'); // Obtener el tenantId del almacenamiento local
