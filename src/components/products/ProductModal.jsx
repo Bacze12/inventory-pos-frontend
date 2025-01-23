@@ -36,50 +36,41 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
   const [isIvaExempt, setIsIvaExempt] = useState(initialData?.isIvaExempt || false);
   const toast = useToast();
 
+   // Cargar categorías y proveedores
   useEffect(() => {
-  const fetchCategories = async () => {
-    try {
-      const response = await API.get('/categories');
-      setCategories(
-        response.data.map((category) => ({
-          id: category._id, // MongoDB usa _id como string
-          name: category.name,
-        }))
-      );
-    } catch (error) {
-      toast({
-        title: 'Error al cargar categorías',
-        description: error.message,
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
+    const fetchCategories = async () => {
+      try {
+        const response = await API.get('/categories');
+        setCategories(response.data);
+      } catch (error) {
+        toast({
+          title: 'Error al cargar categorías',
+          description: error.message,
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    };
 
-  const fetchSuppliers = async () => {
-    try {
-      const response = await API.get('/suppliers');
-      setSuppliers(
-        response.data.map((supplier) => ({
-          id: supplier._id, // MongoDB usa _id como string
-          name: supplier.name,
-        }))
-      );
-    } catch (error) {
-      toast({
-        title: 'Error al cargar proveedores',
-        description: error.message,
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
+    const fetchSuppliers = async () => {
+      try {
+        const response = await API.get('/suppliers');
+        setSuppliers(response.data);
+      } catch (error) {
+        toast({
+          title: 'Error al cargar proveedores',
+          description: error.message,
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    };
 
-  fetchCategories();
-  fetchSuppliers();
-}, [toast]);
+    fetchCategories();
+    fetchSuppliers();
+  }, [toast]);
 
 
   const handleNetCostChange = (value) => {
@@ -240,34 +231,34 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
             />
           </FormControl>
           <SimpleGrid columns={2} spacing={5} mb={4}>
-            <FormControl>
-              <FormLabel>Categoría</FormLabel>
-              <Select
-                placeholder="Seleccionar"
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
-              >
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl>
-              <FormLabel>Proveedor</FormLabel>
-              <Select
-                placeholder="Seleccionar"
-                value={supplierId}
-                onChange={(e) => setSupplierId(e.target.value)}
-              >
-                {suppliers.map((supplier) => (
-                  <option key={supplier.id} value={supplier.id}>
-                    {supplier.name}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
+           <FormControl mb={4}>
+            <FormLabel>Categoría</FormLabel>
+            <Select
+              placeholder="Seleccionar"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+            >
+              {categories.map((category) => (
+                <option key={category._id} value={category._id}>
+                  {category.name}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl mb={4}>
+            <FormLabel>Proveedor</FormLabel>
+            <Select
+              placeholder="Seleccionar"
+              value={supplierId}
+              onChange={(e) => setSupplierId(e.target.value)}
+            >
+              {suppliers.map((supplier) => (
+                <option key={supplier._id} value={supplier._id}>
+                  {supplier.name}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
           </SimpleGrid>
           <FormControl mb={4}>
             <Checkbox
