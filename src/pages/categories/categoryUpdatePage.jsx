@@ -18,7 +18,7 @@ import CollapsibleSidebar from '../../components/layout/CollapsibleSidebar';
 import  Navbar  from '../../components/layout/Navbar';
 
 const CategoryUpdatePage = () => {
-  const { id } = useParams();
+  const { _id } = useParams();
   const navigate = useNavigate();
   const [category, setCategory] = useState(null);
   const [name, setName] = useState('');
