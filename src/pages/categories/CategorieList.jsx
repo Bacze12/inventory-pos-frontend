@@ -102,24 +102,26 @@ const CategoriesListPage = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {categories.map((category) => (
-                console.log('ID de categoria:', category.id);
-                <Tr key={category.id}>
-                  <Td>{category.id}</Td>
-                  <Td>{category.name}</Td>
-                  <Td>{category.description}</Td>
-                  <Td>{category.isActive ? 'Sí' : 'No'}</Td>
-                  <Td>
-                    <Button
-                      size="sm"
-                      colorScheme="teal"
-                      onClick={() => navigate(`/categories/${category.id}/edit`)}
-                    >
-                      Editar
-                    </Button>
-                  </Td>
-                </Tr>
-              ))}
+              {categories.map((category) => {
+                console.log('ID de categoria:', category.id); // Ahora esto funciona
+                return (
+                  <Tr key={category.id}>
+                    <Td>{category.id}</Td>
+                    <Td>{category.name}</Td>
+                    <Td>{category.description}</Td>
+                    <Td>{category.isActive ? 'Sí' : 'No'}</Td>
+                    <Td>
+                      <Button
+                        size="sm"
+                        colorScheme="teal"
+                        onClick={() => navigate(`/categories/${category.id}/edit`)}
+                      >
+                        Editar
+                      </Button>
+                    </Td>
+                  </Tr>
+                );
+              })}
             </Tbody>
           </Table>
           {isModalOpen && (
