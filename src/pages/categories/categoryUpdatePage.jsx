@@ -48,9 +48,10 @@ const CategoryUpdatePage = () => {
 
   const handleSubmit = async () => {
     try {
-      await API.patch(`/categories/${id}`, { name, description });
+      await API.patch(`/categories/${id}`, { name });
       navigate('/categories');
     } catch (err) {
+      console.error(err.response?.data || err );
       setError('No se pudo actualizar la categoría.');
     }
   };
