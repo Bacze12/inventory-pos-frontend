@@ -54,19 +54,20 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
     };
 
     const fetchSuppliers = async () => {
-      try {
-        const response = await API.get('/suppliers');
-        setSuppliers(response.data);
-      } catch (error) {
-        toast({
-          title: 'Error al cargar proveedores',
-          description: error.message,
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-    };
+  try {
+    const response = await API.get('/suppliers');
+    setSuppliers(response.data); // No transformamos los datos, usamos el formato tal como viene
+  } catch (error) {
+    toast({
+      title: 'Error al cargar proveedores',
+      description: error.message,
+      status: 'error',
+      duration: 3000,
+      isClosable: true,
+    });
+  }
+};
+
 
     fetchCategories();
     fetchSuppliers();
@@ -246,19 +247,20 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
             </Select>
           </FormControl>
           <FormControl mb={4}>
-            <FormLabel>Proveedor</FormLabel>
-            <Select
-              placeholder="Seleccionar"
-              value={supplierId}
-              onChange={(e) => setSupplierId(e.target.value)}
-            >
-              {suppliers.map((supplier) => (
-                <option key={supplier._id} value={supplier._id}>
-                  {supplier.name}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
+          <FormLabel>Proveedor</FormLabel>
+          <Select
+            placeholder="Seleccionar"
+            value={supplierId}
+            onChange={(e) => setSupplierId(e.target.value)}
+          >
+            {suppliers.map((supplier) => (
+              <option key={supplier._id} value={supplier._id}>
+                {supplier.name}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
+
           </SimpleGrid>
           <FormControl mb={4}>
             <Checkbox
