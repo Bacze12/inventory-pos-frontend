@@ -37,44 +37,50 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
   const toast = useToast();
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await API.get('/categories');
-        setCategories(response.data);
-      } catch (error) {
-        toast({
-          title: 'Error al cargar categorías',
-          description: error.message,
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-    };
+  const fetchCategories = async () => {
+    try {
+      const response = await API.get('/categories');
+      setCategories(
+        response.data.map((category) => ({
+          id: category._id, // MongoDB usa _id como string
+          name: category.name,
+        }))
+      );
+    } catch (error) {
+      toast({
+        title: 'Error al cargar categorías',
+        description: error.message,
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
-    const fetchSuppliers = async () => {
-      try {
-        const response = await API.get('/suppliers');
-         setSuppliers(
+  const fetchSuppliers = async () => {
+    try {
+      const response = await API.get('/suppliers');
+      setSuppliers(
         response.data.map((supplier) => ({
           id: supplier._id, // MongoDB usa _id como string
           name: supplier.name,
         }))
       );
-      } catch (error) {
-        toast({
-          title: 'Error al cargar proveedores',
-          description: error.message,
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-    };
+    } catch (error) {
+      toast({
+        title: 'Error al cargar proveedores',
+        description: error.message,
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
-    fetchCategories();
-    fetchSuppliers();
-  }, [toast]);
+  fetchCategories();
+  fetchSuppliers();
+}, [toast]);
+
 
   const handleNetCostChange = (value) => {
     const net = Math.ceil(parseFloat(value) || 0);
