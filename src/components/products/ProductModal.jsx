@@ -132,7 +132,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
       marginPercent: parseInt(marginPercent, 10),
       stock: parseInt(stock, 10),
       categoryId,
-      supplierId,
+      supplier: supplierId,
       hasExtraTax,
       isIvaExempt,
     };
