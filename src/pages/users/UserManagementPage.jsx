@@ -77,8 +77,7 @@ const UserManagementPage = () => {
   const toggleUserStatus = async (userId, isActive) => {
     try {
       const endpoint = isActive 
-        ? `/users/${userId}/deactivate`
-        : `/users/${userId}/reactivate`;
+        ? `/users/${userId}/active`;
       
       await API.patch(endpoint);
       
@@ -188,7 +187,7 @@ const UserManagementPage = () => {
               </Thead>
               <Tbody>
                 {filteredUsers.map((user) => (
-                  <Tr key={user.id}>
+                  <Tr key={user._id}>
                     <Td>{user.email}</Td>
                     <Td>{user.name}</Td>
                     <Td>{user.role}</Td>
@@ -196,7 +195,7 @@ const UserManagementPage = () => {
                       <Switch
                         colorScheme="green"
                         isChecked={user.isActive}
-                        onChange={() => toggleUserStatus(user.id, user.isActive)}
+                        onChange={() => toggleUserStatus(user._id, user.isActive)}
                       />
                     </Td>
                   </Tr>
