@@ -30,7 +30,8 @@ const CategoriesListPage = () => {
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const toast = useToast();
@@ -71,19 +72,34 @@ const CategoriesListPage = () => {
     }
   };
 
-  const handleModalClose = () => {
-    setIsModalOpen(false);
+  const handleCreateModalClose = () => {
+    setIsCreateModalOpen(false);
+  };
+
+  const handleEditModalClose = () => {
+    setIsEditModalOpen(false);
     setSelectedCategory(null);
   };
 
   const handleCategoryCreate = async (categoryData) => {
     try {
       await API.post('/categories', categoryData);
-      setIsModalOpen(false);
-      const response = await API.get('/categories');
-      setCategories(response.data);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Error al crear la categoría');
+      fetchCategories(); // Recargar las categorías después de crear una nueva
+      toast({
+        title: 'Categoría creada con éxito.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      handleCreateModalClose();
+    } catch (error) {
+      toast({
+        title: 'Error al crear la categoría.',
+        description: error.response?.data?.message || 'No se pudo crear la categoría',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -110,7 +126,7 @@ const CategoriesListPage = () => {
 
   const handleOpenEditModal = (category) => {
     setSelectedCategory(category);
-    setIsModalOpen(true);
+    setIsEditModalOpen(true);
   };
 
   const handleCategoryUpdated = () => {
@@ -135,7 +151,7 @@ const CategoriesListPage = () => {
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
         <Box flex="1" ml={isSidebarOpen ? '0px' : '0px'} p={4}>
           <Heading mb={4}>Categorías</Heading>
-          <Button colorScheme="blue" onClick={() => setIsModalOpen(true)} mb={4}>
+          <Button colorScheme="blue" onClick={() => setIsCreateModalOpen(true)} mb={4}>
             Crear Categoría
           </Button>
           <Table variant="simple">
@@ -173,13 +189,17 @@ const CategoriesListPage = () => {
             ))}
             </Tbody>
           </Table>
-          {isModalOpen && (
-            <CategoryModal isOpen={isModalOpen} onClose={handleModalClose} onSubmit={handleCategoryCreate} />
+          {isCreateModalOpen && (
+            <CategoryModal
+              isOpen={isCreateModalOpen}
+              onClose={handleCreateModalClose}
+              onSubmit={handleCategoryCreate}
+            />
           )}
-          {isModalOpen && (
+          {isEditModalOpen && (
             <EditCategoryModal
-              isOpen={isModalOpen}
-              onClose={handleModalClose}
+              isOpen={isEditModalOpen}
+              onClose={handleEditModalClose}
               category={selectedCategory}
               onCategoryUpdated={handleCategoryUpdated}
             />
