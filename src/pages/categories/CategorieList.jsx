@@ -159,20 +159,24 @@ const CategoriesListPage = () => {
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
         <Box flex="1" ml={isSidebarOpen ? '0px' : '0px'} p={4}>
-          <Heading mb={4}>Categorías</Heading>
-          <Button colorScheme="blue" onClick={() => setIsCreateModalOpen(true)} mb={4}>
-            Crear Categoría
-          </Button>
-          <Select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            mb={4}
-            placeholder="Filtrar por estado"
-          >
-            <option value="all">Todas</option>
-            <option value="active">Activas</option>
-            <option value="inactive">Inactivas</option>
-          </Select>
+          <Flex justify="space-between" align="center" mb={6}>
+            <Heading mb={4}>Categorías</Heading>
+            <Button colorScheme="blue" onClick={() => setIsCreateModalOpen(true)} mb={4}>
+              Crear Categoría
+            </Button>
+          </Flex>
+          <Flex justify="space-between" align="center" mb={4}>
+            <Select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              mb={4}
+              placeholder="Filtrar por estado"
+            >
+              <option value="all">Todas</option>
+              <option value="active">Activas</option>
+              <option value="inactive">Inactivas</option>
+            </Select>
+          </Flex>
           <Table variant="simple">
             <Thead>
               <Tr>
