@@ -20,7 +20,7 @@ import CollapsibleSidebar from '../../components/layout/CollapsibleSidebar';
 import  Navbar  from '../../components/layout/Navbar';
 import { useParams } from 'react-router-dom';
 import API from '../../api/api';
-import { Line } from 'react-chartjs-2';
+// import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -70,36 +70,36 @@ const ProductDetailsPage = () => {
 
   const bgColor = useColorModeValue('white', 'gray.800');
 
-  const priceHistoryData = {
-    labels: product?.priceHistory?.map(history => new Date(history.date).toLocaleDateString()) || [],
-    datasets: [
-      {
-        label: 'Precio de Compra',
-        data: product?.priceHistory?.map(history => history.purchasePrice) || [],
-        borderColor: 'rgb(53, 162, 235)',
-        backgroundColor: 'rgba(53, 162, 235, 0.5)',
-      },
-      {
-        label: 'Precio de Venta',
-        data: product?.priceHistory?.map(history => history.finalPrice) || [],
-        borderColor: 'rgb(255, 99, 132)',
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-      },
-    ],
-  };
+  // const priceHistoryData = {
+  //   labels: product?.priceHistory?.map(history => new Date(history.date).toLocaleDateString()) || [],
+  //   datasets: [
+  //     {
+  //       label: 'Precio de Compra',
+  //       data: product?.priceHistory?.map(history => history.purchasePrice) || [],
+  //       borderColor: 'rgb(53, 162, 235)',
+  //       backgroundColor: 'rgba(53, 162, 235, 0.5)',
+  //     },
+  //     {
+  //       label: 'Precio de Venta',
+  //       data: product?.priceHistory?.map(history => history.finalPrice) || [],
+  //       borderColor: 'rgb(255, 99, 132)',
+  //       backgroundColor: 'rgba(255, 99, 132, 0.5)',
+  //     },
+  //   ],
+  // };
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: '',
-      },
-    },
-  };
+  // const options = {
+  //   responsive: true,
+  //   plugins: {
+  //     legend: {
+  //       position: 'top',
+  //     },
+  //     title: {
+  //       display: true,
+  //       text: '',
+  //     },
+  //   },
+  // };
 
   if (isLoading) {
     return (
@@ -185,12 +185,12 @@ const ProductDetailsPage = () => {
               </Stat>
             </SimpleGrid>
             <SimpleGrid columns={[1, 2]} spacing={8} mb={6}>
-              <Stat spacing={4} bg={bgColor} p={4} shadow="sm" borderRadius="lg">
+              {/* <Stat spacing={4} bg={bgColor} p={4} shadow="sm" borderRadius="lg">
                 <Heading size="md" textAlign="center">
                   Historial de Precios
                 </Heading>
                 <Line options={options} data={priceHistoryData} />
-              </Stat>
+              </Stat> */}
               <Stat spacing={4} bg={bgColor} p={4} shadow="sm" borderRadius="lg">
                 <Heading size="md">
                   Tabla con movimientos del producto
