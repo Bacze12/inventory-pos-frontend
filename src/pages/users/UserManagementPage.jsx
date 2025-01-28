@@ -84,7 +84,9 @@ const UserManagementPage = () => {
   const toggleUserStatus = async (userId, isActive) => {
   try {
     // Cambiar el estado (isActive) enviando un body en la solicitud
-    await API.patch(`/users/${userId}/active`, { isActive: !isActive });
+    console.log(`Cambiando estado del usuario ${userId} a ${!isActive}`);
+    const response = await API.patch(`/users/${userId}/active`, { isActive: !isActive });
+    console.log('Respuesta de la API:', response.data);
     toast({
       title: `Usuario ${!isActive ? 'activado' : 'desactivado'} con éxito.`,
       status: 'success',
