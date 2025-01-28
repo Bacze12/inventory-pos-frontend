@@ -7,6 +7,7 @@ import {
   Textarea,
   FormErrorMessage,
   VStack,
+  NavItem,
 } from '@chakra-ui/react';
 
 /**

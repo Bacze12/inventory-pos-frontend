@@ -9,7 +9,9 @@ import {
     FormControl,
     FormLabel,
     Button,
-    Grid
+    Grid,
+    Alert,
+    AlertIcon,
 } from "@chakra-ui/react";
 import NavBar from '../../components/layout/Navbar';
 import CollapsibleSidebar from '../../components/layout/CollapsibleSidebar';
@@ -18,6 +20,8 @@ const SettingsPage = () => {
     const [printers, setPrinters] = useState([]);
     const [selectedPrinter, setSelectedPrinter] = useState(localStorage.getItem('selectedPrinter') || '');
     const [isSidebarOpen, setSidebarOpen] = useState(true);
+    const [error, setError] = useState(null);
+
 
     useEffect(() => {
         const getPrinters = async () => {
@@ -26,7 +30,7 @@ const SettingsPage = () => {
                 const printerNames = devices.map(device => device.productName);
                 setPrinters(printerNames);
             } catch (error) {
-                console.error('Error al obtener las impresoras:', error);
+                setError('Error al obtener las impresoras:' + error.message);
             }
         };
 
@@ -47,6 +51,12 @@ const SettingsPage = () => {
             <Flex>
                 <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
                 <Box flex="1" ml={isSidebarOpen ? '0px' : '0px'} p={6}>
+                    {error && (
+                            <Alert status="error" mb={4}>
+                                <AlertIcon />
+                                {error}
+                            </Alert>
+                        )}
                     <Heading as="h1" size="lg" mb={6}>
                         Configuración
                     </Heading>

@@ -36,8 +36,7 @@ const CategoryUpdatePage = () => {
         setName(response.data.name); // Inicializamos el nombre
         setDescription(response.data.description); // Inicializamos la descripción
       } catch (err) {
-        console.error(err.response?.data || err);
-        setError('No se pudo cargar la categoría.');
+        setError(err.response?.data?.message || 'No se pudo cargar la categoría.');
       } finally {
         setIsLoading(false);
       }
@@ -53,8 +52,7 @@ const CategoryUpdatePage = () => {
       await API.patch(`/categories/${_id}`, { name, description }); // Incluye el campo "description"
       navigate('/categories'); // Navega a la lista de categorías
     } catch (err) {
-      console.error(err.response?.data || err);
-      setError('No se pudo actualizar la categoría.');
+      setError( err.response?.data?.message || 'No se pudo actualizar la categoría.');
     }
   };
 

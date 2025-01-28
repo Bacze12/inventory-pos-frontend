@@ -1,3 +1,4 @@
+import React from 'react';
 import { Alert, AlertIcon, AlertTitle, AlertDescription } from '@chakra-ui/react';
 
 export const AlertMessage = ({ status = 'info', title, description, ...props }) => {

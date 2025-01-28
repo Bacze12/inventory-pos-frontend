@@ -16,11 +16,6 @@ class ErrorBoundary extends Component {
     return { hasError: true };
   }
 
-  componentDidCatch(error, errorInfo) {
-    // Puedes enviar el error a un servicio de monitoreo, como Sentry.
-    console.error('ErrorBoundary capturó un error:', error, errorInfo);
-  }
-
   handleRetry = () => {
     // Reinicia el estado del error.
     this.setState({ hasError: false });

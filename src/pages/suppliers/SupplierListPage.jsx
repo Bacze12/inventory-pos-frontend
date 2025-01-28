@@ -56,7 +56,7 @@ const SuppliersListPage = () => {
       const response = await API.get('/suppliers');
       setSuppliers(response.data);
     } catch (err) {
-      console.error('Error creando proveedor:', err);
+      setError(err.response?.data?.message || 'Error creando proveedor:');
     }
   };
 

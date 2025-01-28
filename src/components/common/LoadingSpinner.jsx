@@ -1,3 +1,4 @@
+import React from 'react';
 import { Spinner, Center } from '@chakra-ui/react';
 
 export const LoadingSpinner = ({ size = 'xl', ...props }) => {

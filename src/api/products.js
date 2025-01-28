@@ -44,8 +44,6 @@ export const createProduct = async (productData) => {
     // Retorna los datos del producto creado
     return response.data;
   } catch (error) {
-    // Lanza un error si la solicitud falla
-    console.error('Error al crear el producto:', error);
     throw new Error(error.response?.data?.message || 'Error al crear el producto');
   }
 };

@@ -58,7 +58,7 @@ const InventoryListPage = () => {
       const response = await API.get('/inventory');
       setInventory(response.data);
     } catch (err) {
-      console.error('Error creando movimiento de inventario:', err);
+      setError(err.response?.data?.message || 'Error creando movimiento de inventario:');
     }
   };
 

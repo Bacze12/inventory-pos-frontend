@@ -1,5 +1,6 @@
 // CategoriesListPage.jsx
 import React, { useState, useEffect } from 'react';
+
 import {
   Box,
   Button,
@@ -36,7 +37,7 @@ const CategoriesListPage = () => {
         const response = await API.get('/categories');
         setCategories(response.data);
       } catch (err) {
-        setError('No se pudo cargar las categorías.');
+        setError(err.response?.data?.message || 'No se pudo cargar las categorías.');
       } finally {
         setIsLoading(false);
       }
@@ -56,7 +57,7 @@ const CategoriesListPage = () => {
       const response = await API.get('/categories');
       setCategories(response.data);
     } catch (err) {
-      console.error('Error creando categoría:', err);
+      setError(err.response?.data?.message || 'Error al crear la categoría');
     }
   };
 
