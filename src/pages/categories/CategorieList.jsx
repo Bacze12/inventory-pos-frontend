@@ -15,94 +15,48 @@ import {
   Alert,
   AlertIcon,
   Flex,
-  Switch,
-  useToast,
-  IconButton,
-  Select,
 } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 import API from '../../api/api';
 import CategoryModal from '../../components/categories/CategoriesModal';
 import CollapsibleSidebar  from '../../components/layout/CollapsibleSidebar';
 import  Navbar  from '../../components/layout/Navbar';
-import { EditIcon } from '@chakra-ui/icons';
-import EditCategoryModal from '../../components/categories/EditCategoryModal';
 
 const CategoriesListPage = () => {
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [filter, setFilter] = useState('all');
-  const toast = useToast();
-
-  const fetchCategories = async () => {
-    try {
-      const response = await API.get('/categories');
-      console.log('Categorías recibidas:', response.data);
-      setCategories(response.data);
-    } catch (err) {
-      setError(err.response?.data?.message || 'No se pudo cargar las categorías.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await API.get('/categories');
+        setCategories(response.data);
+      } catch (err) {
+        setError('No se pudo cargar las categorías.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchCategories();
   }, []);
 
-  const toggleCategoryStatus = async (categoryId, isActive) => {
-    try {
-      await API.patch(`/categories/${categoryId}`, { isActive: !isActive });
-      fetchCategories(); // Recargar las categorías después de cambiar el estado
-      toast({
-        title: 'Estado de la categoría actualizado.',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-    } catch (error) {
-      toast({
-        title: 'Error al actualizar el estado de la categoría.',
-        description: error.response?.data?.message || 'No se pudo actualizar el estado de la categoría',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
-
-  const handleCreateModalClose = () => {
-    setIsCreateModalOpen(false);
-  };
-
-  const handleEditModalClose = () => {
-    setIsEditModalOpen(false);
-    setSelectedCategory(null);
+  const handleModalClose = () => {
+    setIsModalOpen(false);
   };
 
   const handleCategoryCreate = async (categoryData) => {
     try {
       await API.post('/categories', categoryData);
-      fetchCategories(); // Recargar las categorías después de crear una nueva
-      toast({
-        title: 'Categoría creada con éxito.',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-      handleCreateModalClose();
-    } catch (error) {
-      toast({
-        title: 'Error al crear la categoría.',
-        description: error.response?.data?.message || 'No se pudo crear la categoría',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
+      setIsModalOpen(false);
+      const response = await API.get('/categories');
+      setCategories(response.data);
+    } catch (err) {
+      console.error('Error creando categoría:', err);
     }
   };
 
@@ -127,64 +81,20 @@ const CategoriesListPage = () => {
     );
   }
 
-  const handleOpenEditModal = (category) => {
-    setSelectedCategory(category);
-    setIsEditModalOpen(true);
-  };
-
-  const handleCategoryUpdated = () => {
-    fetchCategories(); // Recargar las categorías después de actualizar una
-  };
-
-  const filteredCategories = categories.filter((category) => {
-  switch (filter) {
-    case 'active':
-      return category.isActive === true;
-    case 'inactive':
-      return category.isActive === false;
-    default:
-      return true;
-  }
-});
-
-  if (error) {
-    return (
-      <Center h="100vh">
-        <Alert status="error">
-          <AlertIcon />
-          {error}
-        </Alert>
-      </Center>
-    );
-  }
-
   return (
     <Box>
       <Navbar onMenuClick={toggleSidebar} />
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
         <Box flex="1" ml={isSidebarOpen ? '0px' : '0px'} p={4}>
-          <Flex justify="space-between" align="center" mb={6}>
-            <Heading mb={4}>Categorías</Heading>
-            <Button colorScheme="blue" onClick={() => setIsCreateModalOpen(true)} mb={4}>
-              Crear Categoría
-            </Button>
-          </Flex>
-          <Flex justify="space-between" align="center" mb={4}>
-            <Select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              mb={4}
-              placeholder="Filtrar por estado"
-            >
-              <option value="all">Todas</option>
-              <option value="active">Activas</option>
-              <option value="inactive">Inactivas</option>
-            </Select>
-          </Flex>
+          <Heading mb={4}>Categorías</Heading>
+          <Button colorScheme="blue" onClick={() => setIsModalOpen(true)} mb={4}>
+            Crear Categoría
+          </Button>
           <Table variant="simple">
             <Thead>
               <Tr>
+                <Th>ID</Th>
                 <Th>Nombre</Th>
                 <Th>Descripción</Th>
                 <Th>Activo</Th>
@@ -192,45 +102,27 @@ const CategoriesListPage = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {filteredCategories.map((category) => (
+              {categories.map((category) => (
               <Tr key={category._id}>
+                <Td>{category._id}</Td>
                 <Td>{category.name}</Td>
                 <Td>{category.description}</Td>
+                <Td>{category.isActive ? 'Sí' : 'No'}</Td>
                 <Td>
-                  <Switch
-                    colorScheme="green"
-                    isChecked={category.isActive}
-                    onChange={() => toggleCategoryStatus(category._id, category.isActive)}
-                  />
-                </Td>
-                <Td>
-                  <IconButton
-                    icon={<EditIcon />}
-                    colorScheme="blue"
-                    variant="outline"
-                    onClick={() => handleOpenEditModal(category)}
-                    aria-label="Editar usuario"
-                    ml={2}
-                  />
+                  <Button
+                    size="sm"
+                    colorScheme="teal"
+                    onClick={() => navigate(`/categories/${category._id}/edit`)}
+                  >
+                    Editar
+                  </Button>
                 </Td>
               </Tr>
             ))}
             </Tbody>
           </Table>
-          {isCreateModalOpen && (
-            <CategoryModal
-              isOpen={isCreateModalOpen}
-              onClose={handleCreateModalClose}
-              onSubmit={handleCategoryCreate}
-            />
-          )}
-          {isEditModalOpen && (
-            <EditCategoryModal
-              isOpen={isEditModalOpen}
-              onClose={handleEditModalClose}
-              category={selectedCategory}
-              onCategoryUpdated={handleCategoryUpdated}
-            />
+          {isModalOpen && (
+            <CategoryModal isOpen={isModalOpen} onClose={handleModalClose} onSubmit={handleCategoryCreate} />
           )}
         </Box>
       </Flex>
