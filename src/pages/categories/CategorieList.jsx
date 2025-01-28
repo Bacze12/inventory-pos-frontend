@@ -24,6 +24,7 @@ import CategoryModal from '../../components/categories/CategoriesModal';
 import CollapsibleSidebar  from '../../components/layout/CollapsibleSidebar';
 import  Navbar  from '../../components/layout/Navbar';
 import { EditIcon } from '@chakra-ui/icons';
+import EditCategoryModal from '../../components/categories/EditCategoryModal';
 
 const CategoriesListPage = () => {
   const [categories, setCategories] = useState([]);
@@ -31,8 +32,8 @@ const CategoriesListPage = () => {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const toast = useToast();
-  const [setSelectedCategory] = useState(null);
 
   const fetchCategories = async () => {
     try {
@@ -72,6 +73,7 @@ const CategoriesListPage = () => {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+    setSelectedCategory(null);
   };
 
   const handleCategoryCreate = async (categoryData) => {
@@ -109,6 +111,10 @@ const CategoriesListPage = () => {
   const handleOpenEditModal = (category) => {
     setSelectedCategory(category);
     setIsModalOpen(true);
+  };
+
+  const handleCategoryUpdated = () => {
+    fetchCategories(); // Recargar las categorías después de actualizar una
   };
 
   if (error) {
@@ -169,6 +175,14 @@ const CategoriesListPage = () => {
           </Table>
           {isModalOpen && (
             <CategoryModal isOpen={isModalOpen} onClose={handleModalClose} onSubmit={handleCategoryCreate} />
+          )}
+          {isModalOpen && (
+            <EditCategoryModal
+              isOpen={isModalOpen}
+              onClose={handleModalClose}
+              category={selectedCategory}
+              onCategoryUpdated={handleCategoryUpdated}
+            />
           )}
         </Box>
       </Flex>
