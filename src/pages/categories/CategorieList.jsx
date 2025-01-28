@@ -41,6 +41,7 @@ const CategoriesListPage = () => {
   const fetchCategories = async () => {
     try {
       const response = await API.get('/categories');
+      console.log('Categorías recibidas:', response.data);
       setCategories(response.data);
     } catch (err) {
       setError(err.response?.data?.message || 'No se pudo cargar las categorías.');
@@ -136,10 +137,14 @@ const CategoriesListPage = () => {
   };
 
   const filteredCategories = categories.filter((category) => {
-    if (filter === 'all') return true;
-    if (filter === 'active') return category.isActive;
-    if (filter === 'inactive') return !category.isActive;
-    return true;
+    switch (filter) {
+      case 'active':
+        return category.isActive === true;
+      case 'inactive':
+        return category.isActive === false;
+      default:
+        return true;
+    }
   });
 
   if (error) {
