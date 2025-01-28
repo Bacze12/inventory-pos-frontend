@@ -9,9 +9,6 @@ const PrivateRoute = ({ children }) => {
     const location = useLocation();
     const isLoading = useSelector((state) => state.auth.isLoading);
 
-    // Depuración: muestra el estado actual de autenticación
-    console.log('Auth state:', { token, currentPath: location.pathname });
-
     // Muestra un spinner mientras se carga la autenticación
     if (isLoading) {
         return (
