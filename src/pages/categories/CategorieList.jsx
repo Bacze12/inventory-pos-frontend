@@ -1,6 +1,5 @@
 // CategoriesListPage.jsx
 import React, { useState, useEffect } from 'react';
-
 import {
   Box,
   Button,
@@ -16,12 +15,15 @@ import {
   Alert,
   AlertIcon,
   Flex,
+  Switch,
+  useToast,
+  IconButton,
 } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
 import API from '../../api/api';
 import CategoryModal from '../../components/categories/CategoriesModal';
 import CollapsibleSidebar  from '../../components/layout/CollapsibleSidebar';
 import  Navbar  from '../../components/layout/Navbar';
+import { EditIcon } from '@chakra-ui/icons';
 
 const CategoriesListPage = () => {
   const [categories, setCategories] = useState([]);
@@ -29,22 +31,44 @@ const CategoriesListPage = () => {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
-  const navigate = useNavigate();
+  const toast = useToast();
+  const [setSelectedCategory] = useState(null);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await API.get('/categories');
+      setCategories(response.data);
+    } catch (err) {
+      setError(err.response?.data?.message || 'No se pudo cargar las categorías.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await API.get('/categories');
-        setCategories(response.data);
-      } catch (err) {
-        setError(err.response?.data?.message || 'No se pudo cargar las categorías.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchCategories();
   }, []);
+
+  const toggleCategoryStatus = async (categoryId, isActive) => {
+    try {
+      await API.patch(`/categories/${categoryId}`, { isActive: !isActive });
+      fetchCategories(); // Recargar las categorías después de cambiar el estado
+      toast({
+        title: 'Estado de la categoría actualizado.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error al actualizar el estado de la categoría.',
+        description: error.response?.data?.message || 'No se pudo actualizar el estado de la categoría',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
@@ -82,6 +106,22 @@ const CategoriesListPage = () => {
     );
   }
 
+  const handleOpenEditModal = (category) => {
+    setSelectedCategory(category);
+    setIsModalOpen(true);
+  };
+
+  if (error) {
+    return (
+      <Center h="100vh">
+        <Alert status="error">
+          <AlertIcon />
+          {error}
+        </Alert>
+      </Center>
+    );
+  }
+
   return (
     <Box>
       <Navbar onMenuClick={toggleSidebar} />
@@ -95,7 +135,6 @@ const CategoriesListPage = () => {
           <Table variant="simple">
             <Thead>
               <Tr>
-                <Th>ID</Th>
                 <Th>Nombre</Th>
                 <Th>Descripción</Th>
                 <Th>Activo</Th>
@@ -105,18 +144,24 @@ const CategoriesListPage = () => {
             <Tbody>
               {categories.map((category) => (
               <Tr key={category._id}>
-                <Td>{category._id}</Td>
                 <Td>{category.name}</Td>
                 <Td>{category.description}</Td>
-                <Td>{category.isActive ? 'Sí' : 'No'}</Td>
                 <Td>
-                  <Button
-                    size="sm"
-                    colorScheme="teal"
-                    onClick={() => navigate(`/categories/${category._id}/edit`)}
-                  >
-                    Editar
-                  </Button>
+                  <Switch
+                    colorScheme="green"
+                    isChecked={category.isActive}
+                    onChange={() => toggleCategoryStatus(category._id, category.isActive)}
+                  />
+                </Td>
+                <Td>
+                  <IconButton
+                    icon={<EditIcon />}
+                    colorScheme="blue"
+                    variant="outline"
+                    onClick={() => handleOpenEditModal(category)}
+                    aria-label="Editar usuario"
+                    ml={2}
+                  />
                 </Td>
               </Tr>
             ))}
