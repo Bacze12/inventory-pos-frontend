@@ -1,5 +1,5 @@
 // CategoriesListPage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useToast } from 'react';
 import {
   Box,
   Button,
@@ -33,6 +33,7 @@ const CategoriesListPage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const toast = useToast();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -65,7 +66,13 @@ const CategoriesListPage = () => {
       const response = await API.get('/categories');
       setCategories(response.data);
     } catch (err) {
-      console.error('Error creando categoría:', err);
+      toast({
+        title: 'Error al cargar usuarios.',
+        description: error.response?.data?.message || 'Error creando categoría:',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -75,7 +82,13 @@ const CategoriesListPage = () => {
       const response = await API.get('/categories');
       setCategories(response.data);
     } catch (err) {
-      console.error('Error actualizando categoría:', err);
+      toast({
+        title: 'Error al cargar usuarios.',
+        description: error.response?.data?.message || 'Error actualizando categoría:',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -85,7 +98,13 @@ const CategoriesListPage = () => {
       const response = await API.get('/categories');
       setCategories(response.data);
     } catch (err) {
-      console.error('Error actualizando el estado de la categoría:', err);
+      toast({
+        title: 'Error al cargar usuarios.',
+        description: error.response?.data?.message || 'Error actualizando el estado de la categoría:',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
