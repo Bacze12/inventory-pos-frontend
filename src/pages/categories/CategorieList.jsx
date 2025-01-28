@@ -18,6 +18,7 @@ import {
   Switch,
   useToast,
   IconButton,
+  Select,
 } from '@chakra-ui/react';
 import API from '../../api/api';
 import CategoryModal from '../../components/categories/CategoriesModal';
@@ -34,6 +35,7 @@ const CategoriesListPage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [filter, setFilter] = useState('all');
   const toast = useToast();
 
   const fetchCategories = async () => {
@@ -133,6 +135,13 @@ const CategoriesListPage = () => {
     fetchCategories(); // Recargar las categorías después de actualizar una
   };
 
+  const filteredCategories = categories.filter((category) => {
+    if (filter === 'all') return true;
+    if (filter === 'active') return category.isActive;
+    if (filter === 'inactive') return !category.isActive;
+    return true;
+  });
+
   if (error) {
     return (
       <Center h="100vh">
@@ -154,6 +163,16 @@ const CategoriesListPage = () => {
           <Button colorScheme="blue" onClick={() => setIsCreateModalOpen(true)} mb={4}>
             Crear Categoría
           </Button>
+          <Select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            mb={4}
+            placeholder="Filtrar por estado"
+          >
+            <option value="all">Todas</option>
+            <option value="active">Activas</option>
+            <option value="inactive">Inactivas</option>
+          </Select>
           <Table variant="simple">
             <Thead>
               <Tr>
@@ -164,7 +183,7 @@ const CategoriesListPage = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {categories.map((category) => (
+              {filteredCategories.map((category) => (
               <Tr key={category._id}>
                 <Td>{category.name}</Td>
                 <Td>{category.description}</Td>
