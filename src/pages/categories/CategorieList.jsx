@@ -95,8 +95,10 @@ const CategoriesListPage = () => {
   const toggleCategoryStatus = async (category) => {
     try {
       await API.patch(`/categories/${category._id}`, { isActive: !category.isActive });
-      const response = await API.get('/categories');
-      setCategories(response.data);
+      const updatedCategories = categories.map(cat =>
+        cat._id === category._id ? { ...cat, isActive: !cat.isActive } : cat
+      );
+      setCategories(updatedCategories);
     } catch (err) {
       toast({
         title: 'Error al cargar usuarios.',
