@@ -116,10 +116,12 @@ const CategoriesListPage = () => {
       <Flex>
         <CollapsibleSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
         <Box flex="1" ml={isSidebarOpen ? '0px' : '0px'} p={4}>
-          <Heading mb={4}>Categorías</Heading>
-          <Button colorScheme="blue" onClick={() => setIsModalOpen(true)} mb={4}>
-            Crear Categoría
-          </Button>
+          <Flex justify="space-between" align="center" mb={6}>
+            <Heading mb={4}>Categorías</Heading>
+            <Button colorScheme="blue" onClick={() => setIsModalOpen(true)} mb={4}>
+              Crear Categoría
+            </Button>
+          </Flex>
           <Table variant="simple">
             <Thead>
               <Tr>
