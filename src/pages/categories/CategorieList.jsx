@@ -15,7 +15,7 @@ import {
   Alert,
   AlertIcon,
   Flex,
-  Switch,
+  // Switch,
   IconButton,
 } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
@@ -79,15 +79,15 @@ const CategoriesListPage = () => {
     }
   };
 
-  const toggleCategoryStatus = async (category) => {
-    try {
-      await API.patch(`/categories/${category._id}`, { isActive: !category.isActive });
-      const response = await API.get('/categories');
-      setCategories(response.data);
-    } catch (err) {
-      console.error('Error actualizando el estado de la categoría:', err);
-    }
-  };
+  // const toggleCategoryStatus = async (category) => {
+  //   try {
+  //     await API.patch(`/categories/${category._id}`, { isActive: !category.isActive });
+  //     const response = await API.get('/categories');
+  //     setCategories(response.data);
+  //   } catch (err) {
+  //     console.error('Error actualizando el estado de la categoría:', err);
+  //   }
+  // };
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
 
@@ -123,7 +123,6 @@ const CategoriesListPage = () => {
           <Table variant="simple">
             <Thead>
               <Tr>
-                <Th>ID</Th>
                 <Th>Nombre</Th>
                 <Th>Descripción</Th>
                 <Th>Activo</Th>
@@ -133,15 +132,14 @@ const CategoriesListPage = () => {
             <Tbody>
               {categories.map((category) => (
               <Tr key={category._id}>
-                <Td>{category._id}</Td>
                 <Td>{category.name}</Td>
                 <Td>{category.description}</Td>
-                <Td>
-                    <Switch
-                      isChecked={category.isActive}
-                      onChange={() => toggleCategoryStatus(category)}
-                    />
-                  </Td>
+                {/* <Td>
+                  <Switch
+                    isChecked={category.isActive}
+                    onChange={() => toggleCategoryStatus(category)}
+                  />
+                </Td> */}
                 <Td>
                   <IconButton
                     icon={<EditIcon />}
