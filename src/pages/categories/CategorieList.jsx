@@ -1,5 +1,5 @@
 // CategoriesListPage.jsx
-import React, { useState, useEffect, useToast } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -33,7 +33,6 @@ const CategoriesListPage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
-  const toast = useToast();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -66,13 +65,7 @@ const CategoriesListPage = () => {
       const response = await API.get('/categories');
       setCategories(response.data);
     } catch (err) {
-      toast({
-        title: 'Error al cargar usuarios.',
-        description: error.response?.data?.message || 'Error creando categoría:',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
+      console.error('Error creando categoría:', err);
     }
   };
 
@@ -82,31 +75,17 @@ const CategoriesListPage = () => {
       const response = await API.get('/categories');
       setCategories(response.data);
     } catch (err) {
-      toast({
-        title: 'Error al cargar usuarios.',
-        description: error.response?.data?.message || 'Error actualizando categoría:',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
+      console.error('Error actualizando categoría:', err);
     }
   };
 
   const toggleCategoryStatus = async (category) => {
     try {
       await API.patch(`/categories/${category._id}`, { isActive: !category.isActive });
-      const updatedCategories = categories.map(cat =>
-        cat._id === category._id ? { ...cat, isActive: !cat.isActive } : cat
-      );
-      setCategories(updatedCategories);
+      const response = await API.get('/categories');
+      setCategories(response.data);
     } catch (err) {
-      toast({
-        title: 'Error al cargar usuarios.',
-        description: error.response?.data?.message || 'Error actualizando el estado de la categoría:',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
+      console.error('Error actualizando el estado de la categoría:', err);
     }
   };
 
