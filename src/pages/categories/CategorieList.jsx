@@ -125,7 +125,7 @@ const CategoriesListPage = () => {
               <Tr>
                 <Th>Nombre</Th>
                 <Th>Descripción</Th>
-                <Th>Activo</Th>
+                <Th>Estado</Th>
                 <Th>Acciones</Th>
               </Tr>
             </Thead>
@@ -134,6 +134,7 @@ const CategoriesListPage = () => {
               <Tr key={category._id}>
                 <Td>{category.name}</Td>
                 <Td>{category.description}</Td>
+                <Td></Td>
                 {/* <Td>
                   <Switch
                     isChecked={category.isActive}
