@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Flex,
@@ -24,12 +24,13 @@ import {
   Select,
   useDisclosure,
   useToast,
+  IconButton,
 } from '@chakra-ui/react';
-import { AddIcon } from '@chakra-ui/icons';
+import { AddIcon, EditIcon } from '@chakra-ui/icons';
 import CollapsibleSidebar from '../../components/layout/CollapsibleSidebar';
 import  Navbar  from '../../components/layout/Navbar';
 import API from '../../api/api';
-import { useNavigate } from 'react-router-dom';
+import EditUserModal from '../../components/user/EditUserModal';
 
 const UserManagementPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -38,13 +39,14 @@ const UserManagementPage = () => {
   const [newUser, setNewUser] = useState({ email: '', name: '', password: '', role: '' });
   const toast = useToast();
   const [isSidebarOpen, setSidebarOpen] = useState(true);
-  const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'active', 'inactive'
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
 
   // Cargar usuarios
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const response = await API.get('/users');
       setUsers(response.data);
@@ -57,12 +59,12 @@ const UserManagementPage = () => {
         isClosable: true,
       });
     }
-  };
+  }, [toast]);
 
   // Cargar roles desde el backend
-  const fetchRoles = async () => {
+  const fetchRoles = useCallback(async () => {
     try {
-      setRoles(['ADMIN', 'CASHIER', 'MANAGER']); // Roles definidos en Swagger
+      setRoles(['ADMIN', 'CASHIER', 'MANAGER']);
     } catch (error) {
       toast({
         title: 'Error al cargar roles.',
@@ -71,27 +73,30 @@ const UserManagementPage = () => {
         isClosable: true,
       });
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    fetchUsers();
+    fetchRoles();
+  }, [fetchUsers, fetchRoles]);
 
   // Activar o desactivar un usuario
   const toggleUserStatus = async (userId, isActive) => {
   try {
     // Cambiar el estado (isActive) enviando un body en la solicitud
     await API.patch(`/users/${userId}/active`, { isActive: !isActive });
-
     toast({
       title: `Usuario ${!isActive ? 'activado' : 'desactivado'} con éxito.`,
       status: 'success',
       duration: 3000,
       isClosable: true,
     });
-
-    // Refrescar la lista de usuarios después de cambiar el estado
-    fetchUsers();
+    // Recargar la lista de usuarios
+    await fetchUsers();
   } catch (error) {
     toast({
-      title: 'Error al cambiar el estado del usuario.',
-      description: error.response?.data?.message || 'No se pudo actualizar el estado del usuario',
+      title: 'Error al cambiar estado del usuario',
+      description: error.response?.data?.message || 'No se pudo actualizar el estado',
       status: 'error',
       duration: 3000,
       isClosable: true,
@@ -143,10 +148,19 @@ const UserManagementPage = () => {
     return true;
   });
 
-  useEffect(() => {
-    fetchUsers();
-    fetchRoles();
-  }, []);
+  const handleOpenEditModal = (user) => {
+    setSelectedUser(user);
+    setEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setEditModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  const handleUserUpdated = () => {
+    fetchUsers(); // Recarga la lista de usuarios después de la actualización
+  };
 
   return (
     <Box bg="gray.50" minH="100vh">
@@ -182,7 +196,8 @@ const UserManagementPage = () => {
                   <Th>Correo</Th>
                   <Th>Nombre</Th>
                   <Th>Rol</Th>
-                  <Th>Activo</Th>
+                  <Th>Estado</Th>
+                  <Th>Acciones</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -198,10 +213,27 @@ const UserManagementPage = () => {
                         onChange={() => toggleUserStatus(user._id, user.isActive)}
                       />
                     </Td>
+                    <Td>
+                      <IconButton
+                        icon={<EditIcon />}
+                        colorScheme="blue"
+                        variant="outline"
+                        onClick={() => handleOpenEditModal(user)}
+                        aria-label="Editar usuario"
+                        ml={2}
+                      />
+                    </Td>
                   </Tr>
                 ))}
               </Tbody>
             </Table>
+
+            <EditUserModal
+            isOpen={isEditModalOpen}
+            onClose={handleCloseEditModal}
+            user={selectedUser}
+            onUserUpdated={handleUserUpdated}
+          />
           </Box>
 
           <Modal isOpen={isOpen} onClose={onClose} size="lg">
