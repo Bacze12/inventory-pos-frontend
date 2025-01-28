@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     Input,
     Select,
@@ -22,25 +22,19 @@ const SettingsPage = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(true);
     const [error, setError] = useState(null);
 
-
-    useEffect(() => {
-        const getPrinters = async () => {
-            try {
-                const devices = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x04b8 }] });
-                const printerNames = devices.map(device => device.productName);
-                setPrinters(printerNames);
-            } catch (error) {
-                setError('Error al obtener las impresoras:' + error.message);
-            }
-        };
-
-        getPrinters();
-    }, []);
-
     const handlePrinterChange = (event) => {
         const printer = event.target.value;
         setSelectedPrinter(printer);
         localStorage.setItem('selectedPrinter', printer);
+    };
+
+    const handleGetPrinters = async () => {
+        try {
+            const devices = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x1234 }] });
+            setPrinters(devices.map(device => device.productName));
+        } catch (err) {
+            setError(`Error al obtener las impresoras: ${err.message}`);
+        }
     };
 
     const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
@@ -79,6 +73,7 @@ const SettingsPage = () => {
                             <Heading size="md" mb={4}>Configuración POS</Heading>
                             <FormControl mb={4}>
                                 <FormLabel>Impresora predeterminada</FormLabel>
+                                <Button onClick={handleGetPrinters}>Seleccionar Impresora</Button>
                                 <Select value={selectedPrinter} onChange={handlePrinterChange}>
                                     {printers.map((printer, index) => (
                                         <option key={index} value={printer}>{printer}</option>
