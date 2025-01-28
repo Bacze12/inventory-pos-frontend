@@ -15,20 +15,24 @@ import {
   Alert,
   AlertIcon,
   Flex,
+  Switch,
+  IconButton,
 } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+import { EditIcon } from '@chakra-ui/icons';
 import API from '../../api/api';
 import CategoryModal from '../../components/categories/CategoriesModal';
 import CollapsibleSidebar  from '../../components/layout/CollapsibleSidebar';
 import  Navbar  from '../../components/layout/Navbar';
+import EditCategoryModal from '../../components/categories/EditCategoryModal';
 
 const CategoriesListPage = () => {
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -49,6 +53,11 @@ const CategoriesListPage = () => {
     setIsModalOpen(false);
   };
 
+  const handleEditModalClose = () => {
+    setIsEditModalOpen(false);
+    setSelectedCategory(null);
+  };
+
   const handleCategoryCreate = async (categoryData) => {
     try {
       await API.post('/categories', categoryData);
@@ -57,6 +66,26 @@ const CategoriesListPage = () => {
       setCategories(response.data);
     } catch (err) {
       console.error('Error creando categoría:', err);
+    }
+  };
+
+  const handleCategoryUpdate = async (updatedCategory) => {
+    try {
+      await API.patch(`/categories/${updatedCategory._id}`, updatedCategory);
+      const response = await API.get('/categories');
+      setCategories(response.data);
+    } catch (err) {
+      console.error('Error actualizando categoría:', err);
+    }
+  };
+
+  const toggleCategoryStatus = async (category) => {
+    try {
+      await API.patch(`/categories/${category._id}`, { isActive: !category.isActive });
+      const response = await API.get('/categories');
+      setCategories(response.data);
+    } catch (err) {
+      console.error('Error actualizando el estado de la categoría:', err);
     }
   };
 
@@ -107,15 +136,23 @@ const CategoriesListPage = () => {
                 <Td>{category._id}</Td>
                 <Td>{category.name}</Td>
                 <Td>{category.description}</Td>
-                <Td>{category.isActive ? 'Sí' : 'No'}</Td>
                 <Td>
-                  <Button
-                    size="sm"
-                    colorScheme="teal"
-                    onClick={() => navigate(`/categories/${category._id}/edit`)}
-                  >
-                    Editar
-                  </Button>
+                    <Switch
+                      isChecked={category.isActive}
+                      onChange={() => toggleCategoryStatus(category)}
+                    />
+                  </Td>
+                <Td>
+                  <IconButton
+                    icon={<EditIcon />}
+                    colorScheme="blue"
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      setIsEditModalOpen(true);
+                    }}
+                    aria-label="Editar categoría"
+                  />
                 </Td>
               </Tr>
             ))}
@@ -123,6 +160,14 @@ const CategoriesListPage = () => {
           </Table>
           {isModalOpen && (
             <CategoryModal isOpen={isModalOpen} onClose={handleModalClose} onSubmit={handleCategoryCreate} />
+          )}
+          {isEditModalOpen && selectedCategory && (
+            <EditCategoryModal
+              isOpen={isEditModalOpen}
+              onClose={handleEditModalClose}
+              category={selectedCategory}
+              onCategoryUpdated={handleCategoryUpdate}
+            />
           )}
         </Box>
       </Flex>

@@ -17,17 +17,19 @@ import API from '../../api/api';
 
 const EditCategoryModal = ({ isOpen, onClose, category, onCategoryUpdated }) => {
     const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
     const toast = useToast();
 
     useEffect(() => {
         if (category) {
         setName(category.name);
+        setDescription(category.description);
         }
     }, [category]);
 
     const handleUpdateCategory = async () => {
         try {
-        await API.patch(`/categories/${category._id}`, { name });
+        await API.patch(`/categories/${category._id}`, { name, description });
         toast({
             title: 'Categoría actualizada con éxito.',
             status: 'success',
@@ -49,29 +51,37 @@ const EditCategoryModal = ({ isOpen, onClose, category, onCategoryUpdated }) => 
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-            <ModalHeader>Editar Categoría</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-            <FormControl mb={4}>
-                <FormLabel>Nombre</FormLabel>
-                <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Nombre de la categoría"
-                />
-            </FormControl>
-            </ModalBody>
-            <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleUpdateCategory}>
-                Guardar Cambios
-            </Button>
-            <Button variant="ghost" onClick={onClose}>
-                Cancelar
-            </Button>
-            </ModalFooter>
-        </ModalContent>
+            <ModalOverlay />
+            <ModalContent>
+                <ModalHeader>Editar Categoría</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                <FormControl mb={4}>
+                    <FormLabel>Nombre</FormLabel>
+                    <Input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Nombre de la categoría"
+                    />
+                </FormControl>
+                <FormControl mb={4}>
+                    <FormLabel>Descripción</FormLabel>
+                    <Input
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Descripción de la categoría"
+                    />
+                </FormControl>
+                </ModalBody>
+                <ModalFooter>
+                <Button colorScheme="blue" mr={3} onClick={handleUpdateCategory}>
+                    Guardar Cambios
+                </Button>
+                <Button variant="ghost" onClick={onClose}>
+                    Cancelar
+                </Button>
+                </ModalFooter>
+            </ModalContent>
         </Modal>
     );
 };
