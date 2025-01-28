@@ -24,11 +24,13 @@ import {
   Select,
   useDisclosure,
   useToast,
+  IconButton,
 } from '@chakra-ui/react';
-import { AddIcon } from '@chakra-ui/icons';
+import { AddIcon, EditIcon } from '@chakra-ui/icons';
 import CollapsibleSidebar from '../../components/layout/CollapsibleSidebar';
 import  Navbar  from '../../components/layout/Navbar';
 import API from '../../api/api';
+import EditUserModal from '../../components/user/EditUserModal';
 
 const UserManagementPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -38,6 +40,8 @@ const UserManagementPage = () => {
   const toast = useToast();
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'active', 'inactive'
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
 
@@ -144,6 +148,20 @@ const UserManagementPage = () => {
     return true;
   });
 
+  const handleOpenEditModal = (user) => {
+    setSelectedUser(user);
+    setEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setEditModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  const handleUserUpdated = () => {
+    fetchUsers(); // Recarga la lista de usuarios después de la actualización
+  };
+
   return (
     <Box bg="gray.50" minH="100vh">
       <Navbar onMenuClick={toggleSidebar} />
@@ -178,7 +196,8 @@ const UserManagementPage = () => {
                   <Th>Correo</Th>
                   <Th>Nombre</Th>
                   <Th>Rol</Th>
-                  <Th>Activo</Th>
+                  <Th>Estado</Th>
+                  <Th>Acciones</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -194,10 +213,27 @@ const UserManagementPage = () => {
                         onChange={() => toggleUserStatus(user._id, user.isActive)}
                       />
                     </Td>
+                    <Td>
+                      <IconButton
+                        icon={<EditIcon />}
+                        colorScheme="blue"
+                        variant="outline"
+                        onClick={() => handleOpenEditModal(user)}
+                        aria-label="Editar usuario"
+                        ml={2}
+                      />
+                    </Td>
                   </Tr>
                 ))}
               </Tbody>
             </Table>
+
+            <EditUserModal
+            isOpen={isEditModalOpen}
+            onClose={handleCloseEditModal}
+            user={selectedUser}
+            onUserUpdated={handleUserUpdated}
+          />
           </Box>
 
           <Modal isOpen={isOpen} onClose={onClose} size="lg">
