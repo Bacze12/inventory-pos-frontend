@@ -15,6 +15,7 @@ import {
   InputLeftElement,
   Text,
   Link,
+  Image,
 } from '@chakra-ui/react';
 import { Menu as MenuIcon, Sun, Moon, User, LogOut, DollarSign } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -55,6 +56,16 @@ const Navbar = ({ onMenuClick, username, isOpen }) => {
         </Flex>
         <Flex h="1" alignItems="center" mx="1" justifyContent="space-between">
           <Text > x </Text>
+        </Flex>
+        <Flex h="1" alignItems="center" mx="1" justifyContent="space-between">
+          <Link to="/home" onClick={() => navigate('/home')}>
+            <Image
+              src={require('C:/Users/wcastillo/Downloads/inventory-pos-frontend/src/img/Sin título.png')}
+              alt="Logo"
+              boxSize="40px"
+              ml={2}
+            />
+          </Link>
         </Flex>
         <HStack spacing={4}>
           <IconButton

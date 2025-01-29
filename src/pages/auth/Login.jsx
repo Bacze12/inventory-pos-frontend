@@ -33,7 +33,7 @@ const LoginPage = () => {
 
   const boxBg = useColorModeValue('white', 'gray.700');
   const boxColor = useColorModeValue('black', 'white');
-  const bgGradient = useColorModeValue('linear(to-t, green.300, gray.50)', 'linear(to-t, green.500, gray.500)');
+  const bgGradient = useColorModeValue('linear(to-t, green.300, blue.300)', 'linear(to-t, green.500, blue.500)');
 
   const handleLogin = async (e) => {
     e.preventDefault();

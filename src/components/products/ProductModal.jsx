@@ -180,18 +180,18 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
         <ModalCloseButton />
         <ModalBody>
           <SimpleGrid columns={2} spacing={5} mb={4}>
-            <FormControl mb={4}>
-              <FormLabel>Nombre *</FormLabel>
+            <FormControl mb={4} isRequired>
+              <FormLabel>Nombre</FormLabel>
               <Input value={name} required onChange={(e) => setName(e.target.value)} />
             </FormControl>
-            <FormControl mb={4}>
-              <FormLabel>Codigo de Barras *</FormLabel>
+            <FormControl mb={4} isRequired>
+              <FormLabel>Codigo de Barras</FormLabel>
               <Input value={sku} required onChange={(e) => setSku(e.target.value)} />
             </FormControl>
           </SimpleGrid>
           <SimpleGrid columns={2} spacing={5} mb={4}>
-            <FormControl>
-              <FormLabel>Categoría *</FormLabel>
+            <FormControl isRequired>
+              <FormLabel>Categoría</FormLabel>
               <Select
                 placeholder="Seleccionar"
                 value={categoryId}
@@ -205,8 +205,8 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
                 ))}
               </Select>
             </FormControl>
-            <FormControl>
-              <FormLabel>Proveedor *</FormLabel>
+            <FormControl isRequired>
+              <FormLabel>Proveedor</FormLabel>
               <Select
                 placeholder="Seleccionar"
                 value={supplierId}
@@ -221,23 +221,25 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               </Select>
             </FormControl>
           </SimpleGrid>
-          <SimpleGrid columns={2} spacing={5} mb={4}>
-            <FormControl>
-              <FormLabel>Costo Neto *</FormLabel>
+          <SimpleGrid columns={2} spacing={5} mb={4} >
+            <FormControl isRequired>
+              <FormLabel textAlign="center">Costo Neto</FormLabel>
               <Input
                 type="number"
                 value={purchasePrice}
                 placeholder="$0"
                 required
+                width="120px"
                 onChange={(e) => handlePurchasePriceChange(e.target.value)}
               />
             </FormControl>
-            <FormControl>
-              <FormLabel>Costo Bruto</FormLabel>
+            <FormControl textAlign="center">
+              <FormLabel textAlign="center">Costo Bruto</FormLabel>
               <Input
                 type="number"
                 value={grossCost}
                 placeholder="$0"
+                width="120px"
                 onChange={(e) => handleGrossCostChange(e.target.value)}
               />
             </FormControl>
@@ -252,17 +254,18 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
                 onChange={(e) => handleNetSalePriceChange(e.target.value)}
               />
             </FormControl>
-            <FormControl>
-              <FormLabel>Margen (%)</FormLabel>
+            <FormControl textAlign="center">
+              <FormLabel textAlign="center">Margen (%)</FormLabel>
               <Input
                 type="number"
                 value={marginPercent}
                 placeholder="0%"
+                width="80px"
                 onChange={(e) => handleMarginChange(e.target.value)}
               />
             </FormControl>
-            <FormControl>
-              <FormLabel>Venta Bruto *</FormLabel>
+            <FormControl isRequired>
+              <FormLabel>Venta Bruto</FormLabel>
               <Input
                 type="number"
                 value={grossSalePrice}
@@ -290,13 +293,12 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               </Checkbox>
             </FormControl>
           </SimpleGrid>
-          <FormControl mb={4}>
-            <FormLabel>Stock *</FormLabel>
+          <FormControl mb={4} width="80px" isRequired>
+            <FormLabel>Stock</FormLabel>
             <Input
               type="number"
               value={stock}
               placeholder="0"
-              required
               onChange={(e) => setStock(e.target.value)}
             />
           </FormControl>
