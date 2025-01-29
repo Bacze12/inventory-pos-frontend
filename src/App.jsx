@@ -19,9 +19,6 @@ import Pos from './pages/pos/Pos';
 
 const ProductListPage = lazy(() => import('./pages/products/ProductListPage'));
 const ProductDetailsPage = lazy(() => import('./pages/products/ProductDetailsPage'));
-const AddSalePage = lazy(() => import('./pages/sales/AddSalePage'));
-const SalesListPage = lazy(() => import('./pages/sales/SalesListPage'));
-const SaleDetailsPage = lazy(() => import('./pages/sales/SaleDetailsPage'));
 const UserManagementPage = lazy(() => import('./pages/users/UserManagementPage'));
 
 
@@ -45,9 +42,6 @@ const App = () => {
           <Route path="/pos" element={<PrivateRoute><Pos /></PrivateRoute>} />
           <Route path="/products" element={<PrivateRoute><ProductListPage /></PrivateRoute>} />
           <Route path="/products/:id" element={<PrivateRoute><ProductDetailsPage /></PrivateRoute>} />
-          <Route path="/add-sale" element={<PrivateRoute><AddSalePage /></PrivateRoute>} />
-          <Route path="/sales" element={<PrivateRoute><SalesListPage /></PrivateRoute>} />
-          <Route path="/sales/:id" element={<PrivateRoute><SaleDetailsPage /></PrivateRoute>} />
           <Route path="/users" element={<PrivateRoute><UserManagementPage /></PrivateRoute>} />
         </Routes>
       </Suspense>
