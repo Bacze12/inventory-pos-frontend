@@ -19,6 +19,7 @@ import {
   AlertDialogContent,
   AlertDialogOverlay,
   Select,
+  Input,
 } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon } from '@chakra-ui/icons';
 import CollapsibleSidebar from '../../components/layout/CollapsibleSidebar';
@@ -34,6 +35,7 @@ const ProductsPage = () => {
   const [suppliers, setSuppliers] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSupplier, setSelectedSupplier] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setModalOpen] = useState(false);
   const [isAlertOpen, setAlertOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -102,6 +104,10 @@ const ProductsPage = () => {
     fetchSuppliers();
   }, [handleError]);
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
   const handleDeleteProduct = async () => {
     try {
       await API.delete(`/products/${selectedProduct._id}`);
@@ -127,7 +133,8 @@ const ProductsPage = () => {
   const filteredProducts = products.filter((product) => {
     return (
       (selectedCategory === '' || product.categoryId === selectedCategory) &&
-      (selectedSupplier === '' || product.supplier === selectedSupplier)
+      (selectedSupplier === '' || product.supplier === selectedSupplier) &&
+      (product.name.toLowerCase().includes(searchTerm.toLowerCase()) || product.sku.includes(searchTerm))
     );
   });
 
@@ -147,6 +154,12 @@ const ProductsPage = () => {
           </Flex>
 
           <Flex mb={4} gap={4}>
+            <Input
+                type="text"
+                placeholder="Buscar por Nombre o SKU"
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
             <Select
               placeholder="Filtrar por categoría"
               value={selectedCategory}

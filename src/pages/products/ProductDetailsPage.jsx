@@ -15,33 +15,34 @@ import {
   StatLabel,
   StatNumber,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react';
 import CollapsibleSidebar from '../../components/layout/CollapsibleSidebar';
 import  Navbar  from '../../components/layout/Navbar';
 import { useParams } from 'react-router-dom';
 import API from '../../api/api';
 // import { Line } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-} from 'chart.js';
+// import {
+//   Chart as ChartJS,
+//   CategoryScale,
+//   LinearScale,
+//   PointElement,
+//   LineElement,
+//   Title,
+//   Tooltip,
+//   Legend
+// } from 'chart.js';
 
 // Registrar los componentes necesarios de Chart.js
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+// ChartJS.register(
+//   CategoryScale,
+//   LinearScale,
+//   PointElement,
+//   LineElement,
+//   Title,
+//   Tooltip,
+//   Legend
+// );
 
 const ProductDetailsPage = () => {
   const { id } = useParams();
@@ -49,6 +50,7 @@ const ProductDetailsPage = () => {
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const toast = useToast();
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
 
@@ -59,6 +61,13 @@ const ProductDetailsPage = () => {
         setProduct(response.data);
       } catch (err) {
         setError(err.response?.data?.message || 'No se pudo obtener la información del producto.');
+        toast({
+          title: 'Error',
+          description: err.response?.data?.message || 'No se pudo obtener la información del producto.',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
       } finally {
         setIsLoading(false);
       }
@@ -66,7 +75,7 @@ const ProductDetailsPage = () => {
     
 
     fetchProduct();
-  }, [id]);
+  }, [id, toast]);
 
   const bgColor = useColorModeValue('white', 'gray.800');
 
