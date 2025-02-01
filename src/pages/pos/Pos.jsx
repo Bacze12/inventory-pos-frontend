@@ -16,13 +16,13 @@ import {
   AlertIcon,
   Divider,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { MinusIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import CollapsibleSidebar from "../../components/layout/CollapsibleSidebar";
 import  Navbar  from "../../components/layout/Navbar";
 import PaymentModal from "../../components/pos/PaymentModal";
-import * as Sentry from "@sentry/react";
 
 const SalesModule = () => {
   const [cart, setCart] = useState({});
@@ -35,8 +35,22 @@ const SalesModule = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const processPaymentButtonRef = useRef(null);
+    const toast = useToast();
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+
+  const handleError = useCallback(
+      (message, error) => {
+        toast({
+          title: message,
+          description: error.message,
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+      },
+      [toast]
+    );
 
   const handleQuantityChange = (productId, delta) => {
     setCart((prevCart) => {
@@ -90,7 +104,7 @@ const SalesModule = () => {
         setError("Producto no encontrado. Verifique el SKU e intente nuevamente.");
       }
     } catch (error) {
-      Sentry.captureException(new Error("Error al buscar producto por SKU:", error));
+      handleError('Error al buscar producto por SKU:', error);
       setError("Error al buscar producto. Por favor, inténtelo de nuevo.");
     }
   };
@@ -106,7 +120,7 @@ const SalesModule = () => {
       .map(([productId, quantity]) => {
         const product = selectedProducts.find((p) => p.id === parseInt(productId));
         if (!product) {
-          Sentry.captureException(new Error(`Producto con ID ${productId} no encontrado en productos seleccionados.`));
+          handleError(`Producto con ID ${productId} no encontrado en productos seleccionados.`);
           return null;
         }
         return {
@@ -142,7 +156,7 @@ const SalesModule = () => {
       setSelectedProducts([]);
       onClose();
     } catch (error) {
-      Sentry.captureException(new Error("Error al procesar la venta:", error));
+      handleError("Error al procesar la venta:", error);
       setError("Error al procesar la venta. Por favor, inténtelo de nuevo.");
       setTimeout(() => setError(null), 3000); // Oculta el error después de 3 segundos
     }

@@ -60,7 +60,7 @@ const Navbar = ({ onMenuClick, username, isOpen }) => {
         <Flex h="1" alignItems="center" mx="1" justifyContent="space-between">
           <Link to="/home" onClick={() => navigate('/home')}>
             <Image
-              src={require('C:/Users/wcastillo/Downloads/inventory-pos-frontend/src/img/Sin título.png')}
+              src={require('../../img/Sin título.png')}
               alt="Logo"
               boxSize="40px"
               ml={2}

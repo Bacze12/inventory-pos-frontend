@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Flex,
@@ -19,13 +19,13 @@ import {
   useColorModeValue,
   StatArrow,
   Stack,
+  useToast,
 } from '@chakra-ui/react';
 import { Line, Bar } from 'react-chartjs-2';
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import CollapsibleSidebar from '../components/layout/CollapsibleSidebar';
 import  Navbar  from '../components/layout/Navbar';
 import API from '../api/api';
-import * as Sentry from '@sentry/react';
 
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
@@ -36,13 +36,27 @@ const DashboardPage = () => {
   const [chartData, setChartData] = useState(null);
   const [dailySalesData, setDailySalesData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const toast = useToast();
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+
+  const handleError = useCallback(
+      (message, error) => {
+        toast({
+          title: message,
+          description: error.message,
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+      },
+      [toast]
+    );
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [salesResponse, productsResponse, usersResponse] = await Promise.all([
+        const [salesResponse] = await Promise.all([
           API.get('/sales'),
           API.get('/products'),
           API.get('/users'),
@@ -94,14 +108,14 @@ const DashboardPage = () => {
           ],
         });
       } catch (error) {
-        Sentry.captureException(new Error('Error fetching dashboard data:', error));
+        handleError('Error al cargar el dashboard:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchDashboardData();
-  }, []);
+  }, [handleError]);
 
   const chartOptions = {
     responsive: true,
