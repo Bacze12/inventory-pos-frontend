@@ -15,6 +15,7 @@ import {
   Select,
   useToast,
   SimpleGrid,
+  Divider,
 } from '@chakra-ui/react';
 import API from '../../api/api';
 import { createProduct, updateProduct } from '../../api/products';
@@ -221,8 +222,9 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               </Select>
             </FormControl>
           </SimpleGrid>
-          <SimpleGrid columns={2} spacing={5} mb={4} >
-            <FormControl isRequired>
+          <Divider  mt="20px" mb="20px"  />
+          <SimpleGrid columns={2} spacing={5} mb={4}>
+            <FormControl isRequired display="flex" flexDirection="column" alignItems="center"> 
               <FormLabel textAlign="center">Costo Neto</FormLabel>
               <Input
                 type="number"
@@ -230,27 +232,30 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
                 placeholder="$0"
                 required
                 width="120px"
+                textAlign="center"
                 onChange={(e) => handlePurchasePriceChange(e.target.value)}
               />
             </FormControl>
-            <FormControl textAlign="center">
+            <FormControl textAlign="center" display="flex" flexDirection="column" alignItems="center">
               <FormLabel textAlign="center">Costo Bruto</FormLabel>
               <Input
                 type="number"
                 value={grossCost}
                 placeholder="$0"
                 width="120px"
+                textAlign="center"
                 onChange={(e) => handleGrossCostChange(e.target.value)}
               />
             </FormControl>
           </SimpleGrid>
           <SimpleGrid columns={3} spacing={5} mb={4}>
             <FormControl>
-              <FormLabel>Venta Neto</FormLabel>
+              <FormLabel textAlign="center">Venta Neto</FormLabel>
               <Input
                 type="number"
                 value={netSalePrice}
                 placeholder="$0"
+                textAlign="center"
                 onChange={(e) => handleNetSalePriceChange(e.target.value)}
               />
             </FormControl>
@@ -265,18 +270,20 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               />
             </FormControl>
             <FormControl isRequired>
-              <FormLabel>Venta Bruto</FormLabel>
+              <FormLabel textAlign="center">Venta Bruto</FormLabel>
               <Input
                 type="number"
                 value={grossSalePrice}
                 placeholder="$0"
                 required
+                textAlign="center"
                 onChange={(e) => handleGrossSalePriceChange(e.target.value)}
               />
             </FormControl>
           </SimpleGrid>
+          <Divider mt="20px" mb="20px" />
           <SimpleGrid columns={2} spacing={5} mb={4}>
-            <FormControl mb={4}>
+            <FormControl mb={4} display="flex" flexDirection="column" alignItems="center">
               <Checkbox
                 isChecked={hasExtraTax}
                 onChange={(e) => setHasExtraTax(e.target.checked)}
@@ -284,7 +291,7 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
                 Tiene Impuesto Extra
               </Checkbox>
             </FormControl>
-            <FormControl mb={4}>
+            <FormControl mb={4} display="flex" flexDirection="column" alignItems="center">
               <Checkbox
                 isChecked={isIvaExempt}
                 onChange={(e) => setIsIvaExempt(e.target.checked)}
@@ -293,14 +300,19 @@ const ProductModal = ({ initialData, isOpen, onClose }) => {
               </Checkbox>
             </FormControl>
           </SimpleGrid>
-          <FormControl mb={4} width="80px" isRequired>
-            <FormLabel>Stock</FormLabel>
-            <Input
-              type="number"
-              value={stock}
-              placeholder="0"
-              onChange={(e) => setStock(e.target.value)}
-            />
+          <Divider mt="20px" mb="20px" />
+          <FormControl mb={4} isRequired display="flex" flexDirection="column" alignItems="center">
+            <SimpleGrid columns={1} spacing={1} mb={1}>
+              <FormLabel textAlign="center">Stock</FormLabel> 
+              <Input
+                type="number"
+                value={stock}
+                placeholder="0"
+                textAlign="center"
+                width="80px"
+                onChange={(e) => setStock(e.target.value)}
+              />
+            </SimpleGrid>
           </FormControl>
         </ModalBody>
         <ModalFooter>

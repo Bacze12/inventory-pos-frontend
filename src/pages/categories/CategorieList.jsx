@@ -1,5 +1,5 @@
 // CategoriesListPage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Button,
@@ -15,10 +15,12 @@ import {
   Alert,
   AlertIcon,
   Flex,
-  // Switch,
+  Switch,
   IconButton,
+  useToast,
+  ButtonGroup,
 } from '@chakra-ui/react';
-import { EditIcon } from '@chakra-ui/icons';
+import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import API from '../../api/api';
 import CategoryModal from '../../components/categories/CategoriesModal';
 import CollapsibleSidebar  from '../../components/layout/CollapsibleSidebar';
@@ -33,8 +35,22 @@ const CategoriesListPage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
+    const toast = useToast();
 
-  useEffect(() => {
+  const handleError = useCallback(
+      (message, error) => {
+        toast({
+          title: message,
+          description: error.message,
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+      },
+      [toast]
+    );
+
+  
     const fetchCategories = async () => {
       try {
         const response = await API.get('/categories');
@@ -46,7 +62,8 @@ const CategoriesListPage = () => {
       }
     };
 
-    fetchCategories();
+    useEffect(() => {
+      fetchCategories();
   }, []);
 
   const handleModalClose = () => {
@@ -65,7 +82,7 @@ const CategoriesListPage = () => {
       const response = await API.get('/categories');
       setCategories(response.data);
     } catch (err) {
-      console.error('Error creando categoría:', err);
+      handleError('Error creando categoría:', err);
     }
   };
 
@@ -75,19 +92,33 @@ const CategoriesListPage = () => {
       const response = await API.get('/categories');
       setCategories(response.data);
     } catch (err) {
-      console.error('Error actualizando categoría:', err);
+      handleError('Error actualizando categoría:', err);
     }
   };
 
-  // const toggleCategoryStatus = async (category) => {
-  //   try {
-  //     await API.patch(`/categories/${category._id}`, { isActive: !category.isActive });
-  //     const response = await API.get('/categories');
-  //     setCategories(response.data);
-  //   } catch (err) {
-  //     console.error('Error actualizando el estado de la categoría:', err);
-  //   }
-  // };
+  const handleDelete = async (id) => {
+    try {
+      await API.delete(`/categories/${id}`);
+      toast({
+        title: "Categoría eliminada",
+        status: "success",
+        duration: 3000
+      });
+      fetchCategories(); // Recargar las categorías
+    } catch (err) {
+      handleError('Error eliminando categoría:', err);
+    }
+  };
+
+  const toggleCategoryStatus = async (category) => {
+    try {
+      await API.patch(`/categories/${category._id}`, { isActive: !category.isActive });
+      const response = await API.get('/categories');
+      setCategories(response.data);
+    } catch (err) {
+      handleError('Error actualizando el estado de la categoría:', err);
+    }
+  };
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
 
@@ -136,24 +167,30 @@ const CategoriesListPage = () => {
               <Tr key={category._id}>
                 <Td>{category.name}</Td>
                 <Td>{category.description}</Td>
-                <Td></Td>
-                {/* <Td>
+                <Td>
                   <Switch
                     isChecked={category.isActive}
                     onChange={() => toggleCategoryStatus(category)}
                   />
-                </Td> */}
+                </Td>
                 <Td>
-                  <IconButton
-                    icon={<EditIcon />}
-                    colorScheme="blue"
-                    variant="outline"
-                    onClick={() => {
-                      setSelectedCategory(category);
-                      setIsEditModalOpen(true);
-                    }}
-                    aria-label="Editar categoría"
-                  />
+                  <ButtonGroup>
+                    <IconButton
+                      icon={<EditIcon />}
+                      colorScheme="blue"
+                      onClick={() => {
+                        setSelectedCategory(category);
+                        setIsEditModalOpen(true);
+                      }}
+                      aria-label="Editar categoría"
+                    />
+                    <IconButton
+                      icon={<DeleteIcon />}
+                      colorScheme="red"
+                      onClick={() => handleDelete(category._id)}
+                      aria-label="Eliminar categoría"
+                    />
+                  </ButtonGroup>
                 </Td>
               </Tr>
             ))}

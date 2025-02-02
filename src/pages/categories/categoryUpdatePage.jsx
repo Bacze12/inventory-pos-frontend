@@ -19,7 +19,7 @@ import Navbar from '../../components/layout/Navbar';
 const CategoryUpdatePage = () => {
   const { _id } = useParams(); // Obtenemos el ID de la categoría desde la URL
   const navigate = useNavigate();
-  // const [category, setCategory] = useState(null);
+  const [category, setCategory] = useState(null);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -32,7 +32,7 @@ const CategoryUpdatePage = () => {
     const fetchCategory = async () => {
       try {
         const response = await API.get(`/categories/${_id}`); // Usamos _id directamente
-        // setCategory(response.data); // Guardamos la categoría completa
+        setCategory(response.data); // Guardamos la categoría completa
         setName(response.data.name); // Inicializamos el nombre
         setDescription(response.data.description); // Inicializamos la descripción
       } catch (err) {
