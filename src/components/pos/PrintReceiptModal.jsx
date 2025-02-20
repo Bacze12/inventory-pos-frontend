@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   Box,
   Button,
-  Flex,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -10,7 +9,6 @@ import {
   ModalBody,
   ModalFooter,
   Text,
-  Divider,
   useDisclosure,
 } from "@chakra-ui/react";
 import PrintReceiptModal from './PrintReceiptModal';

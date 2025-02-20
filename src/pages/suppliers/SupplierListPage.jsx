@@ -1,4 +1,3 @@
-// SuppliersListPage.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -21,12 +20,12 @@ import {
   Select,
   Input,
 } from '@chakra-ui/react';
-import API from '../../api/api';
 import SupplierModal from '../../components/suppliers/SupplierModal';
 import CollapsibleSidebar from '../../components/layout/CollapsibleSidebar';
-import  Navbar  from '../../components/layout/Navbar';
+import Navbar from '../../components/layout/Navbar';
 import EditSupplierModal from '../../components/suppliers/EditSupplierModal';
-import { EditIcon } from '@chakra-ui/icons';
+import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
+import { getAll, create, update, remove } from '../../api/suppliers.api';
 
 const SuppliersListPage = () => {
   const [suppliers, setSuppliers] = useState([]);
@@ -41,19 +40,20 @@ const SuppliersListPage = () => {
   const toast = useToast();
 
   useEffect(() => {
-    const fetchSuppliers = async () => {
-      try {
-        const response = await API.get('/suppliers');
-        setSuppliers(response.data);
-      } catch (err) {
-        setError('No se pudo cargar los proveedores.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchSuppliers();
   }, []);
+
+  const fetchSuppliers = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getAll();
+      setSuppliers(response.data);
+    } catch (err) {
+      setError('No se pudo cargar los proveedores.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
@@ -66,30 +66,75 @@ const SuppliersListPage = () => {
 
   const handleSupplierCreate = async (supplierData) => {
     try {
-      await API.post('/suppliers', supplierData);
-      setIsModalOpen(false);
-      const response = await API.get('/suppliers');
-      setSuppliers(response.data);
+      // Crear un nuevo objeto sin tenantId ni products si están vacíos
+      const newSupplier = { ...supplierData };
+      
+      // No incluir `products` si está vacío o indefinido
+      if (!newSupplier.products || newSupplier.products.length === 0) {
+        delete newSupplier.products;
+      }
+  
+      // No incluir `tenantId`, ya que debe venir del JWT en el backend
+      delete newSupplier.tenantId;
+  
+      // Enviar el nuevo proveedor sin `tenantId` ni `products` si es necesario
+      await create(newSupplier);
+      fetchSuppliers();
+  
+      toast({
+        title: 'Proveedor creado',
+        description: 'El proveedor se ha registrado correctamente.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
     } catch (err) {
       toast({
-        title: 'Error al crear proveedor.',
-        description: err.response?.data?.message || 'Error creando proveedor.',
+        title: 'Error al crear proveedor',
+        description: err.response?.data?.message || 'Hubo un problema.',
         status: 'error',
         duration: 3000,
         isClosable: true,
       });
     }
   };
-
+  
   const handleSupplierUpdate = async (updatedSupplier) => {
     try {
-      await API.patch(`/suppliers/${updatedSupplier._id}`, updatedSupplier);
-      const response = await API.get('/suppliers');
-      setSuppliers(response.data);
+      await update(updatedSupplier._id, updatedSupplier);
+      fetchSuppliers();
+      toast({
+        title: 'Proveedor actualizado',
+        description: 'Los cambios han sido guardados correctamente.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
     } catch (err) {
       toast({
-        title: 'Error al actualizar proveedor.',
-        description: err.response?.data?.message || 'Error actualizando proveedor.',
+        title: 'Error al actualizar proveedor',
+        description: 'Hubo un problema al actualizar el proveedor.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+  const handleSupplierDelete = async (supplier) => {
+    try {
+      await remove(supplier._id);
+      fetchSuppliers();
+      toast({
+        title: 'Proveedor eliminado',
+        description: 'El proveedor ha sido eliminado correctamente.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (err) {
+      toast({
+        title: 'Error al eliminar proveedor',
+        description: 'Hubo un problema al eliminar el proveedor.',
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -99,15 +144,20 @@ const SuppliersListPage = () => {
 
   const toggleSupplierStatus = async (supplier) => {
     try {
-      await API.patch(`/suppliers/${supplier._id}`, { isActive: !supplier.isActive });
-      const updatedSuppliers = suppliers.map(sup =>
-        sup._id === supplier._id ? { ...sup, isActive: !sup.isActive } : sup
-      );
-      setSuppliers(updatedSuppliers);
+      const updatedSupplier = { isActive: !supplier.isActive }; // Solo enviamos isActive
+      await update(supplier._id, updatedSupplier);
+      fetchSuppliers();
+      toast({
+        title: 'Estado actualizado',
+        description: `El proveedor ha sido ${updatedSupplier.isActive ? 'activado' : 'desactivado'}.`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
     } catch (err) {
       toast({
-        title: 'Error al actualizar el estado del proveedor.',
-        description: err.response?.data?.message || 'No se pudo actualizar el estado del proveedor.',
+        title: 'Error al cambiar estado',
+        description: 'No se pudo cambiar el estado del proveedor.',
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -117,10 +167,14 @@ const SuppliersListPage = () => {
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
 
-  const filteredSuppliers = suppliers.filter(supplier => {
-    if (filterStatus === 'all') return true;
-    return filterStatus === 'active' ? supplier.isActive : !supplier.isActive;
-  }).filter(supplier => supplier.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredSuppliers = suppliers
+    .filter((supplier) => {
+      if (filterStatus === 'all') return true;
+      return filterStatus === 'active' ? supplier.isActive : !supplier.isActive;
+    })
+    .filter((supplier) =>
+      supplier.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
   if (isLoading) {
     return (
@@ -182,7 +236,7 @@ const SuppliersListPage = () => {
             </Thead>
             <Tbody>
               {filteredSuppliers.map((supplier) => (
-                <Tr key={supplier.id}>
+                <Tr key={supplier._id}>
                   <Td>{supplier.name}</Td>
                   <Td>{supplier.email}</Td>
                   <Td>{supplier.phone}</Td>
@@ -191,6 +245,7 @@ const SuppliersListPage = () => {
                     <Switch
                       isChecked={supplier.isActive}
                       onChange={() => toggleSupplierStatus(supplier)}
+                      colorScheme="green"
                     />
                   </Td>
                   <Td>
@@ -205,19 +260,24 @@ const SuppliersListPage = () => {
                       aria-label="Editar proveedor"
                     />
                   </Td>
+                  <Td>
+                    {/* Boton para eliminar permanentemente el supplier con llamado a la API */}
+                    <IconButton icon={<DeleteIcon />} colorScheme="red"  onClick={() => {
+                      handleSupplierDelete(supplier);
+                    }}/>
+                  </Td>
                 </Tr>
               ))}
             </Tbody>
           </Table>
-          {isModalOpen && (
-            <SupplierModal isOpen={isModalOpen} onClose={handleModalClose} onSubmit={handleSupplierCreate} />
-          )}
+          <SupplierModal isOpen={isModalOpen} onClose={handleModalClose} onSubmit={handleSupplierCreate} />
           {isEditModalOpen && selectedSupplier && (
             <EditSupplierModal
               isOpen={isEditModalOpen}
               onClose={handleEditModalClose}
               supplier={selectedSupplier}
-              onSupplierUpdated={handleSupplierUpdate}
+              onSave={handleSupplierUpdate}
+              fetchSuppliers={fetchSuppliers}
             />
           )}
         </Box>

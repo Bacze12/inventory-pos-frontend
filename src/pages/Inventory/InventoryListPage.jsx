@@ -17,10 +17,10 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-import API from '../../api/api';
 import InventoryModal from '../../components/Inventory/InventoryModal';
 import CollapsibleSidebar from '../../components/layout/CollapsibleSidebar';
 import  Navbar  from '../../components/layout/Navbar';
+import { createInventory, getInventory} from '../../api/inventory.api';
 
 const InventoryListPage = () => {
   const [inventory, setInventory] = useState([]);
@@ -35,14 +35,14 @@ const InventoryListPage = () => {
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const response = await API.get('/inventory');
-        setInventory(response.data);
+          const response = await getInventory();
+          setInventory(response);
       } catch (err) {
-        setError('No se pudo cargar el inventario.');
+          setError('No se pudo cargar el inventario.');
       } finally {
-        setIsLoading(false);
+          setIsLoading(false);
       }
-    };
+  };
 
     fetchInventory();
   }, []);
@@ -53,9 +53,9 @@ const InventoryListPage = () => {
 
   const handleInventoryCreate = async (inventoryData) => {
     try {
-      await API.post('/inventory', inventoryData);
+      await createInventory(inventoryData);
       setIsModalOpen(false);
-      const response = await API.get('/inventory');
+      const response = await getInventory();
       setInventory(response.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Error creando movimiento de inventario:');
@@ -115,7 +115,7 @@ const InventoryListPage = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {inventory.map((item) => (
+              {Array.isArray(inventory)&&inventory.map((item) => (
                 <Tr key={item.id}>
                   <Td>{item.id}</Td>
                   <Td>{item.Product?.name}</Td>

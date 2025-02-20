@@ -1,4 +1,3 @@
-// InventoryDetailsPage.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -14,9 +13,9 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import { useParams, useNavigate } from 'react-router-dom';
-import API from '../../api/api';
 import CollapsibleSidebar from '../../components/layout/CollapsibleSidebar';
 import  Navbar  from '../../components/layout/Navbar';
+import {getInventoryById} from '../../api/inventory.api';
 
 const InventoryDetailsPage = () => {
   const { id } = useParams();
@@ -34,13 +33,13 @@ const InventoryDetailsPage = () => {
   useEffect(() => {
     const fetchInventory = async () => {
         try {
-          const response = await API.get(`/inventory/${id}`);
-          if (response.data) {
-            setInventory(response.data);
-            setProductId(response.data.productId || '');
-            setQuantity(response.data.quantity || '');
-            setType(response.data.type || 'IN');
-            setNotes(response.data.notes || '');
+          const inventoryData = await getInventoryById(id);
+          if (inventoryData) {
+            setInventory(inventoryData);
+            setProductId(inventoryData.productId || '');
+            setQuantity(inventoryData.quantity || '');
+            setType(inventoryData.type || 'IN');
+            setNotes(inventoryData.notes || '');
           } else {
             throw new Error('Datos de inventario no encontrados');
           }
@@ -54,20 +53,6 @@ const InventoryDetailsPage = () => {
 
     fetchInventory();
   }, [id]);
-
-  const handleSubmit = async () => {
-    try {
-      await API.patch(`/inventory/${id}`, {
-        productId: parseInt(productId),
-        quantity: parseInt(quantity),
-        type,
-        notes,
-      });
-      navigate('/inventory');
-    } catch (err) {
-      setError('No se pudo actualizar el movimiento de inventario.');
-    }
-  };
 
   if (isLoading) {
     return (
@@ -140,9 +125,6 @@ const InventoryDetailsPage = () => {
                 placeholder="Notas (opcional)"
               />
             </FormControl>
-            <Button colorScheme="blue" onClick={handleSubmit}>
-              Guardar Cambios
-            </Button>
           </Box>
         </Box>
       </Flex>

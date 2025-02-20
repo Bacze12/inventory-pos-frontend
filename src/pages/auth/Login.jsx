@@ -16,10 +16,10 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import useAlert from '../../hooks/useAlert';
-import API from '../../api/api';
 import { useDispatch } from 'react-redux';
 import { loginStart, loginSuccess, loginFailure } from '../../store/slices/authSlice';
 import { Sun, Moon } from 'lucide-react';
+import {login} from '../../api/auth.api';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -42,9 +42,9 @@ const LoginPage = () => {
       dispatch(loginStart());
 
       
-      const response = await API.post('/auth/login', { businessName, email, password });
+      const response = await login({ email, password, businessName });
       
-      const { access_token } = response.data;
+      const { access_token } = response;
 
       if (!access_token) {
         throw new Error('Respuesta del servidor incompleta');
