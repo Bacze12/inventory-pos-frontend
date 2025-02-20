@@ -15,17 +15,19 @@ import {
   Alert,
   AlertIcon,
   Flex,
+  Input,
   Switch,
   IconButton,
   useToast,
   ButtonGroup,
+  Select,
 } from '@chakra-ui/react';
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
-import API from '../../api/api';
 import CategoryModal from '../../components/categories/CategoriesModal';
 import CollapsibleSidebar  from '../../components/layout/CollapsibleSidebar';
 import  Navbar  from '../../components/layout/Navbar';
 import EditCategoryModal from '../../components/categories/EditCategoryModal';
+import {getAll, create, update, remove} from '../../api/categories.api';
 
 const CategoriesListPage = () => {
   const [categories, setCategories] = useState([]);
@@ -35,6 +37,8 @@ const CategoriesListPage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
     const toast = useToast();
 
   const handleError = useCallback(
@@ -53,7 +57,7 @@ const CategoriesListPage = () => {
   
     const fetchCategories = async () => {
       try {
-        const response = await API.get('/categories');
+        const response = await getAll();
         setCategories(response.data);
       } catch (err) {
         setError('No se pudo cargar las categorías.');
@@ -61,6 +65,7 @@ const CategoriesListPage = () => {
         setIsLoading(false);
       }
     };
+    
 
     useEffect(() => {
       fetchCategories();
@@ -77,51 +82,94 @@ const CategoriesListPage = () => {
 
   const handleCategoryCreate = async (categoryData) => {
     try {
-      await API.post('/categories', categoryData);
+      // Make sure categoryData contains valid name and description
+      await create({
+        name: categoryData.name, 
+        description: categoryData.description,
+      });
+      
       setIsModalOpen(false);
-      const response = await API.get('/categories');
-      setCategories(response.data);
+      fetchCategories(); // Reload categories
     } catch (err) {
       handleError('Error creando categoría:', err);
     }
   };
-
   const handleCategoryUpdate = async (updatedCategory) => {
     try {
-      await API.patch(`/categories/${updatedCategory._id}`, updatedCategory);
-      const response = await API.get('/categories');
-      setCategories(response.data);
+      await update(selectedCategory._id, updatedCategory);
+      fetchCategories(); // Reload categories
+      toast({
+        title: 'Categoría actualizada',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
     } catch (err) {
-      handleError('Error actualizando categoría:', err);
+      toast({
+        title: 'Error al actualizar la categoría',
+        description: err.message,
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleCategoryDelete = async (categories) => {
     try {
-      await API.delete(`/categories/${id}`);
+      await remove(categories._id);
+      fetchCategories(); // Reload categories
       toast({
         title: "Categoría eliminada",
         status: "success",
-        duration: 3000
+        duration: 3000,
+        isClosable: true,
       });
-      fetchCategories(); // Recargar las categorías
     } catch (err) {
-      handleError('Error eliminando categoría:', err);
+      toast({
+        title: 'Error al eliminar categoria',
+        description: 'Hubo un problema al eliminar el proveedor.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
   const toggleCategoryStatus = async (category) => {
     try {
-      await API.patch(`/categories/${category._id}`, { isActive: !category.isActive });
-      const response = await API.get('/categories');
-      setCategories(response.data);
+      const updatedCategory = { isActive: !category.isActive };
+      await update(category._id, updatedCategory);
+      fetchCategories(); // Recargar las categorías
+      toast({
+        title: 'Estado de la categoría actualizado',
+        description: `El proveedor ha sido ${updatedCategory.isActive ? 'activado' : 'desactivado'}.`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
     } catch (err) {
-      handleError('Error actualizando el estado de la categoría:', err);
+      toast({
+        title: 'Error al actualizar el estado de la categoría',
+        description: err.message,
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
     }
-  };
-
+};
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
-
+  
+  const filteredCategories = categories
+    .filter((category) => {
+      if (filterStatus === 'all') return true;
+      return filterStatus === 'active' ? category.isActive : !category.isActive;
+    })
+    .filter((category) => 
+       category.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  
   if (isLoading) {
     return (
       <Center h="100vh">
@@ -153,6 +201,19 @@ const CategoriesListPage = () => {
               Crear Categoría
             </Button>
           </Flex>
+          <Flex mb={4}>
+            <Input 
+            placeholder="Buscar categoría" 
+            value={searchTerm} 
+            onChange={(e) => setSearchTerm(e.target.value)} 
+            mr={4} />
+            <Select value={filterStatus}
+             onChange={(e) => setFilterStatus(e.target.value)} >
+              <option value="all">Todas</option>
+              <option value="active">Activas</option>
+              <option value="inactive">Inactivas</option>
+            </Select>
+          </Flex>
           <Table variant="simple">
             <Thead>
               <Tr>
@@ -163,7 +224,7 @@ const CategoriesListPage = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {categories.map((category) => (
+              {filteredCategories.map((category) => (
               <Tr key={category._id}>
                 <Td>{category.name}</Td>
                 <Td>{category.description}</Td>
@@ -171,6 +232,7 @@ const CategoriesListPage = () => {
                   <Switch
                     isChecked={category.isActive}
                     onChange={() => toggleCategoryStatus(category)}
+                    colorScheme='green'
                   />
                 </Td>
                 <Td>
@@ -178,6 +240,7 @@ const CategoriesListPage = () => {
                     <IconButton
                       icon={<EditIcon />}
                       colorScheme="blue"
+                      variant={'outline'}
                       onClick={() => {
                         setSelectedCategory(category);
                         setIsEditModalOpen(true);
@@ -187,8 +250,7 @@ const CategoriesListPage = () => {
                     <IconButton
                       icon={<DeleteIcon />}
                       colorScheme="red"
-                      onClick={() => handleDelete(category._id)}
-                      aria-label="Eliminar categoría"
+                      onClick={() => handleCategoryDelete(category)}
                     />
                   </ButtonGroup>
                 </Td>
@@ -196,15 +258,14 @@ const CategoriesListPage = () => {
             ))}
             </Tbody>
           </Table>
-          {isModalOpen && (
-            <CategoryModal isOpen={isModalOpen} onClose={handleModalClose} onSubmit={handleCategoryCreate} />
-          )}
+          <CategoryModal isOpen={isModalOpen} onClose={handleModalClose} onSubmit={handleCategoryCreate} />
           {isEditModalOpen && selectedCategory && (
             <EditCategoryModal
               isOpen={isEditModalOpen}
               onClose={handleEditModalClose}
               category={selectedCategory}
-              onCategoryUpdated={handleCategoryUpdate}
+              onSave={handleCategoryUpdate}
+              fetchCategory={fetchCategories}
             />
           )}
         </Box>

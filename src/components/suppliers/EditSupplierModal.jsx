@@ -30,6 +30,7 @@ const EditSupplierModal = ({ isOpen, onClose, supplier, onSave, fetchSuppliers }
       setAddress(supplier.address || '');
     }
   }, [supplier]);
+  
   const handleUpdateSupplier = async () => {
     try {
       if (!supplier._id) {

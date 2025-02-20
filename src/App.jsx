@@ -8,7 +8,7 @@ import HomeCashier from './pages/HomeCashier';
 import LoginPage from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import CategoriesListPage from './pages/categories/CategorieList';
-import CategoryUpdatePage from './pages/categories/categoryUpdatePage';
+// import CategoryUpdatePage from './pages/categories/categoryUpdatePage';
 import SupplierListPage from './pages/suppliers/SupplierListPage';
 import InventoryListPage from './pages/Inventory/InventoryListPage';
 import InventoryDetailsPage from './pages/Inventory/InventoryDetailsPage';
@@ -33,7 +33,7 @@ const App = () => {
           <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
           <Route path="/homecashier" element={<HomeCashier />} />
           <Route path="/categories" element={<PrivateRoute><CategoriesListPage /></PrivateRoute>} />
-          <Route path="/categories/:id/edit" element={<PrivateRoute><CategoryUpdatePage /></PrivateRoute>} />
+          {/* <Route path="/categories/:id/edit" element={<PrivateRoute><CategoryUpdatePage /></PrivateRoute>} /> */}
           <Route path="/suppliers" element={<PrivateRoute><SupplierListPage /></PrivateRoute>} />
           <Route path="/inventory" element={<PrivateRoute><InventoryListPage /></PrivateRoute>} />
           <Route path="/inventory/:id" element={<PrivateRoute><InventoryDetailsPage /></PrivateRoute>} />

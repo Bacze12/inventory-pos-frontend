@@ -212,8 +212,7 @@ const SuppliersListPage = () => {
               placeholder="Buscar por nombre"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              mr={4}
-            />
+              mr={4} />
             <Select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}

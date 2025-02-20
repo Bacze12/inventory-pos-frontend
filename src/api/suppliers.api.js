@@ -10,10 +10,6 @@ export const getAll = () => {
     return Api.get('/suppliers');
 }
 
-// Llama a getid (No incorporado)
-export const getById = (id) => {
-    return Api.get(`/suppliers/${id}`);
-}
 // Llama a update (corregido)
 export const update = async (id, data) => {
     try {

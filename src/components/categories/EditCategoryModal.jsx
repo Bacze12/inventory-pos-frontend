@@ -13,31 +13,48 @@ import {
     Button,
     useToast,
 } from '@chakra-ui/react';
-import API from '../../api/api';
+import { update } from '../../api/categories.api';
 
-const EditCategoryModal = ({ isOpen, onClose, category, onCategoryUpdated }) => {
+const EditCategoryModal = ({ isOpen, onClose, category, onSave, fetchCategory }) => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const toast = useToast();
 
     useEffect(() => {
         if (category) {
-        setName(category.name);
-        setDescription(category.description);
+        setName(category.name || '');
+        setDescription(category.description || '');
         }
     }, [category]);
 
     const handleUpdateCategory = async () => {
         try {
-        await API.patch(`/categories/${category._id}`, { name, description });
+        if (!category._id) {
+            throw new Error('ID de la categoría no encontrado');
+        }
+        // Crear un objeto con solo los campos permitidos y que han cambiado
+        const updateData = {
+            name: name.trim() || undefined,
+            description: description.trim() || undefined,
+            isActive: category.isActive, // Incluir isActive con su valor actual
+        };
+        
+        const response = await update(category._id, updateData);
+        if (response.status !== 200) {
+            throw new Error('Error al actualizar la categoría en el servidor');
+        }
+
         toast({
             title: 'Categoría actualizada con éxito.',
             status: 'success',
             duration: 3000,
             isClosable: true,
         });
-        onCategoryUpdated();
+
+        onSave({ ...category, ...updateData });
         onClose();
+        fetchCategory(); // Recargar la categoría
+        
         } catch (error) {
         toast({
             title: 'Error al actualizar la categoría.',
